@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<component name="Main" namespace="Gehtsoft.ResourceManager.Test">
+  <message id="message1">
+    message1 on top
+  </message>
+  <group id="group1" >
+    <message id="message1">
+      <text language="en">
+        message1enus <!-- comment inside message text -->
+      </text>
+      <text language="ru">message1ruru</text>
+    </message>
+    <message id="message2">
+      <text language="en">message2enus</text>
+      This is very important message, eeah
+    </message>
+    <message id="message3" format="yes">
+      <text language="en">test {0}</text>
+      This is very important message, eeah
+      <text language="ru">тест {0}</text>
+    </message>
+  </group>
+</component>

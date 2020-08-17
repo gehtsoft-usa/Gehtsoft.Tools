@@ -1,0 +1,187 @@
+@class
+    @name=DateUtils
+    @key=Gehtsoft.Tools.TypeUtils.DateUtils
+    @brief=Tools for date/time
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.DateUtils
+
+
+    @member
+        @name=TruncateToMilliseconds
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.TruncateToMilliseconds(System.DateTime)
+        @key=TruncateToMilliseconds.0
+        @divisor=.
+        @brief=Truncates to whole millisecond.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TruncateToMilliseconds
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    @member
+        @name=TruncateToSeconds
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.TruncateToSeconds(System.DateTime)
+        @key=TruncateToSeconds.0
+        @divisor=.
+        @brief=Truncates to whole second.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TruncateToSeconds
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    @member
+        @name=TruncateToMinutes
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.TruncateToMinutes(System.DateTime)
+        @key=TruncateToMinutes.0
+        @divisor=.
+        @brief=Truncates to whole minute.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TruncateToMinutes
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    @member
+        @name=TruncateToHours
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.TruncateToHours(System.DateTime)
+        @key=TruncateToHours.0
+        @divisor=.
+        @brief=Truncates to whole hour.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TruncateToHours
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    @member
+        @name=TruncateTime
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.TruncateTime(System.DateTime)
+        @key=TruncateTime.0
+        @divisor=.
+        @brief=Truncates the time part completely.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TruncateTime
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    @member
+        @name=BeginOfMonth
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.BeginOfMonth(System.DateTime)
+        @key=BeginOfMonth.0
+        @divisor=.
+        @brief=Returns the 1st day of the month.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=BeginOfMonth
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    @member
+        @name=BeginOfYear
+        @sig=M:Gehtsoft.Tools.TypeUtils.DateUtils.BeginOfYear(System.DateTime)
+        @key=BeginOfYear.0
+        @divisor=.
+        @brief=Returns the first day of the year.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=BeginOfYear
+            @return=DateTime
+            @params=DateTime dt
+        @end
+
+        @param
+            @name=dt
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

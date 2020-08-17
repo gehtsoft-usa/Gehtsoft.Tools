@@ -1,0 +1,101 @@
+@class
+    @name=RollingFileLogService
+    @key=Gehtsoft.Tools.Log.RollingFile.RollingFileLogService
+    @brief=Simple rolling file implementation of [c]ILogService[/c]
+    @type=class
+    @ingroup=Gehtsoft.Tools.Log.RollingFile
+    @sig=T:Gehtsoft.Tools.Log.RollingFile.RollingFileLogService
+    @parent=[clink=Gehtsoft.Tools.Log.ILogService]Gehtsoft.Tools.Log.ILogService[/clink]
+    @parent=System.IDisposable
+
+    @member
+        @name=RollingFileLogService
+        @sig=M:Gehtsoft.Tools.Log.RollingFile.RollingFileLogService.#ctor(Gehtsoft.Tools.Log.LogLevel,System.String,System.String,System.String,Gehtsoft.Tools.Log.RollingFile.RollingPeriod)
+        @key=RollingFileLogService.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=RollingFileLogService
+            @params=[clink=Gehtsoft.Tools.Log.LogLevel]Gehtsoft.Tools.Log.LogLevel[/clink] level, string path, string prefix, string extension, [clink=Gehtsoft.Tools.Log.RollingFile.RollingPeriod]RollingPeriod[/clink] period
+        @end
+
+        @param
+            @name=level
+            The log level.
+        @end
+
+        @param
+            @name=path
+            The path where log files will be located.
+        @end
+
+        @param
+            @name=prefix
+            The prefix for the file names.
+        @end
+
+        @param
+            @name=extension
+            The file name extension.
+        @end
+
+        @param
+            @name=period
+            The period of rolling.
+        @end
+
+    @end
+
+    @member
+        @name=Flush
+        @sig=M:Gehtsoft.Tools.Log.RollingFile.RollingFileLogService.Flush
+        @key=Flush.0
+        @divisor=.
+        @brief=Forces flushing the messages to the disk.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Flush
+            @return=void
+
+        @end
+
+    @end
+
+    @member
+        @name=WriteTimeout
+        @sig=P:Gehtsoft.Tools.Log.RollingFile.RollingFileLogService.WriteTimeout
+        @key=WriteTimeout.0
+        @divisor=.
+        @brief=Gets or sets how often messages are written to the log file.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=WriteTimeout
+            @return=System.TimeSpan
+            @suffix= get; set;
+        @end
+
+        The default timeout is 10 seconds.
+
+        Please note that errors and fatal errors are written to the log file immediately.
+    @end
+
+
+    The type defined in the [c]Gehtsoft.Tools.Log.RollingFile.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Log.RollingFile]Gehtsoft.Tools.Log.RollingFile[/clink].
+@end

@@ -1,0 +1,83 @@
+@class
+    @name=InjectAttribute
+    @key=Gehtsoft.Tools.IoC.Attributes.InjectAttribute
+    @brief=The attribute to mark a property or a field to be injected.
+    @type=class
+    @ingroup=Gehtsoft.Tools.IoC.Attributes
+    @sig=T:Gehtsoft.Tools.IoC.Attributes.InjectAttribute
+    @parent=System.Attribute
+
+    Use [clink=Gehtsoft.Tools.IoC.Tools.TypeTools.InjectFields.0]TypeTools.InjectFields[/clink],
+    [clink=Gehtsoft.Tools.IoC.Tools.TypeTools.InjectProperties.0]TypeTools.InjectProperties[/clink]
+    to inject values into properties and fields of an object.
+
+    @member
+        @name=InjectAttribute
+        @sig=M:Gehtsoft.Tools.IoC.Attributes.InjectAttribute.#ctor
+        @key=InjectAttribute.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=InjectAttribute
+        @end
+
+    @end
+
+    @member
+        @name=InjectAttribute
+        @sig=M:Gehtsoft.Tools.IoC.Attributes.InjectAttribute.#ctor(System.Boolean)
+        @key=InjectAttribute.1
+        @divisor=.
+        @brief=Constructor with "required" flag.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=InjectAttribute
+            @params=bool required
+        @end
+
+        @param
+            @name=required
+            The flag indicating whether the property or field is required.
+        @end
+
+    @end
+
+    @member
+        @name=Required
+        @sig=P:Gehtsoft.Tools.IoC.Attributes.InjectAttribute.Required
+        @key=Required.0
+        @divisor=.
+        @brief=The flag indicating whether the property or field is required.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Required
+            @return=bool
+            @suffix= get; set;
+        @end
+
+        By default the attribute is required.
+
+        If required property or field value cannot be provided, the exception is thrown.
+
+        If the value is not required and cannot be provided, the null value will be assigned.
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC.Attributes]Gehtsoft.Tools.IoC.Attributes[/clink].
+@end

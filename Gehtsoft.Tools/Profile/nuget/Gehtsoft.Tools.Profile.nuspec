@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+ <metadata>
+  <id>Gehtsoft.Tools.Profile</id>
+  <version>$version$</version>
+  <authors>Gehtsoft</authors>
+  <owners>Gehtsoft</owners>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <licenseUrl>http://asp.gehtsoftusa.com/licenses/private.html</licenseUrl>
+  <description>Windows-profile style initialiation/configuration files.</description>
+  <copyright>Gehtsoft USA LLC 2016-2017</copyright>
+ </metadata>
+  <files>
+    <file src="../bin/Release/net45/Gehtsoft.Tools.Profile.dll" target="lib\net45" />
+    <file src="../bin/Release/netstandard2.0/Gehtsoft.Tools.Profile.dll" target="lib\netstandard2.0" />
+  </files>
+</package>

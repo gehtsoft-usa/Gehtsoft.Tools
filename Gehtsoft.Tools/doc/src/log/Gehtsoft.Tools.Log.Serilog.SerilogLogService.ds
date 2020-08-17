@@ -1,0 +1,55 @@
+
+@class
+
+    @name=SerilogLogService
+    @key=Gehtsoft.Tools.Log.Serilog.SerilogLogService
+    @brief=Serilog-based implementation of [c]ILogService[/c]
+    @type=class
+    @ingroup=Gehtsoft.Tools.Log.Serilog
+    @sig=T:Gehtsoft.Tools.Log.Serilog.SerilogLogService
+    @parent=[clink=Gehtsoft.Tools.Log.ILogService]Gehtsoft.Tools.Log.ILogService[/clink]
+    @parent=System.IDisposable
+
+    @member
+        @name=SerilogLogService
+        @sig=M:Gehtsoft.Tools.Log.Serilog.SerilogLogService.#ctor(Gehtsoft.Tools.Log.LogLevel,System.String,System.String,System.String)
+        @key=SerilogLogService.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=SerilogLogService
+            @params=[clink=Gehtsoft.Tools.Log.LogLevel]Gehtsoft.Tools.Log.LogLevel[/clink] level, string path, string prefix, string extension
+        @end
+
+        @param
+            @name=level
+            The level.
+        @end
+
+        @param
+            @name=path
+            The path where log fixes are located.
+        @end
+
+        @param
+            @name=prefix
+            The filename prefix.
+        @end
+
+        @param
+            @name=extension
+            The file name extension
+        @end
+
+        Currently the serilog wrapper creates log files using rolling file sink with daily rolling.
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Log.Serilog.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Log.Serilog]Gehtsoft.Tools.Log.Serilog[/clink].
+@end

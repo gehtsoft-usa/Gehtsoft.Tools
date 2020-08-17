@@ -1,0 +1,70 @@
+
+@class
+    
+    @name=ByteSaver.StringType
+    @key=Gehtsoft.Tools.Crypto.ByteSaver.StringType
+    @brief=
+    @type=enum
+    @ingroup=Gehtsoft.Tools.Crypto
+    @sig=T:Gehtsoft.Tools.Crypto.ByteSaver.StringType
+    @member
+        @name=FixedLength
+        @sig=F:Gehtsoft.Tools.Crypto.ByteSaver.StringType.FixedLength
+        @key=FixedLength.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+            
+        @type=field
+            
+        @declaration
+            @language=cs
+            @name=FixedLength
+            @return=[clink=Gehtsoft.Tools.Crypto.ByteSaver.StringType]ByteSaver.StringType[/clink]
+        @end
+    
+    @end
+    
+    @member
+        @name=Pascal
+        @sig=F:Gehtsoft.Tools.Crypto.ByteSaver.StringType.Pascal
+        @key=Pascal.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+            
+        @type=field
+            
+        @declaration
+            @language=cs
+            @name=Pascal
+            @return=[clink=Gehtsoft.Tools.Crypto.ByteSaver.StringType]ByteSaver.StringType[/clink]
+        @end
+    
+    @end
+    
+    @member
+        @name=ASCIZ
+        @sig=F:Gehtsoft.Tools.Crypto.ByteSaver.StringType.ASCIZ
+        @key=ASCIZ.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+            
+        @type=field
+            
+        @declaration
+            @language=cs
+            @name=ASCIZ
+            @return=[clink=Gehtsoft.Tools.Crypto.ByteSaver.StringType]ByteSaver.StringType[/clink]
+        @end
+    
+    @end
+    
+    The type defined in the [c]Gehtsoft.Tools.Crypto.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Crypto]Gehtsoft.Tools.Crypto[/clink].
+@end
+    

@@ -1,0 +1,98 @@
+@class
+    @name=TypePathUtil
+    @key=Gehtsoft.Tools.FileUtils.TypePathUtil
+    @brief=Type and path manipulation utilities.
+    @type=class
+    @ingroup=Gehtsoft.Tools.FileUtils
+    @sig=T:Gehtsoft.Tools.FileUtils.TypePathUtil
+    @member
+        @name=ApplicationName
+        @sig=M:Gehtsoft.Tools.FileUtils.TypePathUtil.ApplicationName
+        @key=ApplicationName.0
+        @divisor=.
+        @brief=Get the full file name of the main assembly in the application.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ApplicationName
+            @return=string
+        @end
+
+    @end
+
+    @member
+        @name=ApplicationFolder
+        @sig=M:Gehtsoft.Tools.FileUtils.TypePathUtil.ApplicationFolder
+        @key=ApplicationFolder.0
+        @divisor=.
+        @brief=Get the full directory name where the main assembly of the application is located.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ApplicationFolder
+            @return=string
+        @end
+
+    @end
+
+    @member
+        @name=TypeFileName
+        @sig=M:Gehtsoft.Tools.FileUtils.TypePathUtil.TypeFileName(System.Type)
+        @key=TypeFileName.0
+        @divisor=.
+        @brief=Get the full file name of the assembly where the type is located.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TypeFileName
+            @return=string
+            @params=System.Type type
+        @end
+
+        @param
+            @name=type
+
+        @end
+
+    @end
+
+    @member
+        @name=TypeFolder
+        @sig=M:Gehtsoft.Tools.FileUtils.TypePathUtil.TypeFolder(System.Type)
+        @key=TypeFolder.0
+        @divisor=.
+        @brief=Get the full directory name of the assembly where the type is located.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TypeFolder
+            @return=string
+            @params=System.Type type
+        @end
+
+        @param
+            @name=type
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.FileUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.FileUtils]Gehtsoft.Tools.FileUtils[/clink].
+@end

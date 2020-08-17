@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<dg:help-project xmlns:dg="http://www.gehtsoft.com/docgen/project">
+    <dg:source>
+        <dg:file name="src\index.ds" encoding="windows-1252" />
+        <dg:folder name="src\crypto" encoding="windows-1252" />
+        <dg:folder name="src\log" encoding="windows-1252" />
+        <dg:folder name="src\profile" encoding="windows-1252" />
+        <dg:folder name="src\pool" encoding="windows-1252" />
+        <dg:folder name="src\file" encoding="windows-1252" />
+        <dg:folder name="src\struct" encoding="windows-1252" />
+        <dg:folder name="src\ioc" encoding="windows-1252" />
+        <dg:folder name="src\type" encoding="windows-1252" />
+
+    </dg:source>
+
+<dg:output template="%docgen%\template\html\main.xsl" file="dst/null-file" encoding="windows-1252" >
+        <dg:define name="text-language" value="en" />
+        <dg:define name="hhp-language" value="0x409 English (United States)" />
+        <dg:define name="help-title" value="Gehtsoft Tools Reference" />
+        <dg:define name="chm-file" value="..\Gehtsoft.Tools.chm" />
+        <dg:define name="advanced-web-content" value="yes" />
+        <dg:define name="default-transform" value="yes" />
+    </dg:output>
+
+</dg:help-project>
+

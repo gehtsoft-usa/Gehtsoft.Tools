@@ -1,0 +1,62 @@
+@class
+    @name=EnumDescriptionAttribute
+    @key=Gehtsoft.Tools.TypeUtils.EnumDescriptionAttribute
+    @brief=Attribute that defines the enumeration value's name/description.
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.EnumDescriptionAttribute
+    @parent=System.Attribute
+
+    @member
+        @name=EnumDescriptionAttribute
+        @sig=M:Gehtsoft.Tools.TypeUtils.EnumDescriptionAttribute.#ctor
+        @key=EnumDescriptionAttribute.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=EnumDescriptionAttribute
+        @end
+
+        @declaration
+            @language=cs
+            @name=EnumDescriptionAttribute
+            @params=string description
+        @end
+
+        @param
+            @name=description
+
+        @end
+
+    @end
+
+
+    @member
+        @name=Description
+        @sig=P:Gehtsoft.Tools.TypeUtils.EnumDescriptionAttribute.Description
+        @key=Description.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Description
+            @return=string
+            @suffix= get; set;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

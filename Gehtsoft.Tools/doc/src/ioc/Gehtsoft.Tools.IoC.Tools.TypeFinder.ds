@@ -1,0 +1,412 @@
+@class
+
+    @name=TypeFinder
+    @key=Gehtsoft.Tools.IoC.Tools.TypeFinder
+    @brief=
+    @type=class
+    @ingroup=Gehtsoft.Tools.IoC.Tools
+    @sig=T:Gehtsoft.Tools.IoC.Tools.TypeFinder
+    @member
+        @name=NearClass
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.NearClass(Type)
+        @key=NearClass.1
+        @divisor=.
+        @brief=Returns a enumeration that consists of only one assembly where the class specified is container.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=NearClass<T>
+            @return=IEnumerable<Assembly>
+        @end
+        @declaration
+            @language=cs
+            @name=NearClass
+            @return=IEnumerable<Assembly>
+            @params=Type type
+        @end
+
+        @param
+            @name=type
+
+        @end
+
+    @end
+
+    @member
+        @name=InAllAssemblies
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.InAllAssemblies
+        @key=InAllAssemblies.0
+        @divisor=.
+        @brief=Return a enumeration that consists of all loaded assemblies.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=InAllAssemblies
+            @return=IEnumerable<Assembly>
+        @end
+
+    @end
+
+    @member
+        @name=ExceptSystem
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.ExceptSystem(IEnumerable{Assembly})
+        @key=ExceptSystem.0
+        @divisor=.
+        @brief=Filters out a enumeration of assemblies excluding the system and SDK assemblies.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ExceptSystem
+            @return=IEnumerable<Assembly>
+            @params=this IEnumerable<Assembly> enumerator
+        @end
+
+        @param
+            @name=enumerator
+
+        @end
+
+    @end
+
+    @member
+        @name=GetTypes
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.GetTypes(IEnumerable{Assembly})
+        @key=GetTypes.0
+        @divisor=.
+        @brief=Gets a enumeration of all types within a specified enumeration of assemblies.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetTypes
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerator
+        @end
+
+        @param
+            @name=enumerator
+
+        @end
+
+    @end
+
+    @member
+        @name=Which
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.Which(IEnumerable{Assembly},System.Func`2)
+        @key=Which.0
+        @divisor=.
+        @brief=Filters out types in the assembly or types list using the specified predicate.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Which
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerator, Func<Type, bool> predicate
+        @end
+        @declaration
+            @language=cs
+            @name=Which
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Type> enumerator, Func<Type, bool> predicate
+        @end
+
+        @param
+            @name=enumerator
+
+        @end
+
+        @param
+            @name=predicate
+
+        @end
+
+    @end
+
+    @member
+        @name=WhichIsClass
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.WhichIsClass(IEnumerable{Assembly})
+        @key=WhichIsClass.0
+        @divisor=.
+        @brief=Filters out types in the assembly or types list for only those types that are classes (i.e. can be instantiated).
+        @scope=class
+        @visibility=public
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=WhichIsClass
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerable
+        @end
+
+        @declaration
+            @language=cs
+            @name=WhichIsClass
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Type> enumerable
+        @end
+
+        @param
+            @name=enumerable
+
+        @end
+
+    @end
+
+    @member
+        @name=WhichImplements
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.WhichImplements(IEnumerable{Type},Type)
+        @key=WhichImplements.3
+        @divisor=.
+        @brief=Filters out types in the assembly or types list for only those types that implements the interface specified.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=WhichImplements<T>
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerable
+        @end
+        @declaration
+            @language=cs
+            @name=WhichImplements<T>
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Type> enumerable
+        @end
+        @declaration
+            @language=cs
+            @name=WhichImplements
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerable, Type implementsInterface
+        @end
+        @declaration
+            @language=cs
+            @name=WhichImplements
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Type> enumerable, Type implementsInterface
+        @end
+
+        @param
+            @name=enumerable
+
+        @end
+
+        @param
+            @name=implementsInterface
+            The interface type. If the interface type is the generic declaration, e.g. IEnumerable<> (vs IEnumerable and IEnumerable<T>),
+            the first interface that is derived from the generic declaration specified will be taken into account.
+        @end
+
+    @end
+
+    @member
+        @name=WhichHasAttribute
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.WhichHasAttribute(IEnumerable{Assembly},Type)
+        @key=WhichHasAttribute.1
+        @divisor=.
+        @brief=Filters out types in the assembly or types list for only those types that has the attribute specified.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=WhichHasAttribute
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerable, Type attributeType
+        @end
+        @declaration
+            @language=cs
+            @name=WhichHasAttribute<T>
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Assembly> enumerable
+        @end
+        @declaration
+            @language=cs
+            @name=WhichHasAttribute
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Type> enumerable, Type attributeType
+        @end
+        @declaration
+            @language=cs
+            @name=WhichHasAttribute<T>
+            @return=IEnumerable<Type>
+            @params=this IEnumerable<Type> enumerable
+        @end
+
+        @param
+            @name=enumerable
+
+        @end
+
+        @param
+            @name=attributeType
+
+        @end
+
+    @end
+
+
+
+    @member
+        @name=ForAll
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.ForAll(IEnumerable{Type},System.Action{Type})
+        @key=ForAll.1
+        @divisor=.
+        @brief=Invokes the action specified for all types in the enumeration
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ForAll
+            @return=void
+
+            @params=this IEnumerable<Assembly> enumerable, System.Action<Type> action
+        @end
+        @declaration
+            @language=cs
+            @name=ForAll
+            @return=void
+
+            @params=this IEnumerable<Type> enumerable, Action<Type> action
+        @end
+
+        @param
+            @name=enumerable
+
+        @end
+
+        @param
+            @name=action
+
+        @end
+
+    @end
+
+    @member
+        @name=InvokeForAll
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.InvokeForAll(IEnumerable{Type},System.String,System.IServiceProvider,System.Object[])
+        @key=InvokeForAll.0
+        @divisor=.
+        @brief=Invokes the method specified for all types in the enumeration.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=InvokeForAll
+            @return=void
+
+            @params=this IEnumerable<Type> enumerable, string methodName, IServiceProvider provider, params object[] additionalArguments
+        @end
+
+        @param
+            @name=enumerable
+
+        @end
+
+        @param
+            @name=methodName
+
+        @end
+
+        @param
+            @name=provider
+
+        @end
+
+        @param
+            @name=additionalArguments
+
+        @end
+
+    @end
+
+
+    @member
+        @name=RegisterAll
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeFinder.RegisterAll(IEnumerable{Type},Gehtsoft.Tools.IoC.IClassRegistry,Gehtsoft.Tools.IoC.RegistryMode,Type)
+        @key=RegisterAll.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=RegisterAll
+            @return=void
+
+            @params=this IEnumerable<Type> enumerable, Type asInterfaceType, System.Action<> registerAction
+        @end
+        @declaration
+            @language=cs
+            @name=RegisterAll
+            @return=void
+
+            @params=this IEnumerable<Type> enumerable, [clink=Gehtsoft.Tools.IoC.IClassRegistry]IClassRegistry[/clink] registry, [clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink] mode, Type asInterfaceType
+        @end
+        @declaration
+            @language=cs
+            @name=RegisterAll
+            @return=void
+
+            @params=this IEnumerable<Type> enumerable, IServiceCollection registry, [clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink] mode, Type asInterfaceType
+        @end
+
+        @param
+            @name=enumerable
+
+        @end
+
+        @param
+            @name=registry
+            The registry where the types needs to be registered.
+        @end
+
+        @param
+            @name=mode
+            The registration mode.
+        @end
+
+        @param
+            @name=asInterfaceType
+            The interface type. If the interface type is the generic declaration, e.g. IEnumerable<> (vs IEnumerable and IEnumerable<T>),
+            the first interface that is derived from the generic declaration specified will be taken into account.
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC.Tools]Gehtsoft.Tools.IoC.Tools[/clink].
+@end

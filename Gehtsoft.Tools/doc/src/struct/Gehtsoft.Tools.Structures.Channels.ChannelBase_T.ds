@@ -1,0 +1,338 @@
+@class
+    @name=ChannelBase&lt;T&gt;
+    @key=Gehtsoft.Tools.Structures.Channels.ChannelBase_T
+    @brief=The base class for all channels
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures.Channels
+    @sig=T:Gehtsoft.Tools.Structures.Channels.ChannelBase`1
+    @parent=[c]IChannel[/c]
+    @param
+        @name=T
+
+    @end
+
+    You cannot instantiate the channel base class. Use
+    [clink=Gehtsoft.Tools.Structures.Channels.Channel_T]Channel<T>[/clink] or
+    [clink=Gehtsoft.Tools.Structures.Channels.PrioritizedChannel_T]PrioritizedChannel<T>[/clink] instead.
+
+    @member
+        @name=Post
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.Post(`0)
+        @key=Post.0
+        @divisor=.
+        @brief=Posts a message into the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Post
+            @return=bool
+            @params=T message
+        @end
+
+        @param
+            @name=message
+
+        @end
+
+
+        The method returns [c]true[/c] if the message is successfully posted.
+
+        The method returns [c]false[/c] if the message cannot be posted, for example if the channel is
+        at its maximum capacity.
+
+        The method throws [clink=Gehtsoft.Tools.Structures.Channels.ChannelIsClosedException]ChannelIsClosedException[/clink]
+        if channel is closed.
+    @end
+
+    @member
+        @name=Send
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.Send(`0)
+        @key=Send.0
+        @divisor=.
+        @brief=Sends a message into the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Send
+            @return=void
+            @params=T message
+        @end
+
+        @declaration
+            @language=cs
+            @name=Send
+            @return=void
+            @params=T message, CancellationToken cancellationToken
+        @end
+
+        @param
+            @name=message
+            The message to be sent.
+        @end
+        @param
+            @name=cancellationToken
+            The cancellation token
+        @end
+
+        If the channel is at the limit of its capacity, the method blocks until an older message are received from channel.
+
+        The method throws [clink=Gehtsoft.Tools.Structures.Channels.ChannelIsClosedException]ChannelIsClosedException[/clink]
+        if channel is closed.
+    @end
+
+    @member
+        @name=SendAsync
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.SendAsync(`0)
+        @key=SendAsync.0
+        @divisor=.
+        @brief=Sends a message into the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=SendAsync
+            @return=Task
+            @params=T message
+        @end
+        @declaration
+            @language=cs
+            @name=SendAsync
+            @return=Task
+            @params=T message, CancellationToken cancellationToken
+        @end
+        @param
+            @name=message
+            The message to be sent.
+        @end
+        @param
+            @name=cancellationToken
+            The cancellation token
+        @end
+
+        The returned task won't complete until the message is sent.
+
+        The method throws [clink=Gehtsoft.Tools.Structures.Channels.ChannelIsClosedException]ChannelIsClosedException[/clink]
+        if channel is closed.
+
+    @end
+
+    @member
+        @name=Close
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.Close
+        @key=Close.0
+        @divisor=.
+        @brief=Closes the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Close
+            @return=void
+
+        @end
+
+    @end
+
+    @member
+        @name=Peek
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.Peek
+        @key=Peek.0
+        @divisor=.
+        @brief=Peeks the message at the top of the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Peek
+            @return=T
+        @end
+
+        The method returns a message that will be received the next or [c]default(T)[/c] if
+        there is no messages in the channel.
+
+
+        The method throws [clink=Gehtsoft.Tools.Structures.Channels.ChannelIsClosedException]ChannelIsClosedException[/clink]
+        if channel is closed.
+
+    @end
+
+    @member
+        @name=Receive
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.Receive
+        @key=Receive.1
+        @divisor=.
+        @brief=Received a message from the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Receive
+            @return=T
+        @end
+        @declaration
+            @language=cs
+            @name=Receive
+            @return=T
+            @params=CancellationToken cancellationToken
+        @end
+
+        @param
+            @name=cancellationToken
+
+        @end
+
+        If there is no messages in the channel, the channel will block until
+        a message appears.
+    @end
+
+    @member
+        @name=ReceiveAsync
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.ReceiveAsync
+        @key=ReceiveAsync.0
+        @divisor=.
+        @brief=Received a message from the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ReceiveAsync
+            @return=Task<T>
+        @end
+        @declaration
+            @language=cs
+            @name=ReceiveAsync
+            @return=Task<T>
+            @params=CancellationToken cancellationToken
+        @end
+
+        The returned task won't complete until the message is received.
+
+        The received message is available via [c]Result[/c] property of the task.
+    @end
+
+    @member
+        @name=Count
+        @sig=P:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.Count
+        @key=Count.0
+        @divisor=.
+        @brief=Returns the number of the elements in the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Count
+            @return=int
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=IsEmpty
+        @sig=P:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.IsEmpty
+        @key=IsEmpty.0
+        @divisor=.
+        @brief=Returns a flag indicating whether the channel is empty.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=IsEmpty
+            @return=bool
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=SyncRoot
+        @sig=P:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.SyncRoot
+        @key=SyncRoot.0
+        @divisor=.
+        @brief=Returns a sync root object
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=SyncRoot
+            @return=object
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=IsClosed
+        @sig=P:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.IsClosed
+        @key=IsClosed.0
+        @divisor=.
+        @brief=Returns the flag indicating whether the channel is closed.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=IsClosed
+            @return=bool
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=DataAvailableWaitHandle
+        @sig=P:Gehtsoft.Tools.Structures.Channels.ChannelBase`1.DataAvailableWaitHandle
+        @key=DataAvailableWaitHandle.0
+        @divisor=.
+        @brief=Returns a wait handle for an auto reset event which is raised when a data is available on the channel.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=DataAvailableWaitHandle
+            @return=System.Threading.WaitHandle
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures.Channels]Gehtsoft.Tools.Structures.Channels[/clink].
+@end

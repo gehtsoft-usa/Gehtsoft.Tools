@@ -1,0 +1,40 @@
+@class
+    @name=Borrowed&lt;T&gt;
+    @key=Gehtsoft.Tools.ObjectPool.Borrowed_T
+    @brief=Container for the object borrowed from the pool.
+    @type=class
+    @ingroup=Gehtsoft.Tools.ObjectPool
+    @sig=T:Gehtsoft.Tools.ObjectPool.Borrowed`1
+    @parent=System.IDisposable
+
+    @param
+        @name=T
+        Type of the object contained.
+    @end
+
+    Disposed the container in order to release the object back to the pool.
+
+
+    @member
+        @name=Object
+        @sig=P:Gehtsoft.Tools.ObjectPool.Borrowed`1.Object
+        @key=Object.0
+        @divisor=.
+        @brief=The reference to the object.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Object
+            @return=T
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.ObjectPool]Gehtsoft.Tools.ObjectPool[/clink].
+@end

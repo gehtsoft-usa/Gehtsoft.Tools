@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net451;netcoreapp2.0</TargetFrameworks>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">NETCORE</DefineConstants>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\Gehtsoft.ResourceManager\Gehtsoft.ResourceManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="MessagesDao.cs" />
+    <Compile Include="Entities.cs" />
+    <Compile Include="TextMessageLoader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Gehtsoft.EF.Db.SqlDb" Version="1.1.3.6" />
+    <PackageReference Include="Gehtsoft.EF.Entities" Version="1.1.3.6" />
+  </ItemGroup>
+</Project>

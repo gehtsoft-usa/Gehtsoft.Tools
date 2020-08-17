@@ -1,0 +1,44 @@
+
+@class
+
+    @name=PathUtil
+    @key=Gehtsoft.Tools.FileUtils.PathUtil
+    @brief=Path manipulation utilities.
+    @type=class
+    @ingroup=Gehtsoft.Tools.FileUtils
+    @sig=T:Gehtsoft.Tools.FileUtils.PathUtil
+    @member
+        @name=RelativePath
+        @sig=M:Gehtsoft.Tools.FileUtils.PathUtil.RelativePath(System.String,System.String)
+        @key=RelativePath.0
+        @divisor=.
+        @brief=Gets a relative path.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=RelativePath
+            @return=string
+            @params=string absoluteBasePath, string absolutePathToConvert
+        @end
+
+        @param
+            @name=absoluteBasePath
+            The path to convert the other path as relative to.
+        @end
+
+        @param
+            @name=absolutePathToConvert
+            The path to be converted as a relative to the other path.
+        @end
+
+        If paths aren't related, the [c]absolutePathToConvert[/c] is returned.
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.FileUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.FileUtils]Gehtsoft.Tools.FileUtils[/clink].
+@end

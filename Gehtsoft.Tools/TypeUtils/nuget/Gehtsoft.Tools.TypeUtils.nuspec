@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Gehtsoft.Tools.TypeUtils</id>
+    <version>$version$</version>
+    <authors>Gehtsoft</authors>
+    <owners>Gehtsoft</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://asp.gehtsoftusa.com/licenses/private.html</licenseUrl>
+    <description>Additional simple type manipulations.</description>
+    <copyright>Gehtsoft USA LLC 2016-2017</copyright>
+    <dependencies>
+      <group targetFramework="net45" />
+      <group targetFramework="net48" />
+      <group targetFramework="netstandard2.0" />
+      <group targetFramework="netcoreapp2.2">
+       <dependency id="Microsoft.Extensions.DependencyModel" version="2.1.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="../bin/Release/net45/Gehtsoft.Tools.TypeUtils.dll" target="lib\net45" />
+    <file src="../bin/Release/net48/Gehtsoft.Tools.TypeUtils.dll" target="lib\net48" />
+    <file src="../bin/Release/netstandard2.0/Gehtsoft.Tools.TypeUtils.dll" target="lib\netstandard2.0" />
+    <file src="../bin/Release/netcoreapp2.2/Gehtsoft.Tools.TypeUtils.dll" target="lib\netcoreapp2.2" />
+  </files>
+</package>

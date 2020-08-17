@@ -1,0 +1,161 @@
+@class
+    @name=IoCFactory
+    @key=Gehtsoft.Tools.IoC.IoCFactory
+    @brief=The IoC factory implementation
+    @type=class
+    @ingroup=Gehtsoft.Tools.IoC
+    @sig=T:Gehtsoft.Tools.IoC.IoCFactory
+    @parent=[clink=Gehtsoft.Tools.IoC.IIoCFactory]IIoCFactory[/clink]
+    @parent=IServiceProvider
+    @parent=[clink=Gehtsoft.Tools.IoC.IClassRegistry]IClassRegistry[/clink]
+
+    @member
+        @name=GetService
+        @sig=M:Gehtsoft.Tools.IoC.IoCFactory.GetService(System.Type)
+        @key=GetService.2
+        @divisor=.
+        @brief=Gets the service
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetService
+            @return=object
+            @params=Type serviceType
+        @end
+        @declaration
+            @language=cs
+            @name=GetService<T>
+            @return=T
+            @params=
+        @end
+        @declaration
+            @language=cs
+            @name=GetService
+            @return=object
+            @params=Type type, object[] args
+        @end
+        @declaration
+            @language=cs
+            @name=GetService<T>
+            @return=T
+            @params=object[] args
+        @end
+
+        @param
+            @name=T, serviceType
+
+        @end
+
+        @param
+            @name=args
+        @end
+
+        Note: The type specified does not have to be in the registry. If there is no such type in the registry,
+        the IoC controller will try to find and create the type using its only constructor or the constructor that
+        attributed with [clink=Gehtsoft.Tools.IoC.Attributes.IoCConstructorAttribute]IoCConstructorAttribute[/clink]
+
+        Note: The method also automatically injects properties and fields that are attributed with [clink=Gehtsoft.Tools.IoC.Attributes.InjectAttribute]InjectAttribute[/clink].
+    @end
+
+    @member
+        @name=Add
+        @sig=M:Gehtsoft.Tools.IoC.IoCFactory.Add(System.Type,System.Type,Gehtsoft.Tools.IoC.RegistryMode)
+        @key=Add.2
+        @divisor=.
+        @brief=Add the service.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Add
+            @return=void
+
+            @params=Type registryType, Type implementationType, [clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink] mode
+        @end
+
+        @declaration
+            @language=cs
+            @name=Add<T>
+            @return=void
+
+        @end
+        @declaration
+            @language=cs
+            @name=Add<T, TI>
+            @return=void
+
+        @end
+        @declaration
+            @language=cs
+            @name=AddSignletone<T>
+            @return=void
+
+        @end
+        @declaration
+            @language=cs
+            @name=AddSignletone<T,TI>
+            @return=void
+
+        @end
+        @declaration
+            @language=cs
+            @name=AddSingletone<T>
+            @return=void
+
+            @params=T instance
+        @end
+
+        @param
+            @name=T, registryType
+            The type under which the service is registered.
+
+        @end
+
+        @param
+            @name=TI, implementationType
+            The implementation type. The implementation type must be the same as T, or must implement the interface specified in type T.
+
+        @end
+
+        @param
+            @name=mode
+            The registration mode. You can choose whether the object will be created only once (singleton) or every time when the service is requested.
+
+        @end
+
+        @param
+            @name=instance
+
+        @end
+
+    @end
+
+
+    @member
+        @name=IoCFactory
+        @sig=M:Gehtsoft.Tools.IoC.IoCFactory.#ctor
+        @key=IoCFactory.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=IoCFactory
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC]Gehtsoft.Tools.IoC[/clink].
+@end

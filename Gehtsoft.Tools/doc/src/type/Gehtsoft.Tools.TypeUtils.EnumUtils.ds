@@ -1,0 +1,91 @@
+@class
+    @name=EnumUtils
+    @key=Gehtsoft.Tools.TypeUtils.EnumUtils
+    @brief=Enum types utils.
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.EnumUtils
+
+    @member
+        @name=GetCustomAttribute
+        @sig=M:Gehtsoft.Tools.TypeUtils.EnumUtils.GetCustomAttribute``1(System.Enum)
+        @key=GetCustomAttribute.0
+        @divisor=.
+        @brief=Gets a custom attribute of the enum value.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetCustomAttribute<T>
+            @return=T
+            @params=Enum enumVal
+        @end
+        @declaration
+            @language=cs
+            @name=GetCustomAttribute
+            @return=System.Attribute
+            @params=System.Enum enumVal, System.Type attributeType
+        @end
+
+        @param
+            @name=enumVal
+
+        @end
+
+    @end
+
+
+    @member
+        @name=Description
+        @sig=M:Gehtsoft.Tools.TypeUtils.EnumUtils.Description(System.Enum)
+        @key=Description.0
+        @divisor=.
+        @brief=Gets enumeration value description.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Description
+            @return=string
+            @params=Enum enumVal
+        @end
+
+        @param
+            @name=enumVal
+
+        @end
+
+        The method returns description of the enumeration value defined using [clink=Gehtsoft.Tools.TypeUtils.EnumDescriptionAttribute]EnumDescriptionAttribute[/clink].
+
+    @end
+
+    @member
+        @name=GetEnumValues
+        @sig=M:Gehtsoft.Tools.TypeUtils.EnumUtils.GetEnumValues``2
+        @key=GetEnumValues.0
+        @divisor=.
+        @brief=Gets list of all enumeration values.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetEnumValues<TE,TV>
+            @return=[clink=Gehtsoft.Tools.TypeUtils.EnumValue_TE_TV]EnumValue[/clink]<TE,TV>[]
+        @end
+
+
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

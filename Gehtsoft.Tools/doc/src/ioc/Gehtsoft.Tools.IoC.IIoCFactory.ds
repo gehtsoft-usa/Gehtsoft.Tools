@@ -1,0 +1,53 @@
+
+@class
+
+    @name=IIoCFactory
+    @key=Gehtsoft.Tools.IoC.IIoCFactory
+    @brief=The interface to IoC factory.
+    @type=interface
+    @ingroup=Gehtsoft.Tools.IoC
+    @sig=T:Gehtsoft.Tools.IoC.IIoCFactory
+    @parent=System.IServiceProvider
+    @parent=[clink=Gehtsoft.Tools.IoC.IClassRegistry]IClassRegistry[/clink]
+    @member
+        @name=GetService
+        @sig=M:Gehtsoft.Tools.IoC.IIoCFactory.GetService(System.Type,System.Object[])
+        @key=GetService.0
+        @divisor=.
+        @brief=Gets a service
+        @scope=instance
+        @visibility=public
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetService
+            @return=object
+            @params=System.Type type
+        @end
+
+
+        @declaration
+            @language=cs
+            @name=GetService
+            @return=object
+            @params=System.Type type, object[] args
+        @end
+
+        @param
+            @name=type
+
+        @end
+
+        @param
+            @name=args
+
+        @end
+
+        See [clink=Gehtsoft.Tools.IoC.IoCFactory.GetService.2]IoCFactory.GetService()[/clink] for more details.
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC]Gehtsoft.Tools.IoC[/clink].
+@end

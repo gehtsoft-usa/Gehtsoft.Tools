@@ -1,0 +1,61 @@
+@class
+
+    @name=Channel&lt;T&gt;
+    @key=Gehtsoft.Tools.Structures.Channels.Channel_T
+    @brief=Regular channel
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures.Channels
+    @sig=T:Gehtsoft.Tools.Structures.Channels.Channel`1
+    @parent=[clink=Gehtsoft.Tools.Structures.Channels.ChannelBase_T]ChannelBase[/clink]<T>
+    @param
+        @name=T
+
+    @end
+
+    A regular channel returns the elements in the same order as they are posted.
+
+    @member
+        @name=Channel
+        @sig=M:Gehtsoft.Tools.Structures.Channels.Channel`1.#ctor
+        @key=Channel.0
+        @divisor=.
+        @brief=Constructor for an endless channel.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=Channel
+        @end
+
+    @end
+
+    @member
+        @name=Channel
+        @sig=M:Gehtsoft.Tools.Structures.Channels.Channel`1.#ctor(System.Int32)
+        @key=Channel.1
+        @divisor=.
+        @brief=Constructor for an channel with limited capacity channel.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=Channel
+            @params=int capacity
+        @end
+
+        @param
+            @name=capacity
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures.Channels]Gehtsoft.Tools.Structures.Channels[/clink].
+@end

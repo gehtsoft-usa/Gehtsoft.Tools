@@ -1,0 +1,30 @@
+@class
+    @name=InjectOptionalAttribute
+    @key=Gehtsoft.Tools.IoC.Attributes.InjectOptionalAttribute
+    @brief=The attribute to mark a property or a field to be injected with an optional (not required) value.
+    @type=class
+    @ingroup=Gehtsoft.Tools.IoC.Attributes
+    @sig=T:Gehtsoft.Tools.IoC.Attributes.InjectOptionalAttribute
+    @parent=[clink=Gehtsoft.Tools.IoC.Attributes.InjectAttribute]InjectAttribute[/clink]
+    @parent=System.Attribute
+    @member
+        @name=InjectOptionalAttribute
+        @sig=M:Gehtsoft.Tools.IoC.Attributes.InjectOptionalAttribute.#ctor
+        @key=InjectOptionalAttribute.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=InjectOptionalAttribute
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC.Attributes]Gehtsoft.Tools.IoC.Attributes[/clink].
+@end

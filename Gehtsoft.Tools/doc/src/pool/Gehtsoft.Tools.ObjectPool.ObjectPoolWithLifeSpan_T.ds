@@ -1,0 +1,54 @@
+@class
+
+    @name=ObjectPoolWithLifeSpan&lt;T&gt;
+    @key=Gehtsoft.Tools.ObjectPool.ObjectPoolWithLifeSpan_T
+    @brief=Object pool with limited life span of the object.
+    @type=class
+    @ingroup=Gehtsoft.Tools.ObjectPool
+    @sig=T:Gehtsoft.Tools.ObjectPool.ObjectPoolWithLifeSpan`1
+    @parent=[clink=Gehtsoft.Tools.ObjectPool.ObjectPool_T]ObjectPool[/clink]<T>
+    @param
+        @name=T
+        The type of the contained object.
+    @end
+
+    The class works exactly like [clink=Gehtsoft.Tools.ObjectPool.ObjectPool_T]ObjectPool[/clink] but disposes objects
+    if they are not in use for the specified period of time.
+
+    @member
+        @name=ObjectPoolWithLifeSpan
+        @sig=M:Gehtsoft.Tools.ObjectPool.ObjectPoolWithLifeSpan`1.#ctor(Gehtsoft.Tools.ObjectPool.IObjectFactory{`0},System.Int32,System.TimeSpan)
+        @key=ObjectPoolWithLifeSpan.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=ObjectPoolWithLifeSpan
+            @params=[clink=Gehtsoft.Tools.ObjectPool.IObjectFactory_T]IObjectFactory[/clink]<T> factory, int poolSize, System.TimeSpan lifespan
+        @end
+
+        @param
+            @name=factory
+            The factory for the objects.
+        @end
+
+        @param
+            @name=poolSize
+            The maximum number of the objects in the pool.
+        @end
+
+        @param
+            @name=lifespan
+            The timeout to disposes an object if it is not in use.
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.ObjectPool]Gehtsoft.Tools.ObjectPool[/clink].
+@end

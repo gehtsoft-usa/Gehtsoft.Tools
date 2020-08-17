@@ -1,0 +1,235 @@
+@class
+    @name=ILogService
+    @key=Gehtsoft.Tools.Log.ILogService
+    @brief=Log writing service.
+    @type=interface
+    @ingroup=Gehtsoft.Tools.Log
+    @sig=T:Gehtsoft.Tools.Log.ILogService
+    @parent=System.IDisposable
+
+    @member
+        @name=Log
+        @sig=M:Gehtsoft.Tools.Log.ILogService.Log(Gehtsoft.Tools.Log.LogLevel,System.String)
+        @key=Log.1
+        @divisor=.
+        @brief=Log a message.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Log
+            @return=void
+
+            @params=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink] level, string message
+        @end
+
+        @param
+            @name=level
+
+        @end
+
+        @param
+            @name=message
+
+        @end
+
+    @end
+
+    @member
+        @name=Log
+        @sig=M:Gehtsoft.Tools.Log.ILogService.Log(Gehtsoft.Tools.Log.LogLevel,System.String,System.Object[])
+        @key=Log.2
+        @divisor=.
+        @brief=Log a formatted string.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Log
+            @return=void
+
+            @params=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink] level, string format, object[] parameters
+        @end
+
+        @param
+            @name=level
+
+        @end
+
+        @param
+            @name=format
+
+        @end
+
+        @param
+            @name=parameters
+
+        @end
+
+    @end
+
+    @member
+        @name=Log
+        @sig=M:Gehtsoft.Tools.Log.ILogService.Log(Gehtsoft.Tools.Log.LogLevel,System.Exception,System.String)
+        @key=Log.0
+        @divisor=.
+        @brief=Log an exception.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Log
+            @return=void
+
+            @params=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink] level, System.Exception e, string message
+        @end
+
+        @param
+            @name=level
+
+        @end
+
+        @param
+            @name=e
+
+        @end
+
+        @param
+            @name=message
+
+        @end
+
+    @end
+
+    @member
+        @name=Level
+        @sig=P:Gehtsoft.Tools.Log.ILogService.Level
+        @key=Level.0
+        @divisor=.
+        @brief=Gets or sets the current log level.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Level
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+            @suffix= get; set;
+        @end
+
+    @end
+
+    @member
+        @name=Debug
+        @sig=P:Gehtsoft.Tools.Log.ILogService.Debug
+        @key=Debug.0
+        @divisor=.
+        @brief=The stream for debug level or [c]null[/c] if debug level is off.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Debug
+            @return=[clink=Gehtsoft.Tools.Log.ILoggingStream]ILoggingStream[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Info
+        @sig=P:Gehtsoft.Tools.Log.ILogService.Info
+        @key=Info.0
+        @divisor=.
+        @brief=The stream for information level or [c]null[/c] if information level is off.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Info
+            @return=[clink=Gehtsoft.Tools.Log.ILoggingStream]ILoggingStream[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Warning
+        @sig=P:Gehtsoft.Tools.Log.ILogService.Warning
+        @key=Warning.0
+        @divisor=.
+        @brief=The stream for warning level or [c]null[/c] if warning level is off.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Warning
+            @return=[clink=Gehtsoft.Tools.Log.ILoggingStream]ILoggingStream[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Error
+        @sig=P:Gehtsoft.Tools.Log.ILogService.Error
+        @key=Error.0
+        @divisor=.
+        @brief=The stream for error level or [c]null[/c] if error level is off.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Error
+            @return=[clink=Gehtsoft.Tools.Log.ILoggingStream]ILoggingStream[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Fatal
+        @sig=P:Gehtsoft.Tools.Log.ILogService.Fatal
+        @key=Fatal.0
+        @divisor=.
+        @brief=The stream for fatal error level or [c]null[/c] if fatal error level is off.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Fatal
+            @return=[clink=Gehtsoft.Tools.Log.ILoggingStream]ILoggingStream[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Log.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Log]Gehtsoft.Tools.Log[/clink].
+@end

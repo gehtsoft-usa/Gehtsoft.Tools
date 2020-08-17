@@ -1,0 +1,207 @@
+@class
+    @name=ProfileFactory
+    @key=Gehtsoft.Tools.ConfigurationProfile.ProfileFactory
+    @brief=The factory of the profiles.
+    @type=class
+    @ingroup=Gehtsoft.Tools.ConfigurationProfile
+    @sig=T:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory
+
+    The factory loads profiles, saves them and watches for the changes to dynamically reload.
+
+    @member
+        @name=ProfileFactory
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.#ctor
+        @key=ProfileFactory.0
+        @divisor=.
+        @brief=Constructor
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=ProfileFactory
+        @end
+
+        You can either use a profile factory as a signletone via [clink=Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Instance.0]Instance[/clink] method
+        or construct multiple profile factories if multiple profiles are required.
+    @end
+
+
+    @member
+        @name=Configure
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Configure(System.String,System.Boolean,System.Boolean)
+        @key=Configure.0
+        @divisor=.
+        @brief=Initializes the factory.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Configure
+            @return=void
+
+            @params=string fileName, bool watchFile, bool autoSave
+        @end
+
+        @param
+            @name=fileName
+            The profile file.
+        @end
+
+        @param
+            @name=watchFile
+            The flag indicating whether profile must be reloaded when it is externally changed.
+        @end
+
+        @param
+            @name=autoSave
+            The flag indicating whether profile changes must be automatically saved.
+        @end
+
+    @end
+
+    @member
+        @name=Save
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Save
+        @key=Save.0
+        @divisor=.
+        @brief=Saves the profile.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Save
+            @return=void
+
+        @end
+
+    @end
+
+    @member
+        @name=Close
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Close
+        @key=Close.0
+        @divisor=.
+        @brief=Closes the profile and stops watching.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Close
+            @return=void
+
+        @end
+
+    @end
+
+    @member
+        @name=Encrypt
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Encrypt
+        @key=Encrypt.0
+        @divisor=.
+        @brief=The encryption function.
+        @scope=class
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Encrypt
+            @return=System.Func<string, string, string>
+            @suffix= get; set;
+        @end
+
+        The function signature is [c](string textString, string key) => string encryptedString[/c]
+
+        By default a simple XOR encryption is used.
+
+    @end
+
+    @member
+        @name=Decrypt
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Decrypt
+        @key=Decrypt.0
+        @divisor=.
+        @brief=The decryption function.
+        @scope=class
+        @visibility=public
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Decrypt
+            @return=System.Func<string, string, string, string>
+            @suffix= get; set;
+        @end
+
+        The function signature is [c](string encryptedString, string key, string defaultValue) => string decryptedString[/c]
+
+        By default a simple XOR encryption is used.
+    @end
+
+    @member
+        @name=Instance
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Instance
+        @key=Instance.0
+        @divisor=.
+        @brief=Returns the instance of the profile factory (if the application needs only one profile).
+        @scope=class
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Instance
+            @return=[clink=Gehtsoft.Tools.ConfigurationProfile.ProfileFactory]ProfileFactory[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Profile
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Profile
+        @key=Profile.0
+        @divisor=.
+        @brief=The profile.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Profile
+            @return=[clink=Gehtsoft.Tools.ConfigurationProfile.Profile]Profile[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=ProfileChanged
+        @sig=E:Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.ProfileChanged
+        @key=ProfileChanged.0
+        @divisor=.
+        @brief=The event called when the profile is changed.
+        @scope=instance
+        @visibility=public
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Profile.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.ConfigurationProfile]Gehtsoft.Tools.ConfigurationProfile[/clink].
+@end

@@ -1,0 +1,221 @@
+@class
+    @name=RandomUtils
+    @key=Gehtsoft.Tools.TypeUtils.RandomUtils
+    @brief=Random extensions
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.RandomUtils
+
+    @member
+        @name=Next
+        @sig=M:Gehtsoft.Tools.TypeUtils.RandomUtils.Next``1(System.Random,``0[])
+        @key=Next.4
+        @divisor=.
+        @brief=Get random element of an array.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Next<T>
+            @return=T
+            @params=this Random r, T[] array
+        @end
+
+        @param
+            @name=r
+
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+    @end
+
+    @member
+        @name=Next
+        @sig=M:Gehtsoft.Tools.TypeUtils.RandomUtils.Next``1(System.Random,System.Collections.Generic.IList{``0})
+        @key=Next.1
+        @divisor=.
+        @brief=Get random element of an list.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Next<T>
+            @return=T
+            @params=this Random r, System.Collections.Generic.IList<T> list
+        @end
+
+        @param
+            @name=r
+
+        @end
+
+        @param
+            @name=list
+
+        @end
+
+    @end
+
+
+    @member
+        @name=Next
+        @sig=M:Gehtsoft.Tools.TypeUtils.RandomUtils.Next(System.Random,System.Int32,System.Int32)
+        @key=Next.3
+        @divisor=.
+        @brief=Gets a random value within a range.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Next
+            @return=int
+            @params=this Random r, int min, int max
+        @end
+
+        @param
+            @name=r
+
+        @end
+
+        @param
+            @name=min
+
+        @end
+
+        @param
+            @name=max
+
+        @end
+
+        The method returns a random value which [c]min <= value < max[/c].
+
+
+    @end
+
+    @member
+        @name=Next
+        @sig=M:Gehtsoft.Tools.TypeUtils.RandomUtils.Next(System.Random,System.DateTime,System.DateTime)
+        @key=Next.2
+        @divisor=.
+        @brief=Get random date.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Next
+            @return=DateTime
+            @params=this Random r, DateTime from, DateTime to
+        @end
+
+        @param
+            @name=r
+
+        @end
+
+        @param
+            @name=from
+
+        @end
+
+        @param
+            @name=to
+
+        @end
+
+        The method returns a random value which [c]from <= value < to[/c].
+
+    @end
+
+    @member
+        @name=NextDouble
+        @sig=M:Gehtsoft.Tools.TypeUtils.RandomUtils.NextDouble(System.Random,System.Double,System.Double)
+        @key=NextDouble.1
+        @divisor=.
+        @brief=Get random double
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=NextDouble
+            @return=double
+            @params=this Random r, double min, double max
+        @end
+
+        @declaration
+            @language=cs
+            @name=NextDouble
+            @return=double
+            @params=this Random r, double max
+        @end
+
+        @param
+            @name=r
+
+        @end
+
+        @param
+            @name=min
+
+        @end
+
+        @param
+            @name=max
+
+        @end
+
+        The method returns a random value which [c]from <= value < to[/c].
+
+    @end
+
+    @member
+        @name=IsChance
+        @sig=M:Gehtsoft.Tools.TypeUtils.RandomUtils.IsChance(System.Random,System.Double)
+        @key=IsChance.0
+        @divisor=.
+        @brief=Gets whether an event with specified chance happends.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=IsChance
+            @return=bool
+            @params=this Random r, double chance
+        @end
+
+        @param
+            @name=r
+
+        @end
+
+        @param
+            @name=chance
+            The chance of the event from 0 (never happen) to 1 (always happen). E.g. value 0.1 means that even happen once at 10 attempt.
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

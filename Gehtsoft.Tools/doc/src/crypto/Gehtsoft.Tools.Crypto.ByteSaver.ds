@@ -1,0 +1,242 @@
+@class
+    @name=ByteSaver
+    @key=Gehtsoft.Tools.Crypto.ByteSaver
+    @brief=
+    @type=class
+    @ingroup=Gehtsoft.Tools.Crypto
+    @sig=T:Gehtsoft.Tools.Crypto.ByteSaver
+    @member
+        @name=WriteUInt32
+        @sig=M:Gehtsoft.Tools.Crypto.ByteSaver.WriteUInt32(System.Byte[],System.Int32,System.UInt32,System.Boolean)
+        @key=WriteUInt32.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=WriteUInt32
+            @return=void
+
+            @params=byte[] array, int offset, uint value, bool littleEndian
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+        @param
+            @name=offset
+
+        @end
+
+        @param
+            @name=value
+
+        @end
+
+        @param
+            @name=littleEndian
+
+        @end
+
+    @end
+
+    @member
+        @name=ReadUInt32
+        @sig=M:Gehtsoft.Tools.Crypto.ByteSaver.ReadUInt32(System.Byte[],System.Int32,System.Boolean)
+        @key=ReadUInt32.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ReadUInt32
+            @return=uint
+            @params=byte[] array, int offset, bool littleEndian
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+        @param
+            @name=offset
+
+        @end
+
+        @param
+            @name=littleEndian
+
+        @end
+
+    @end
+
+    @member
+        @name=WriteUInt16
+        @sig=M:Gehtsoft.Tools.Crypto.ByteSaver.WriteUInt16(System.Byte[],System.Int32,System.UInt16,System.Boolean)
+        @key=WriteUInt16.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=WriteUInt16
+            @return=void
+
+            @params=byte[] array, int offset, ushort value, bool littleEndian
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+        @param
+            @name=offset
+
+        @end
+
+        @param
+            @name=value
+
+        @end
+
+        @param
+            @name=littleEndian
+
+        @end
+
+    @end
+
+    @member
+        @name=ReadUInt16
+        @sig=M:Gehtsoft.Tools.Crypto.ByteSaver.ReadUInt16(System.Byte[],System.Int32,System.Boolean)
+        @key=ReadUInt16.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ReadUInt16
+            @return=ushort
+            @params=byte[] array, int offset, bool littleEndian
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+        @param
+            @name=offset
+
+        @end
+
+        @param
+            @name=littleEndian
+
+        @end
+
+    @end
+
+    @member
+        @name=TextLength
+        @sig=M:Gehtsoft.Tools.Crypto.ByteSaver.TextLength(System.String,Gehtsoft.Tools.Crypto.ByteSaver.StringType,System.Text.Encoding)
+        @key=TextLength.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TextLength
+            @return=int
+            @params=string text, [clink=Gehtsoft.Tools.Crypto.ByteSaver.StringType]ByteSaver.StringType[/clink] type, System.Text.Encoding encoding
+        @end
+
+        @param
+            @name=text
+
+        @end
+
+        @param
+            @name=type
+
+        @end
+
+        @param
+            @name=encoding
+
+        @end
+
+    @end
+
+    @member
+        @name=WriteText
+        @sig=M:Gehtsoft.Tools.Crypto.ByteSaver.WriteText(System.Byte[],System.Int32,System.String,Gehtsoft.Tools.Crypto.ByteSaver.StringType,System.Text.Encoding)
+        @key=WriteText.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=WriteText
+            @return=int
+            @params=byte[] array, int offset, string text, [clink=Gehtsoft.Tools.Crypto.ByteSaver.StringType]ByteSaver.StringType[/clink] type, System.Text.Encoding encoding
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+        @param
+            @name=offset
+
+        @end
+
+        @param
+            @name=text
+
+        @end
+
+        @param
+            @name=type
+
+        @end
+
+        @param
+            @name=encoding
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Crypto.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Crypto]Gehtsoft.Tools.Crypto[/clink].
+@end

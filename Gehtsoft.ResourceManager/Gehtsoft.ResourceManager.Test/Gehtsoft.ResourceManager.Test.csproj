@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net451;netcoreapp2.0</TargetFrameworks>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">NETCORE</DefineConstants>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Gehtsoft.EF.Db.SqliteDb" Version="1.1.3.6" />
+    <PackageReference Include="Gehtsoft.Tools.FileUtils" Version="1.0.3" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnitLite" Version="3.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gehtsoft.ResourceManager\Gehtsoft.ResourceManager.csproj" />
+    <ProjectReference Include="..\Gehtsoft.ResourceManager.Db\Gehtsoft.ResourceManager.Db.csproj" />
+  </ItemGroup>
+
+  <Target Name="CompilingMessages" BeforeTargets="Build">
+    <Exec Command="msxsl.exe .\component1.xml ..\Gehtsoft.ResourceManager\xslt\resources2cs.xslt  -o messages1.cs" />
+  </Target>
+
+  <ItemGroup>
+    <Compile Include="DbTest.cs" />
+    <Compile Include="messages1.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Test1.cs" />
+    <None Include="component1.xml" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>
+

@@ -1,0 +1,42 @@
+@class
+    @name=MDFourHash
+    @key=Gehtsoft.Tools.Crypto.MDFourHash
+    @brief=The class implements MD-four Hash Algorithm
+    @type=class
+    @ingroup=Gehtsoft.Tools.Crypto
+    @sig=T:Gehtsoft.Tools.Crypto.MDFourHash
+    @parent=System.Security.Cryptography.HashAlgorithm
+
+    @example
+        @title=Usage example
+        byte[] mybinaryData;
+
+        MDFourHash hash = new MDFourHash();
+        byte[] hashValue = hash.ComputeHash(mybinaryData);
+
+        StringBuilder ret = new StringBuilder();
+            foreach (byte b in hashValue)
+                ret.Append($"{b:x2}");
+    @end
+
+    @member
+        @name=MDFourHash
+        @sig=M:Gehtsoft.Tools.Crypto.MDFourHash.#ctor
+        @key=MDFourHash.0
+        @divisor=.
+        @brief=Constructor
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=MDFourHash
+        @end
+    @end
+
+
+    The type defined in the [c]Gehtsoft.Tools.Crypto.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Crypto]Gehtsoft.Tools.Crypto[/clink].
+@end

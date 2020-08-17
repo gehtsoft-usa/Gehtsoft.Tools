@@ -1,0 +1,88 @@
+@class
+    @name=Crc32
+    @key=Gehtsoft.Tools.Crypto.Crc32
+    @brief=The class implements CRC32 Hash Algorithm
+    @type=class
+    @ingroup=Gehtsoft.Tools.Crypto
+    @sig=T:Gehtsoft.Tools.Crypto.Crc32
+    @parent=System.Security.Cryptography.HashAlgorithm
+
+    @example
+        @title=Example of usage
+            byte[] mybinaryData;
+
+            Crc32 c = new Crc32();
+            c.UpdateHash(mybinaryData);
+            uint crc32 = c.Checksum;
+    @end
+
+    @member
+        @name=Crc32
+        @sig=M:Gehtsoft.Tools.Crypto.Crc32.#ctor
+        @key=Crc32.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=Crc32
+        @end
+
+    @end
+
+    @member
+        @name=Crc32
+        @sig=M:Gehtsoft.Tools.Crypto.Crc32.#ctor(System.UInt32,System.UInt32)
+        @key=Crc32.1
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=Crc32
+            @params=uint polynomial, uint seed
+        @end
+
+        @param
+            @name=polynomial
+
+        @end
+
+        @param
+            @name=seed
+
+        @end
+
+    @end
+
+    @member
+        @name=Checksum
+        @sig=P:Gehtsoft.Tools.Crypto.Crc32.Checksum
+        @key=Checksum.0
+        @divisor=.
+        @brief=Get hash value as a 32-bit unsigned integer instead of byte array.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Checksum
+            @return=uint
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Crypto.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Crypto]Gehtsoft.Tools.Crypto[/clink].
+@end

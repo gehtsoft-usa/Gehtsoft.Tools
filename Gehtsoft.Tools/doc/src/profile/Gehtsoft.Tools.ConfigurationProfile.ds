@@ -1,0 +1,16 @@
+@group
+    @title=Namespace Gehtsoft.Tools.ConfigurationProfile
+    @key=Gehtsoft.Tools.ConfigurationProfile
+    @ingroup=index
+    @brief=The support of windows-style profiles.
+
+    The windows-style profile is a text file organized as the following:
+
+    @example
+        @title=Profile structure
+        @show=yes
+    ;comment
+    [section]
+    key=value
+    @end
+@end

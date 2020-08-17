@@ -1,0 +1,121 @@
+@class
+    @name=ILoggingStream
+    @key=Gehtsoft.Tools.Log.ILoggingStream
+    @brief=The logging stream.
+    @type=interface
+    @ingroup=Gehtsoft.Tools.Log
+    @sig=T:Gehtsoft.Tools.Log.ILoggingStream
+
+    The logging streams are accessible via [clink=Gehtsoft.Tools.Log.ILogService]ILogService[/clink].
+
+    @member
+        @name=Log
+        @sig=M:Gehtsoft.Tools.Log.ILoggingStream.Log(System.String)
+        @key=Log.1
+        @divisor=.
+        @brief=Log a text.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Log
+            @return=void
+
+            @params=string message
+        @end
+
+        @param
+            @name=message
+
+        @end
+
+    @end
+
+    @member
+        @name=Log
+        @sig=M:Gehtsoft.Tools.Log.ILoggingStream.Log(System.String,System.Object[])
+        @key=Log.2
+        @divisor=.
+        @brief=Logs a formatted message.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Log
+            @return=void
+
+            @params=string format, object[] parameters
+        @end
+
+        @param
+            @name=format
+            The format string (the same as for [c]string.Format()[/c]).
+        @end
+
+        @param
+            @name=parameters
+
+        @end
+
+    @end
+
+    @member
+        @name=Log
+        @sig=M:Gehtsoft.Tools.Log.ILoggingStream.Log(System.Exception,System.String)
+        @key=Log.0
+        @divisor=.
+        @brief=Log an exception.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Log
+            @return=void
+
+            @params=System.Exception e, string message
+        @end
+
+        @param
+            @name=e
+
+        @end
+
+        @param
+            @name=message
+
+        @end
+
+    @end
+
+    @member
+        @name=Level
+        @sig=P:Gehtsoft.Tools.Log.ILoggingStream.Level
+        @key=Level.0
+        @divisor=.
+        @brief=The log level of the stream.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Level
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Log.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Log]Gehtsoft.Tools.Log[/clink].
+@end

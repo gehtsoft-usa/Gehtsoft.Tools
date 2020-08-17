@@ -1,0 +1,158 @@
+@class
+    @name=ObjectPool&lt;T&gt;
+    @key=Gehtsoft.Tools.ObjectPool.ObjectPool_T
+    @brief=Pool of objects.
+    @type=class
+    @ingroup=Gehtsoft.Tools.ObjectPool
+    @sig=T:Gehtsoft.Tools.ObjectPool.ObjectPool`1
+    @parent=System.IDisposable
+    @param
+        @name=T
+        Type of the object.
+    @end
+
+    @member
+        @name=ObjectPool
+        @sig=M:Gehtsoft.Tools.ObjectPool.ObjectPool`1.#ctor(Gehtsoft.Tools.ObjectPool.IObjectFactory{`0},System.Int32)
+        @key=ObjectPool.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=ObjectPool
+            @params=[clink=Gehtsoft.Tools.ObjectPool.IObjectFactory_T]IObjectFactory[/clink]<T> factory, int poolSize
+        @end
+
+        @param
+            @name=factory
+            Factory of the objects.
+        @end
+
+        @param
+            @name=poolSize
+            Maximum size of the pool.
+        @end
+
+    @end
+
+    @member
+        @name=Borrow
+        @sig=M:Gehtsoft.Tools.ObjectPool.ObjectPool`1.Borrow(System.Int32)
+        @key=Borrow.1
+        @divisor=.
+        @brief=Borrow the object from the pool with timeout (in milliseconds).
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Borrow
+            @return=[clink=Gehtsoft.Tools.ObjectPool.Borrowed_T]Borrowed[/clink]<T>
+            @params=int milliseconds
+        @end
+
+        @param
+            @name=milliseconds
+            Timeout in milliseconds to wait for a next free object
+        @end
+
+        The method returns [c]null[/c] if there is not objects available during the time frame specified.
+
+        Dispose the container object to free borrowed object back to the pool.
+    @end
+
+    @member
+        @name=Borrow
+        @sig=M:Gehtsoft.Tools.ObjectPool.ObjectPool`1.Borrow
+        @key=Borrow.0
+        @divisor=.
+        @brief=Borrow the object from the pool.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Borrow
+            @return=[clink=Gehtsoft.Tools.ObjectPool.Borrowed_T]Borrowed[/clink]<T>
+        @end
+
+        Dispose the container object to free borrowed object back to the pool.
+    @end
+
+    @member
+        @name=Borrow
+        @sig=M:Gehtsoft.Tools.ObjectPool.ObjectPool`1.Borrow(System.TimeSpan)
+        @key=Borrow.2
+        @divisor=.
+        @brief=Borrow the object from the pool with timeout (using timespan).
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Borrow
+            @return=[clink=Gehtsoft.Tools.ObjectPool.Borrowed_T]Borrowed[/clink]<T>
+            @params=System.TimeSpan _timeout
+        @end
+
+        @param
+            @name=_timeout
+
+        @end
+
+    @end
+
+    @member
+        @name=TotalObjects
+        @sig=P:Gehtsoft.Tools.ObjectPool.ObjectPool`1.TotalObjects
+        @key=TotalObjects.0
+        @divisor=.
+        @brief=Returns the total number of the objects in pool.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=TotalObjects
+            @return=int
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=InUseObjects
+        @sig=P:Gehtsoft.Tools.ObjectPool.ObjectPool`1.InUseObjects
+        @key=InUseObjects.0
+        @divisor=.
+        @brief=Returns the total number of the objects in pool currently in use.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=InUseObjects
+            @return=int
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.ObjectPool]Gehtsoft.Tools.ObjectPool[/clink].
+@end

@@ -1,0 +1,8 @@
+
+@group
+    @title=Namespace Gehtsoft.Tools.Log.Serilog
+    @key=Gehtsoft.Tools.Log.Serilog
+    @ingroup=Gehtsoft.Tools.Log
+    @brief=
+
+@end

@@ -1,0 +1,115 @@
+@class
+
+    @name=StringUtils
+    @key=Gehtsoft.Tools.TypeUtils.StringUtils
+    @brief=String utilities.
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.StringUtils
+    @member
+        @name=Like
+        @sig=M:Gehtsoft.Tools.TypeUtils.StringUtils.Like(System.String,System.String,System.Boolean)
+        @key=Like.0
+        @divisor=.
+        @brief=Perform DB-style like operation.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Like
+            @return=bool
+            @params=string text, string mask, bool caseInsensitive
+        @end
+
+        @param
+            @name=text
+
+        @end
+
+        @param
+            @name=mask
+
+        @end
+
+        @param
+            @name=caseInsensitive
+
+        @end
+
+    @end
+
+    @member
+        @name=ParseToWords
+        @sig=M:Gehtsoft.Tools.TypeUtils.StringUtils.ParseToWords(System.String)
+        @key=ParseToWords.0
+        @divisor=.
+        @brief=Parses a string into separate words.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ParseToWords
+            @return=string[]
+            @params=string text
+        @end
+        @declaration
+            @language=cs
+            @name=ParseToWords
+            @return=string[]
+            @params=string text, bool mask
+        @end
+
+        @param
+            @name=text
+
+        @end
+        @param
+            @name=mask
+            The flag indicating whether a word may be SQL Like mask.
+
+        @end
+
+    @end
+
+
+    @member
+        @name=LevenshteinDistance
+        @sig=M:Gehtsoft.Tools.TypeUtils.StringUtils.LevenshteinDistance(System.String,System.String)
+        @key=LevenshteinDistance.0
+        @divisor=.
+        @brief=Calculates Levenshtein distance between two words.
+        @scope=class
+        @visibility=public
+
+        The Levenshtein distance is a minimum number of character addition/removal/replacement needed to get one word from another.
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=LevenshteinDistance
+            @return=int
+            @params=string source, string target
+        @end
+
+        @param
+            @name=source
+
+        @end
+
+        @param
+            @name=target
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

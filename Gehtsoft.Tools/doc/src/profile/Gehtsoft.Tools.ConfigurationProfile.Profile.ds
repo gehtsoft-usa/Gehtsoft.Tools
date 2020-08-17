@@ -1,0 +1,516 @@
+@class
+    @name=Profile
+    @key=Gehtsoft.Tools.ConfigurationProfile.Profile
+    @brief=The profile.
+    @type=class
+    @ingroup=Gehtsoft.Tools.ConfigurationProfile
+    @sig=T:Gehtsoft.Tools.ConfigurationProfile.Profile
+    @parent=System.IEquatable<[clink=Gehtsoft.Tools.ConfigurationProfile.Profile]Profile[/clink]>
+
+    Use [clink=Gehtsoft.Tools.ConfigurationProfile.ProfileFactory]ProfileFactory[/clink] to read and write profile from/to files.
+
+    @member
+        @name=HasValue
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.HasValue(System.String,System.String)
+        @key=HasValue.0
+        @divisor=.
+        @brief=Checks whether the value exists.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=HasValue
+            @return=bool
+            @params=string section, string key
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+    @end
+
+    @member
+        @name=HasSection
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.HasSection(System.String)
+        @key=HasSection.0
+        @divisor=.
+        @brief=Checks whether the section exists.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=HasSection
+            @return=bool
+            @params=string section
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+    @end
+
+
+    @member
+        @name=Get
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.Get``1(System.String,System.String,``0)
+        @key=Get.1
+        @divisor=.
+        @brief=Gets the value
+        @scope=instance
+        @visibility=public
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Get
+            @return=string
+            @params=string section, string key
+        @end
+
+        @declaration
+            @language=cs
+            @name=Get
+            @return=string
+            @params=string section, string key, string defaultValue
+        @end
+
+
+        @declaration
+            @language=cs
+            @name=Get<T>
+            @return=T
+            @params=string section, string key
+        @end
+
+        @declaration
+            @language=cs
+            @name=Get<T>
+            @return=T
+            @params=string section, string key, T defaultValue
+        @end
+
+        @param
+            @name=T
+            The type of the value.
+
+            The type must be either a serializable type, string or a value type.
+
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=defaultValue
+
+        @end
+
+    @end
+
+
+    @member
+        @name=Set
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.Set``1(System.String,System.String,``0)
+        @key=Set.1
+        @divisor=.
+        @brief=Sets the key value.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Set
+            @return=void
+
+            @params=string section, string key, string value
+        @end
+
+        @declaration
+            @language=cs
+            @name=Set<T>
+            @return=void
+
+            @params=string section, string key, T value
+        @end
+
+        @param
+            @name=T
+            The type of the value.
+
+            The type must be either a serializable type, string or a value type.
+
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=value
+
+        @end
+
+    @end
+
+    @member
+        @name=SetBinary
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.SetBinary(System.String,System.String,System.Byte[])
+        @key=SetBinary.0
+        @divisor=.
+        @brief=Sets value as a byte array.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=SetBinary
+            @return=void
+
+            @params=string section, string key, byte[] arr
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=arr
+
+        @end
+
+    @end
+
+    @member
+        @name=GetBinary
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.GetBinary(System.String,System.String)
+        @key=GetBinary.0
+        @divisor=.
+        @brief=Gets value as a byte array.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetBinary
+            @return=byte[]
+            @params=string section, string key
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+    @end
+
+    @member
+        @name=SetSecure
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.SetSecure(System.String,System.String,System.String,System.String)
+        @key=SetSecure.0
+        @divisor=.
+        @brief=Sets value as an encrypted string.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=SetSecure
+            @return=void
+
+            @params=string section, string key, string value, string password
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=value
+
+        @end
+
+        @param
+            @name=password
+
+        @end
+
+    @end
+
+    @member
+        @name=GetSecure
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.GetSecure(System.String,System.String,System.String,System.String)
+        @key=GetSecure.0
+        @divisor=.
+        @brief=Gets value from the encrypted string.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetSecure
+            @return=string
+            @params=string section, string key, string password, string defaultValue
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=password
+
+        @end
+
+        @param
+            @name=defaultValue
+
+        @end
+
+    @end
+
+    @member
+        @name=GetSections
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.GetSections
+        @key=GetSections.0
+        @divisor=.
+        @brief=Gets list of section names.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetSections
+            @return=System.Collections.Generic.IEnumerable<string>
+        @end
+
+    @end
+
+    @member
+        @name=GetKeys
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.GetKeys(System.String)
+        @key=GetKeys.0
+        @divisor=.
+        @brief=Gets list of key names in the section.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=GetKeys
+            @return=System.Collections.Generic.IEnumerable<string>
+            @params=string section
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+    @end
+
+
+    @member
+        @name=RemoveKey
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.RemoveKey(System.String,System.String)
+        @key=RemoveKey.0
+        @divisor=.
+        @brief=Removes key.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=RemoveKey
+            @return=void
+
+            @params=string section, string key
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+    @end
+
+    @member
+        @name=RemoveSection
+        @sig=M:Gehtsoft.Tools.ConfigurationProfile.Profile.RemoveSection(System.String)
+        @key=RemoveSection.0
+        @divisor=.
+        @brief=Removes the whole section.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=RemoveSection
+            @return=void
+
+            @params=string section
+        @end
+
+        @param
+            @name=section
+
+        @end
+
+    @end
+
+    @member
+        @name=Mutex
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.Profile.Mutex
+        @key=Mutex.0
+        @divisor=.
+        @brief=The mutex can be used to synchronize operations in multithreaded environment.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Mutex
+            @return=object
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Changed
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.Profile.Changed
+        @key=Changed.0
+        @divisor=.
+        @brief=The flag indicating whether profile has been changed by the application.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Changed
+            @return=bool
+            @suffix= get; set;
+        @end
+
+    @end
+
+    @member
+        @name=Source
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.Profile.Source
+        @key=Source.0
+        @divisor=.
+        @brief=The file name where the profile is located.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Source
+            @return=string
+            @suffix= get; set;
+        @end
+
+    @end
+
+    @member
+        @name=SectionsCount
+        @sig=P:Gehtsoft.Tools.ConfigurationProfile.Profile.SectionsCount
+        @key=SectionsCount.0
+        @divisor=.
+        @brief=The number of the sections in the profile.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=SectionsCount
+            @return=int
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Profile.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.ConfigurationProfile]Gehtsoft.Tools.ConfigurationProfile[/clink].
+@end

@@ -1,0 +1,117 @@
+@class
+    @name=TypeTools
+    @key=Gehtsoft.Tools.IoC.Tools.TypeTools
+    @brief=The basic IoC type tools
+    @type=class
+    @ingroup=Gehtsoft.Tools.IoC.Tools
+    @sig=T:Gehtsoft.Tools.IoC.Tools.TypeTools
+
+    @member
+        @name=InjectEverything
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeTools.InjectEverything(System.Object,System.IServiceProvider)
+        @key=InjectProperties.0
+        @divisor=.
+        @brief=Injects properties and fields values into the object specified using the service provider.
+        @scope=class
+        @visibility=public
+        @type=method
+
+        The method uses the service provider to initialize all properties that are attributed using [clink=Gehtsoft.Tools.IoC.Attributes.InjectAttribute]InjectAttribute[/clink]
+
+        Please note that the property must have explicitly declared set method.
+
+        The property as well as the set method may be private.
+
+        @declaration
+            @language=cs
+            @name=InjectEverything
+            @return=void
+
+            @params=object obj, IServiceProvider factory
+        @end
+
+        @param
+            @name=obj
+
+        @end
+
+        @param
+            @name=factory
+
+        @end
+
+    @end
+
+    @member
+        @name=InjectProperties
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeTools.InjectProperties(System.Object,System.IServiceProvider)
+        @key=InjectProperties.0
+        @divisor=.
+        @brief=Injects property values into the object specified using the service provider.
+        @scope=class
+        @visibility=public
+        @type=method
+
+        The method uses the service provider to initialize all properties that are attributed using [clink=Gehtsoft.Tools.IoC.Attributes.InjectAttribute]InjectAttribute[/clink]
+
+        Please note that the property must have explicitly declared set method.
+
+        The property as well as the set method may be private.
+
+        @declaration
+            @language=cs
+            @name=InjectProperties
+            @return=void
+
+            @params=object obj, IServiceProvider factory
+        @end
+
+        @param
+            @name=obj
+
+        @end
+
+        @param
+            @name=factory
+
+        @end
+
+    @end
+
+    @member
+        @name=InjectFields
+        @sig=M:Gehtsoft.Tools.IoC.Tools.TypeTools.InjectFields(System.Object,System.IServiceProvider)
+        @key=InjectFields.0
+        @divisor=.
+        @brief=Injects field values into the object specified using the service provider.
+        @scope=class
+        @visibility=public
+        @type=method
+
+        The method uses the service provider to initialize all fields that are attributed using [clink=Gehtsoft.Tools.IoC.Attributes.InjectAttribute]InjectAttribute[/clink]
+
+        The field may be private.
+
+        @declaration
+            @language=cs
+            @name=InjectFields
+            @return=void
+
+            @params=object obj, System.IServiceProvider factory
+        @end
+
+        @param
+            @name=obj
+
+        @end
+
+        @param
+            @name=factory
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC.Tools]Gehtsoft.Tools.IoC.Tools[/clink].
+@end

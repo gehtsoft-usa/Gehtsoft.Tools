@@ -1,0 +1,161 @@
+@class
+    @name=RCFourTransform
+    @key=Gehtsoft.Tools.Crypto.RCFourTransform
+    @brief=The class that implements a buffer transformation for RC4 stream encryption.
+    @type=class
+    @ingroup=Gehtsoft.Tools.Crypto
+    @sig=T:Gehtsoft.Tools.Crypto.RCFourTransform
+    @parent=System.Security.Cryptography.ICryptoTransform
+    @parent=System.IDisposable
+
+    @member
+        @name=RCFourTransform
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourTransform.#ctor(System.String,System.Boolean)
+        @key=RCFourTransform.2
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=RCFourTransform
+            @params=string key, bool useHash
+        @end
+
+        @param
+            @name=key
+            Text password to encode
+        @end
+
+        @param
+            @name=useHash
+            Use [c]false[/c] if you want to use password as is a key (less secure option). Use [c]true[/c] if you want to use
+            MD-four hash value of the password as a key (more secure option).
+
+        @end
+
+    @end
+
+    @member
+        @name=RCFourTransform
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourTransform.#ctor(System.Byte[])
+        @key=RCFourTransform.1
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=RCFourTransform
+            @params=byte[] key
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+    @end
+
+    @member
+        @name=Update
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourTransform.Update(System.Byte[],System.Byte[],System.Int32,System.Int32,System.Int32)
+        @key=Update.2
+        @divisor=.
+        @brief=Do transform
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Update
+            @return=void
+
+            @params=byte[] source, byte[] output, int srcfrom, int outputfrom, int lenght
+        @end
+
+        @param
+            @name=source
+            The source array.
+        @end
+
+        @param
+            @name=output
+            The output array
+        @end
+
+        @param
+            @name=srcfrom
+            The index of the first byte in the source to process from.
+        @end
+
+        @param
+            @name=outputfrom
+            The index of the first byte in the output to process to.
+        @end
+
+        @param
+            @name=lenght
+            The number of bytes to process.
+        @end
+
+        The RC-four can process data in-place, so you can specify the same array as a source and and as an output.
+
+    @end
+
+    @member
+        @name=TransformBlock
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourTransform.TransformBlock(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32)
+        @key=TransformBlock.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=TransformBlock
+            @return=int
+            @params=byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset
+        @end
+
+        @param
+            @name=inputBuffer
+
+        @end
+
+        @param
+            @name=inputOffset
+
+        @end
+
+        @param
+            @name=inputCount
+
+        @end
+
+        @param
+            @name=outputBuffer
+
+        @end
+
+        @param
+            @name=outputOffset
+
+        @end
+        The RC-four can process data in-place, so you can specify the same array as a source and and as an output.
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Crypto.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Crypto]Gehtsoft.Tools.Crypto[/clink].
+@end

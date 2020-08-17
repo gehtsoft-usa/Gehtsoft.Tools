@@ -1,0 +1,355 @@
+@class
+    @name=FibonacciHeap&lt;TKey,TValue&gt;.Node
+    @key=Gehtsoft.Tools.Structures.FibonacciHeap.Node
+    @brief=A node of a Fibonacci heap.
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures
+    @sig=T:Gehtsoft.Tools.Structures.FibonacciHeap`2.Node
+    @parent=IComparable<[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<>>
+
+    @member
+        @name=FibonacciHeap&lt;TKey,TValue&gt.Node
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.Node.#ctor(`0,`1)
+        @key=FibonacciHeap`2.No.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=FibonacciHeap&lt;TKey,TValue&gt.Node
+            @params=TKey key, TValue value
+        @end
+
+        @param
+            @name=key
+            The key (which is the priority).
+        @end
+
+        @param
+            @name=value
+            The heap value.
+
+        @end
+
+    @end
+
+    @member
+        @name=CompareTo
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.Node.CompareTo(Gehtsoft.Tools.Structures.FibonacciHeap{`0,`1}.Node)
+        @key=CompareTo.0
+        @divisor=.
+        @brief=Compare the node priority to the other node priority.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=CompareTo
+            @return=int
+            @params=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<> other
+        @end
+
+        @param
+            @name=other
+
+        @end
+
+    @end
+
+    @member
+        @name=Key
+        @sig=P:Gehtsoft.Tools.Structures.FibonacciHeap`2.Node.Key
+        @key=Key.0
+        @divisor=.
+        @brief=The key (priority) value.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Key
+            @return=TKey
+            @suffix= get;
+        @end
+
+    @end
+
+    @member
+        @name=Value
+        @sig=P:Gehtsoft.Tools.Structures.FibonacciHeap`2.Node.Value
+        @key=Value.0
+        @divisor=.
+        @brief=The value.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Value
+            @return=TValue
+            @suffix= get;
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures]Gehtsoft.Tools.Structures[/clink].
+@end
+
+
+@class
+    @name=FibonacciHeap&lt;TKey,TValue&gt;
+    @key=Gehtsoft.Tools.Structures.FibonacciHeap_TKey_TValue
+    @brief=
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures
+    @sig=T:Gehtsoft.Tools.Structures.FibonacciHeap`2
+    @parent=ICollection<[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<>>
+    @parent=IEnumerable<[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<>>
+    @parent=System.Collections.IEnumerable
+    @param
+        @name=TKey
+        The type of the key (priority)
+    @end
+
+    @param
+        @name=TValue
+        The type of the value.
+    @end
+
+    The Fibonacci Heap is the data structure that provides a fast way to get the items with minimum key value from the help.
+
+    The good examples of Fibonacci Heap usage are:
+
+    @list
+        @list-item
+            Get the most important item from a queue of the messages with different level of importance (you must have smaller numeric value for highest importance)
+        @end
+        @list-item
+            Get the next node of a graph to calculate in Dijkstra shortest path algorithm.
+        @end
+    @end
+
+    @member
+        @name=Add
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.Add(`0,`1)
+        @key=Add.1
+        @divisor=.
+        @brief=Adds a new value to the heap.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Add
+            @return=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<>
+            @params=TKey key, TValue value
+        @end
+
+        @declaration
+            @language=cs
+            @name=Add
+            @return=void
+
+            @params=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<> newNode
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=value
+
+        @end
+
+        @param
+            @name=newNode
+
+        @end
+
+
+        The operation amortized time is O(1)
+
+    @end
+
+    @member
+        @name=ExtractMin
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.ExtractMin
+        @key=ExtractMin.0
+        @divisor=.
+        @brief=Removes the current minimum node from the heap.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ExtractMin
+            @return=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<>
+        @end
+
+        The operation amortized time is O(Lg[sub]2[/sub]N)
+
+    @end
+
+    @member
+        @name=DecreaseKey
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.DecreaseKey(Gehtsoft.Tools.Structures.FibonacciHeap{`0,`1}.Node,System.Boolean,`0)
+        @key=DecreaseKey.0
+        @divisor=.
+        @brief=Decreases the key value of the node.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=DecreaseKey
+            @return=bool
+            @params=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<> theNode, bool minimal, TKey newKey
+        @end
+
+        @param
+            @name=theNode
+
+        @end
+
+        @param
+            @name=minimal
+
+        @end
+
+        @param
+            @name=newKey
+
+        @end
+
+        The operation amortized time is O(Lg[sub]2[/sub]N).
+    @end
+
+    @member
+        @name=Remove
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.Remove(Gehtsoft.Tools.Structures.FibonacciHeap{`0,`1}.Node)
+        @key=Remove.0
+        @divisor=.
+        @brief=Removes the node from the heap.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Remove
+            @return=bool
+            @params=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<> theNode
+        @end
+
+        @param
+            @name=theNode
+
+        @end
+
+        The operation amortized time is O(Lg[sub]2[/sub]N)
+    @end
+
+    @member
+        @name=Clear
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.Clear
+        @key=Clear.0
+        @divisor=.
+        @brief=Removes all nodes from the heap.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Clear
+            @return=void
+
+        @end
+
+        The operation amortized time is O(1)
+    @end
+
+    @member
+        @name=FibonacciHeap
+        @sig=M:Gehtsoft.Tools.Structures.FibonacciHeap`2.#ctor
+        @key=FibonacciHeap.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=FibonacciHeap
+        @end
+
+    @end
+
+    @member
+        @name=Count
+        @sig=P:Gehtsoft.Tools.Structures.FibonacciHeap`2.Count
+        @key=Count.0
+        @divisor=.
+        @brief=Returns the number of nodes in the heap.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Count
+            @return=int
+            @suffix= get;
+        @end
+
+        The operation amortized time is O(1)
+    @end
+
+    @member
+        @name=Minimum
+        @sig=P:Gehtsoft.Tools.Structures.FibonacciHeap`2.Minimum
+        @key=Minimum.0
+        @divisor=.
+        @brief=Returns the current minimum node.
+        @scope=instance
+        @visibility=public
+
+        @type=property
+
+        @declaration
+            @language=cs
+            @name=Minimum
+            @return=[clink=Gehtsoft.Tools.Structures.FibonacciHeap.Node]FibonacciHeap&lt;TKey,TValue&gt.Node[/clink]<>
+            @suffix= get;
+        @end
+
+        The operation amortized time is O(1)
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures]Gehtsoft.Tools.Structures[/clink].
+@end

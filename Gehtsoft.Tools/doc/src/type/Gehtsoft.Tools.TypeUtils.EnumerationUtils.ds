@@ -1,0 +1,60 @@
+@class
+    @name=EnumerationUtils
+    @key=Gehtsoft.Tools.TypeUtils.EnumerationUtils
+    @brief=
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.EnumerationUtils
+
+    @member
+        @name=ForEach
+        @sig=M:Gehtsoft.Tools.TypeUtils.EnumerationUtils.ForEach``1(``0[],System.Action`2)
+        @key=ForEach.2
+        @divisor=.
+        @brief=Invokes action for each member of the enumeration.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ForEach<T>
+            @return=void
+
+            @params=this T[] array, Action<T, int> action
+        @end
+
+        @declaration
+            @language=cs
+            @name=ForEach<T>
+            @return=void
+
+            @params=this IList<T> array, Action<T, int> action
+        @end
+
+        @declaration
+            @language=cs
+            @name=ForEach<T>
+            @return=void
+
+            @params=this IEnumerable<T> enumerable, Action<T> action
+        @end
+
+        @param
+            @name=array
+
+        @end
+
+        @param
+            @name=action
+            The action to perform.
+
+            Actions for list and array gets both, the item and its index.
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

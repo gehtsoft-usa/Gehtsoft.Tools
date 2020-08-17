@@ -1,0 +1,69 @@
+
+@class
+
+    @name=RegistryMode
+    @key=Gehtsoft.Tools.IoC.RegistryMode
+    @brief=
+    @type=enum
+    @ingroup=Gehtsoft.Tools.IoC
+    @sig=T:Gehtsoft.Tools.IoC.RegistryMode
+    @member
+        @name=CreateEveryTime
+        @sig=F:Gehtsoft.Tools.IoC.RegistryMode.CreateEveryTime
+        @key=CreateEveryTime.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=CreateEveryTime
+            @return=[clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Cached
+        @sig=F:Gehtsoft.Tools.IoC.RegistryMode.Cached
+        @key=Cached.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Cached
+            @return=[clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Singleton
+        @sig=F:Gehtsoft.Tools.IoC.RegistryMode.Singleton
+        @key=Singletone.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Singleton
+            @return=[clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink]
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC]Gehtsoft.Tools.IoC[/clink].
+@end

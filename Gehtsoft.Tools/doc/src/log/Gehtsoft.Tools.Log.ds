@@ -1,0 +1,23 @@
+@group
+    @title=Namespace Gehtsoft.Tools.Log
+    @key=Gehtsoft.Tools.Log
+    @ingroup=index
+    @brief=The common logging interface.
+
+    The main point of the this log interface is that the process of detection whether the log level is on is perfectly simplified and allows
+    you to avoid needless formatting and calls in case the log level is off.
+
+    The following pattern is used:
+
+    [c]myLogService.Debug?.Log("logMessage");[/c]
+
+    This namespace and assembly defines interfaces only.
+
+    You can use various implementations of this log interface or provide your own.
+
+    The following implementations are readily available:
+
+    [clink=Gehtsoft.Tools.Log.RollingFile]Gehtsoft.Tools.Log.RollingFile[/clink] for simple and lightweight rolling file log implementation.
+
+    [clink=Gehtsoft.Tools.Log.Serilog]Gehtsoft.Tools.Log.Serilog[/clink] for wrapper over [eurl=https://serilog.net/]Serilog[/eurl] log library.
+@end

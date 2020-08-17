@@ -1,0 +1,127 @@
+
+@class
+
+    @name=LogLevel
+    @key=Gehtsoft.Tools.Log.LogLevel
+    @brief=Log level values
+    @type=enum
+    @ingroup=Gehtsoft.Tools.Log
+    @sig=T:Gehtsoft.Tools.Log.LogLevel
+
+    @member
+        @name=Off
+        @sig=F:Gehtsoft.Tools.Log.LogLevel.Off
+        @key=Off.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Off
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Debug
+        @sig=F:Gehtsoft.Tools.Log.LogLevel.Debug
+        @key=Debug.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Debug
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Info
+        @sig=F:Gehtsoft.Tools.Log.LogLevel.Info
+        @key=Info.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Info
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Warning
+        @sig=F:Gehtsoft.Tools.Log.LogLevel.Warning
+        @key=Warning.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Warning
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Error
+        @sig=F:Gehtsoft.Tools.Log.LogLevel.Error
+        @key=Error.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Error
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Fatal
+        @sig=F:Gehtsoft.Tools.Log.LogLevel.Fatal
+        @key=Fatal.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Fatal
+            @return=[clink=Gehtsoft.Tools.Log.LogLevel]LogLevel[/clink]
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Log.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Log]Gehtsoft.Tools.Log[/clink].
+@end

@@ -1,0 +1,29 @@
+@class
+    @name=IoCConstructorAttribute
+    @key=Gehtsoft.Tools.IoC.Attributes.IoCConstructorAttribute
+    @brief=The attribute used to mark up IoC constructor for the classes with multiple constructors.
+    @type=class
+    @ingroup=Gehtsoft.Tools.IoC.Attributes
+    @sig=T:Gehtsoft.Tools.IoC.Attributes.IoCConstructorAttribute
+    @parent=System.Attribute
+    @member
+        @name=IoCConstructorAttribute
+        @sig=M:Gehtsoft.Tools.IoC.Attributes.IoCConstructorAttribute.#ctor
+        @key=IoCConstructorAttribute.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=IoCConstructorAttribute
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC.Attributes]Gehtsoft.Tools.IoC.Attributes[/clink].
+@end

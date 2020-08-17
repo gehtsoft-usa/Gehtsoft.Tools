@@ -1,0 +1,49 @@
+@class
+    @name=AutoExpandCircularBuffer&lt;T&gt;
+    @key=Gehtsoft.Tools.Structures.AutoExpandCircularBuffer_T
+    @brief=Auto-expanding circular buffer.
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures
+    @sig=T:Gehtsoft.Tools.Structures.AutoExpandCircularBuffer`1
+    @parent=[clink=Gehtsoft.Tools.Structures.FixedCircularBuffer_T]FixedCircularBuffer[/clink]<T>
+
+    @param
+        @name=T
+        The type of the buffer element.
+    @end
+
+    Please note that if the buffer needed expansion, the Add and Insert operation will require O(n) instead of O(1).
+
+    @member
+        @name=AutoExpandCircularBuffer
+        @sig=M:Gehtsoft.Tools.Structures.AutoExpandCircularBuffer`1.#ctor(System.Int32,System.Int32)
+        @key=AutoExpandCircularBuffer.0
+        @divisor=.
+        @brief=Constructor
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=AutoExpandCircularBuffer
+            @params=int initialCapacity = 1024, int growFactor = 20
+        @end
+
+        @param
+            @name=initialCapacity
+            The initial capacity.
+        @end
+
+        @param
+            @name=growFactor
+            The percentage at which the buffer must grow if the capacity is exceeded.
+        @end
+
+    @end
+
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures]Gehtsoft.Tools.Structures[/clink].
+@end

@@ -1,0 +1,13 @@
+.svn/
+.git/
+.vs/
+.nuget/
+bin/
+obj/
+*.nupkg
+*.bak
+*.~*
+*.zip
+**/prepare/src/
+**/prepare/dst/
+**/doc/dst/

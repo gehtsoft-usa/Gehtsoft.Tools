@@ -1,0 +1,7 @@
+@group
+    @title=Namespace Gehtsoft.Tools.Log.RollingFile
+    @key=Gehtsoft.Tools.Log.RollingFile
+    @ingroup=Gehtsoft.Tools.Log
+    @brief=
+
+@end

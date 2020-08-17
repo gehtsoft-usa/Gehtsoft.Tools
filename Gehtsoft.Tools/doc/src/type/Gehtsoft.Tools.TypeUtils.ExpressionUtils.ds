@@ -1,0 +1,79 @@
+@class
+    @name=ExpressionUtils
+    @key=Gehtsoft.Tools.TypeUtils.ExpressionUtils
+    @brief=Linq Expression Utilities.
+    @type=class
+    @ingroup=Gehtsoft.Tools.TypeUtils
+    @sig=T:Gehtsoft.Tools.TypeUtils.ExpressionUtils
+
+    @member
+        @name=ExpressionToName
+        @sig=M:Gehtsoft.Tools.TypeUtils.ExpressionUtils.ExpressionToName(System.Linq.Expressions.Expression)
+        @key=ExpressionToName.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ExpressionToName
+            @return=string
+            @params=System.Linq.Expressions.Expression expression
+        @end
+
+        @param
+            @name=expression
+
+        @end
+
+    @end
+
+    @member
+        @name=ExpressionToMemberInfo
+        @sig=M:Gehtsoft.Tools.TypeUtils.ExpressionUtils.ExpressionToMemberInfo(System.Linq.Expressions.Expression)
+        @key=ExpressionToMemberInfo.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=ExpressionToMemberInfo
+            @return=System.Reflection.MemberInfo
+            @params=System.Linq.Expressions.Expression expression
+        @end
+
+        @param
+            @name=expression
+
+        @end
+
+    @end
+
+    @member
+        @name=ExpressionUtils
+        @sig=M:Gehtsoft.Tools.TypeUtils.ExpressionUtils.#ctor
+        @key=ExpressionUtils.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=ExpressionUtils
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.TypeUtils.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.TypeUtils]Gehtsoft.Tools.TypeUtils[/clink].
+@end

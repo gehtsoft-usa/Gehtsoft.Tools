@@ -1,0 +1,157 @@
+@class
+    @name=RCFourAlgorithm
+    @key=Gehtsoft.Tools.Crypto.RCFourAlgorithm
+    @brief=The class implements RC4 stream encryption
+    @type=class
+    @ingroup=Gehtsoft.Tools.Crypto
+    @sig=T:Gehtsoft.Tools.Crypto.RCFourAlgorithm
+    @parent=System.Security.Cryptography.SymmetricAlgorithm
+
+    @member
+        @name=CreateEncryptor
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourAlgorithm.CreateEncryptor(System.Byte[],System.Byte[])
+        @key=CreateEncryptor.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=CreateEncryptor
+            @return=System.Security.Cryptography.ICryptoTransform
+            @params=byte[] rgbKey, byte[] rgbIV
+        @end
+
+        @param
+            @name=rgbKey
+
+        @end
+
+        @param
+            @name=rgbIV
+            Initial vector is not used in RC-four algorithm and is ignored.
+        @end
+    @end
+
+    @member
+        @name=CreateDecryptor
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourAlgorithm.CreateDecryptor(System.Byte[],System.Byte[])
+        @key=CreateDecryptor.0
+        @divisor=.
+        @brief=
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=CreateDecryptor
+            @return=System.Security.Cryptography.ICryptoTransform
+            @params=byte[] rgbKey, byte[] rgbIV
+        @end
+
+        @param
+            @name=rgbKey
+
+        @end
+
+        @param
+            @name=rgbIV
+            Initial vector is not used in RC-four algorithm and is ignored.
+        @end
+
+    @end
+
+
+
+    @member
+        @name=Encode
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourAlgorithm.Encode(System.String,System.String)
+        @key=Encode.0
+        @divisor=.
+        @brief=Encodes a string into base64 string.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Encode
+            @return=string
+            @params=string text, string key
+        @end
+
+        @param
+            @name=text
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        This method can be used as more secure option for [clink=Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Encrypt.0]ProfileFactory.Encrypt[/clink].
+    @end
+
+    @member
+        @name=Decode
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourAlgorithm.Decode(System.String,System.String,System.String)
+        @key=Decode.0
+        @divisor=.
+        @brief=Decodes a base64 encoded string backing into string.
+        @scope=class
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Decode
+            @return=string
+            @params=string encoded, string key, string defaultValue
+        @end
+
+        @param
+            @name=encoded
+
+        @end
+
+        @param
+            @name=key
+
+        @end
+
+        @param
+            @name=defaultValue
+
+        @end
+        This method can be used as more secure option for [clink=Gehtsoft.Tools.ConfigurationProfile.ProfileFactory.Decrypt.0]ProfileFactory.Decrypt[/clink].
+    @end
+
+    @member
+        @name=RCFourAlgorithm
+        @sig=M:Gehtsoft.Tools.Crypto.RCFourAlgorithm.#ctor
+        @key=RCFourAlgorithm.0
+        @divisor=.
+        @brief=Constructor
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=RCFourAlgorithm
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Crypto.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Crypto]Gehtsoft.Tools.Crypto[/clink].
+@end

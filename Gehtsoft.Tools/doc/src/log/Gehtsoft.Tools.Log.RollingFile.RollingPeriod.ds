@@ -1,0 +1,105 @@
+@class
+    @name=RollingPeriod
+    @key=Gehtsoft.Tools.Log.RollingFile.RollingPeriod
+    @brief=Rolling file period.
+    @type=enum
+    @ingroup=Gehtsoft.Tools.Log.RollingFile
+    @sig=T:Gehtsoft.Tools.Log.RollingFile.RollingPeriod
+    @member
+        @name=None
+        @sig=F:Gehtsoft.Tools.Log.RollingFile.RollingPeriod.None
+        @key=None.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=None
+            @return=[clink=Gehtsoft.Tools.Log.RollingFile.RollingPeriod]RollingPeriod[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Hour
+        @sig=F:Gehtsoft.Tools.Log.RollingFile.RollingPeriod.Hour
+        @key=Hour.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Hour
+            @return=[clink=Gehtsoft.Tools.Log.RollingFile.RollingPeriod]RollingPeriod[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Day
+        @sig=F:Gehtsoft.Tools.Log.RollingFile.RollingPeriod.Day
+        @key=Day.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Day
+            @return=[clink=Gehtsoft.Tools.Log.RollingFile.RollingPeriod]RollingPeriod[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Week
+        @sig=F:Gehtsoft.Tools.Log.RollingFile.RollingPeriod.Week
+        @key=Week.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Week
+            @return=[clink=Gehtsoft.Tools.Log.RollingFile.RollingPeriod]RollingPeriod[/clink]
+        @end
+
+    @end
+
+    @member
+        @name=Month
+        @sig=F:Gehtsoft.Tools.Log.RollingFile.RollingPeriod.Month
+        @key=Month.0
+        @divisor=.
+        @brief=
+        @scope=class
+        @visibility=public
+
+        @type=field
+
+        @declaration
+            @language=cs
+            @name=Month
+            @return=[clink=Gehtsoft.Tools.Log.RollingFile.RollingPeriod]RollingPeriod[/clink]
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Log.RollingFile.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Log.RollingFile]Gehtsoft.Tools.Log.RollingFile[/clink].
+@end

@@ -1,0 +1,53 @@
+@class
+
+    @name=IClassRegistry
+    @key=Gehtsoft.Tools.IoC.IClassRegistry
+    @brief=The interface to the class registry.
+    @type=interface
+    @ingroup=Gehtsoft.Tools.IoC
+    @sig=T:Gehtsoft.Tools.IoC.IClassRegistry
+
+
+
+    @member
+        @name=Add
+        @sig=M:Gehtsoft.Tools.IoC.IClassRegistry.Add(System.Type,System.Type,Gehtsoft.Tools.IoC.RegistryMode)
+        @key=Add.0
+        @divisor=.
+        @brief=Adds a new class into the registry.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Add
+            @return=void
+
+            @params=System.Type registryType, System.Type implementationType, [clink=Gehtsoft.Tools.IoC.RegistryMode]RegistryMode[/clink] mode
+        @end
+
+        @param
+            @name=registryType
+
+        @end
+
+        @param
+            @name=implementationType
+
+        @end
+
+        @param
+            @name=mode
+
+        @end
+
+        See [clink=Gehtsoft.Tools.IoC.IoCFactory.Add.2]IoCFactory.Add()[/clink] for more details.
+
+        You may need to implement this interface to use tools with other IoC containers.
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.IoC.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.IoC]Gehtsoft.Tools.IoC[/clink].
+@end

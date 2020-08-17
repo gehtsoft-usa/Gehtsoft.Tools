@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+ <metadata>
+  <id>Gehtsoft.Tools.Log.Serilog</id>
+  <version>$version$</version>
+  <authors>Gehtsoft</authors>
+  <owners>Gehtsoft</owners>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <licenseUrl>http://asp.gehtsoftusa.com/licenses/private.html</licenseUrl>
+  <description>Serilog adapter to logger interface.</description>
+  <copyright>Gehtsoft USA LLC 2016-2017</copyright>
+<dependencies>
+  <group targetFramework="net45">
+   <dependency id="Gehtsoft.Tools.Log" version="$logversion$" />
+   <dependency id="Serilog" version="2.8.0" />
+   <dependency id="Serilog.Sinks.RollingFile" version="3.3.0" />
+  </group>
+  <group targetFramework="netstandard2.0">
+   <dependency id="Gehtsoft.Tools.Log" version="$logversion$" />
+   <dependency id="Serilog" version="2.8.0" />
+   <dependency id="Serilog.Sinks.RollingFile" version="3.3.0" />
+  </group>
+</dependencies>
+ </metadata>
+  <files>
+    <file src="../bin/Release/net45/Gehtsoft.Tools.Log.Serilog.dll" target="lib\net45" />
+    <file src="../bin/Release/netstandard2.0/Gehtsoft.Tools.Log.Serilog.dll" target="lib\netstandard2.0" />
+  </files>
+</package>

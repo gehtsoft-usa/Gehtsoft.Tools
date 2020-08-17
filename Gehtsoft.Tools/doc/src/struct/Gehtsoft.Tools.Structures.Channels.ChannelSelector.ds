@@ -1,0 +1,163 @@
+@class
+    @name=ChannelSelector
+    @key=Gehtsoft.Tools.Structures.Channels.ChannelSelector
+    @brief=The channel selector is a class that received a message(s) from more than one channels
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures.Channels
+    @sig=T:Gehtsoft.Tools.Structures.Channels.ChannelSelector
+
+    @member
+        @name=ChannelSelector
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelSelector.#ctor(Gehtsoft.Tools.Structures.Channels.IChannel[])
+        @key=ChannelSelector.0
+        @divisor=.
+        @brief=Constructor.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=ChannelSelector
+            @params=[clink=Gehtsoft.Tools.Structures.Channels.ChannelBase_T]IChannel[/clink][] channels
+        @end
+
+        @param
+            @name=channels
+
+        @end
+
+    @end
+
+    @member
+        @name=Select
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelSelector.Select(System.Threading.CancellationToken)
+        @key=Select.1
+        @divisor=.
+        @brief=Selects one message from any of the associated channels.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=Select
+            @return=object
+        @end
+        @declaration
+            @language=cs
+            @name=Select
+            @return=object
+            @params=System.Threading.CancellationToken cancellationToken
+        @end
+
+        @param
+            @name=cancellationToken
+
+        @end
+
+        If there is no messages in any of associated channel, the method blocks until
+        a message appears.
+
+    @end
+
+    @member
+        @name=SelectAll
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelSelector.SelectAll(System.Threading.CancellationToken)
+        @key=SelectAll.1
+        @divisor=.
+        @brief=Selects all messages from the associated channels.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=SelectAll
+            @return=object[]
+        @end
+        @declaration
+            @language=cs
+            @name=SelectAll
+            @return=object[]
+            @params=CancellationToken cancellationToken
+        @end
+
+        @param
+            @name=cancellationToken
+        @end
+
+        If there is no messages in any of associated channel, the method blocks until
+        a message appears.
+
+    @end
+
+    @member
+        @name=SelectAsync
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelSelector.SelectAsync(System.Void)
+        @key=SelectAsync.1
+        @divisor=.
+        @brief=Selects a message from any of the associated channels.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=SelectAsync
+            @return=Task<object>
+        @end
+        @declaration
+            @language=cs
+            @name=SelectAsync
+            @return=Task<object>
+            @params=CancellationToken cancellationToken
+        @end
+
+        @param
+            @name=cancellationToken
+
+        @end
+
+        The method returns a task which completes when a message appears.
+
+    @end
+
+    @member
+        @name=SelectAllAsync
+        @sig=M:Gehtsoft.Tools.Structures.Channels.ChannelSelector.SelectAllAsync(System.Void)
+        @key=SelectAsync.1
+        @divisor=.
+        @brief=Selects all messages from the associated channels.
+        @scope=instance
+        @visibility=public
+
+        @type=method
+
+        @declaration
+            @language=cs
+            @name=SelectAllAsync
+            @return=Task<object[]>
+        @end
+        @declaration
+            @language=cs
+            @name=SelectAllAsync
+            @return=Task<object[]>
+            @params=CancellationToken cancellationToken
+        @end
+
+        @param
+            @name=cancellationToken
+
+        @end
+
+        The method returns a task which completes when a message appears.
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures.Channels]Gehtsoft.Tools.Structures.Channels[/clink].
+@end

@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netcoreapp2.2</TargetFrameworks>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">NETCORE</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'net45' ">NET45</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Crypto\Gehtsoft.Tools.Crypto.csproj" />
+    <ProjectReference Include="..\FileUtils\Gehtsoft.Tools.FileUtils.csproj" />
+    <ProjectReference Include="..\IoC\Gehtsoft.Tools.IoC.csproj" />
+    <ProjectReference Include="..\Log.RollingFile\Gehtsoft.Tools.Log.RollingFile.csproj" />
+    <ProjectReference Include="..\Log.Serilog\Gehtsoft.Tools.Log.Serilog.csproj" />
+    <ProjectReference Include="..\Log\Gehtsoft.Tools.Log.csproj" />
+    <ProjectReference Include="..\Profile\Gehtsoft.Tools.Profile.csproj" />
+    <ProjectReference Include="..\Structures\Gehtsoft.Tools.Structures.csproj" />
+    <ProjectReference Include="..\TypeUtils\Gehtsoft.Tools.TypeUtils.csproj" />
+    <ProjectReference Include="..\CommandLine\Gehtsoft.Tools.CommandLine.csproj" />
+  </ItemGroup>
+</Project>

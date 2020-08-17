@@ -1,0 +1,6 @@
+@group
+    @title=Namespace Gehtsoft.Tools.IoC.Tools
+    @key=Gehtsoft.Tools.IoC.Tools
+    @ingroup=Gehtsoft.Tools.IoC
+    @brief=The namespace consists of tool classes that may be useful for working with other IoC containers
+@end

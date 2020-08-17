@@ -1,0 +1,7 @@
+@group
+    @title=Namespace Gehtsoft.Tools.Structures.Channels
+    @key=Gehtsoft.Tools.Structures.Channels
+    @ingroup=Gehtsoft.Tools.Structures
+    @brief=Go-style channels
+
+@end

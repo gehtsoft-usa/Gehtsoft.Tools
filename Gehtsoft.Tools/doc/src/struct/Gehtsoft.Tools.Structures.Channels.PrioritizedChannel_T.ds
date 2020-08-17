@@ -1,0 +1,66 @@
+@class
+
+    @name=PrioritizedChannel&lt;T&gt;
+    @key=Gehtsoft.Tools.Structures.Channels.PrioritizedChannel_T
+    @brief=Prioritized channel
+    @type=class
+    @ingroup=Gehtsoft.Tools.Structures.Channels
+    @sig=T:Gehtsoft.Tools.Structures.Channels.PrioritizedChannel`1
+    @parent=[clink=Gehtsoft.Tools.Structures.Channels.ChannelBase_T]ChannelBase[/clink]<T>
+    @param
+        @name=T
+        The element the be sent trough the channel.
+        The type T must implement [c]IComparable<T>[/c] interface
+    @end
+
+    The prioritized channel returns elements with higher priority first. The elements that are intensified themselves as
+    smaller are considered as elements of higher priority.
+
+    Please note that channel does not provides warranty that elements with equal priority will be returns in
+    the same order as they were posted.
+
+    @member
+        @name=PrioritizedChannel
+        @sig=M:Gehtsoft.Tools.Structures.Channels.PrioritizedChannel`1.#ctor
+        @key=PrioritizedChannel.0
+        @divisor=.
+        @brief=Constructor for an endless channel.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=PrioritizedChannel
+        @end
+
+    @end
+
+    @member
+        @name=PrioritizedChannel
+        @sig=M:Gehtsoft.Tools.Structures.Channels.PrioritizedChannel`1.#ctor(System.Int32)
+        @key=PrioritizedChannel.1
+        @divisor=.
+        @brief=Constructor for an channel with limited capacity channel.
+        @scope=instance
+        @visibility=public
+
+        @type=constructor
+
+        @declaration
+            @language=cs
+            @name=PrioritizedChannel
+            @params=int capacity
+        @end
+
+        @param
+            @name=capacity
+
+        @end
+
+    @end
+
+    The type defined in the [c]Gehtsoft.Tools.Structures.dll[/c] assembly.
+    The namespace is [clink=Gehtsoft.Tools.Structures.Channels]Gehtsoft.Tools.Structures.Channels[/clink].
+@end
