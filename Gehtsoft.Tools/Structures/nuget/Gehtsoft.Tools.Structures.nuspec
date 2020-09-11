@@ -10,13 +10,6 @@
     <description>Additional data storage structures.</description>
     <copyright>Gehtsoft USA LLC 2016-2017</copyright>
     <dependencies>
-      <group targetFramework="net45">
-        <dependency id="Gehtsoft.Tools.TypeUtils" version="$typeutilsversion$" />
-      </group>
-      <group targetFramework="net461">
-       <dependency id="Gehtsoft.Tools.TypeUtils" version="$typeutilsversion$" />
-       <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.2.0" />
-      </group>
       <group targetFramework="netstandard2.0">
        <dependency id="Gehtsoft.Tools.TypeUtils" version="$typeutilsversion$" />
        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.2.0" />
@@ -24,8 +17,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="../bin/Release/net45/Gehtsoft.Tools.Structures.dll" target="lib\net45" />
-    <file src="../bin/Release/net461/Gehtsoft.Tools.Structures.dll" target="lib\net461" />
     <file src="../bin/Release/netstandard2.0/Gehtsoft.Tools.Structures.dll" target="lib\netstandard2.0" />
   </files>
 </package>

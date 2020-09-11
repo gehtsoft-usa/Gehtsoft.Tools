@@ -1,15 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;net48;netstandard2.0;netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net45;net461;net48;netstandard2.0;netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">NETCORE</DefineConstants>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">NETCORE</DefineConstants>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard2.0' ">NETSTANDARD</DefineConstants>
-    <DefineConstants Condition=" '$(TargetFramework)' == 'net48' ">NETSTANDARD</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'net48' ">NET45</DefineConstants>
     <DefineConstants Condition=" '$(TargetFramework)' == 'net45' ">NET45</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'net461' ">NET45</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net48' ">
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
