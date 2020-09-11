@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -131,17 +132,13 @@ namespace Gehtsoft.Tools.IoC.Tools
 
                 if (!memberInfo.IsStatic)
                 {
-#if NETCORE
                     obj = provider != null ? ActivatorUtilities.CreateInstance(provider, type, additionalArguments) : Activator.CreateInstance(type);
-#else
-                    obj = provider?.GetService(type) ?? Activator.CreateInstance(type);
-#endif
                 }
                 memberInfo.Invoke(obj, TypeTools.BuildArguments(memberInfo, provider, additionalArguments));
             });
 
 
-        public static void RegisterAll(this IEnumerable<Type> enumerable, Type asInterfaceType, Action<Type, Type> registerAction) 
+        public static void RegisterAll(this IEnumerable<Type> enumerable, Type asInterfaceType, Action<Type, Type> registerAction)
             => enumerable.ForAll(type =>
             {
                 Type registerAs = null;
@@ -197,10 +194,10 @@ namespace Gehtsoft.Tools.IoC.Tools
 
         public static void RegisterAllAsSingleton(this IEnumerable<Type> enumerable, IServiceCollection collection, Type asInterfaceType)
            => enumerable.RegisterAll(asInterfaceType, (registerAs, type) => collection.AddSingleton(registerAs, type));
-        
+
         public static void RegisterAllAsScoped(this IEnumerable<Type> enumerable, IServiceCollection collection, Type asInterfaceType)
             => enumerable.RegisterAll(asInterfaceType, (registerAs, type) => collection.AddScoped(registerAs, type));
-        
+
         public static void RegisterAllAsTransient(this IEnumerable<Type> enumerable, IServiceCollection collection, Type asInterfaceType)
             => enumerable.RegisterAll(asInterfaceType, (registerAs, type) => collection.AddTransient(registerAs, type));
         #endif

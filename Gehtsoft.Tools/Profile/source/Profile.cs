@@ -88,11 +88,7 @@ namespace Gehtsoft.Tools.ConfigurationProfile
         {
             Type t = typeof(T);
             bool isValue;
-#if NETCORE
-            isValue = t.GetTypeInfo().IsValueType;
-#else
             isValue = t.IsValueType;
-#endif
             if (isValue || typeof(T) == typeof(string))
             {
                 EquatableDictionary<string, string> sectionDict;
@@ -127,11 +123,7 @@ namespace Gehtsoft.Tools.ConfigurationProfile
 
             Type t = typeof(T);
             bool isValue;
-#if NETCORE
-            isValue = t.GetTypeInfo().IsValueType;
-#else
             isValue = t.IsValueType;
-#endif
             if (isValue)
             {
                 string svalue;

@@ -3,12 +3,10 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-#if NETCORE
 using System.Linq;
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.DependencyModel.Resolution;
-#endif
 
 namespace Gehtsoft.Tools.TypeUtils
 {
@@ -53,7 +51,6 @@ namespace Gehtsoft.Tools.TypeUtils
         }
     }
 
-#if NETCORE
     public static class AssemblyUtils
     {
         public static Assembly LoadAssemblyFromPath(string path)
@@ -113,7 +110,7 @@ namespace Gehtsoft.Tools.TypeUtils
 
             //scan callers and try to find it near a caller
             HashSet<string> tested = new HashSet<string>();
-            
+
             StackTrace trace = new StackTrace();
             foreach (StackFrame frame in trace.GetFrames())
             {
@@ -132,16 +129,15 @@ namespace Gehtsoft.Tools.TypeUtils
 
             if (resolvedPath != null)
                 return LoadAssemblyFromPath(resolvedPath);
-            
+
             string nugetFallbackFolder = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"), "dotnet\\sdk\\NuGetFallbackFolder");
             resolvedPath = ResolveInRepository(nugetFallbackFolder, assemblyName);
 
             if (resolvedPath != null)
                 return LoadAssemblyFromPath(resolvedPath);
-            
+
             return null;
         }
     }
 
-#endif
 }

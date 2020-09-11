@@ -12,7 +12,7 @@
 <dependencies>
   <group targetFramework="netstandard2.0">
    <dependency id="Gehtsoft.Tools.Log" version="$logversion$" />
-   <dependency id="Serilog" version="2.9.0" />
+   <dependency id="Serilog" version="2.10.0" />
    <dependency id="Serilog.Sinks.RollingFile" version="3.3.0" />
   </group>
 </dependencies>

@@ -12,7 +12,7 @@
     <dependencies>
       <group targetFramework="netstandard2.0">
        <dependency id="Gehtsoft.Tools.TypeUtils" version="$typeutilsversion$" />
-       <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.2.0" />
+       <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="3.1.8" />
       </group>
     </dependencies>
   </metadata>

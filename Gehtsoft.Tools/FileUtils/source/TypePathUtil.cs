@@ -27,12 +27,7 @@ namespace Gehtsoft.Tools.FileUtils
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
             Assembly assembly;
-#if NETCORE
-            assembly = type.GetTypeInfo().Assembly;
-#else
             assembly = type.Assembly;
-#endif
-
             UriBuilder uri = new UriBuilder(assembly.CodeBase);
             string path = Uri.UnescapeDataString(uri.Path);
             return Path.GetFullPath(path);

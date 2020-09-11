@@ -33,7 +33,6 @@ namespace Gehtsoft.Tools.UnitTest
             Assert.Throws<ArgumentException>(() => list.GetType().ExtractGenericImplementation(typeof(IEnumerable<>)));
         }
 
-#if NETCORE
         [Test]
         public void TestLoadAssembly()
         {
@@ -41,7 +40,7 @@ namespace Gehtsoft.Tools.UnitTest
             Assembly assembly = AssemblyUtils.FindAssembly("Gehtsoft.Tools.CommandLine.dll");
             Assert.IsNotNull(assembly);
             Assert.IsTrue(string.Compare("Gehtsoft.Tools.CommandLine", assembly.GetName().Name, StringComparison.OrdinalIgnoreCase) == 0);
-            //assembly existed in call stack 
+            //assembly existed in call stack
             assembly = AssemblyUtils.FindAssembly("nunit.framework.dll");
             Assert.IsNotNull(assembly);
             Assert.IsTrue(string.Compare("nunit.framework", assembly.GetName().Name, StringComparison.OrdinalIgnoreCase) == 0);
@@ -52,6 +51,5 @@ namespace Gehtsoft.Tools.UnitTest
             assembly = AssemblyUtils.FindAssembly("Not.Existed.Or.Referenced.dll");
             Assert.IsNull(assembly);
         }
-#endif
     }
 }

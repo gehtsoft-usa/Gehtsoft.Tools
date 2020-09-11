@@ -138,11 +138,7 @@ namespace Gehtsoft.Tools.ConfigurationProfile
                 mAutoSaveThread.Start();
             }
 
-#if NETCORE
-#else
             AppDomain.CurrentDomain.ProcessExit += OnProcessExited;
-#endif
-
         }
 
         private bool mSuspendWather = false;
