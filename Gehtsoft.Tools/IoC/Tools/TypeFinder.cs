@@ -6,9 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-#if HASSERVICEPROVIDER
 using Microsoft.Extensions.DependencyInjection;
-#endif
 
 namespace Gehtsoft.Tools.IoC.Tools
 {
@@ -175,7 +173,6 @@ namespace Gehtsoft.Tools.IoC.Tools
         public static void RegisterAll(this IEnumerable<Type> enumerable, IClassRegistry registry, RegistryMode mode = RegistryMode.CreateEveryTime, Type asInterfaceType = null)
             => enumerable.RegisterAll(asInterfaceType, (registerAs, type) => registry.Add(registerAs, type, mode));
 
-        #if HASSERVICEPROVIDER
         public static void RegisterAll(this IEnumerable<Type> enumerable, IServiceCollection collection, RegistryMode mode, Type asInterfaceType)
         {
             switch (mode)
@@ -200,6 +197,5 @@ namespace Gehtsoft.Tools.IoC.Tools
 
         public static void RegisterAllAsTransient(this IEnumerable<Type> enumerable, IServiceCollection collection, Type asInterfaceType)
             => enumerable.RegisterAll(asInterfaceType, (registerAs, type) => collection.AddTransient(registerAs, type));
-        #endif
     }
 }

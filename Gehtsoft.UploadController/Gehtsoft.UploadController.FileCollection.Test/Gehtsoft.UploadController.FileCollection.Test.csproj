@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">NETCORE</DefineConstants>
-    <DefineConstants Condition=" '$(TargetFramework)' == 'net45' ">NET45</DefineConstants>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gehtsoft.Tools.FileUtils" Version="1.0.4" />
+    <PackageReference Include="Gehtsoft.Tools.FileUtils" Version="1.0.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />

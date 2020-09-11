@@ -5,9 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.IoC.Attributes;
-#if HASSERVICEPROVIDER
 using Microsoft.Extensions.DependencyInjection;
-#endif
 
 namespace Gehtsoft.Tools.IoC.Tools
 {
@@ -98,32 +96,7 @@ namespace Gehtsoft.Tools.IoC.Tools
 
         internal static object ForcedConstructUsingFactory(Type type, IServiceProvider factory, object[] args = null)
         {
-#if HASSERVICEPROVIDER
             return ActivatorUtilities.CreateInstance(factory, type, args);
-#else
-            ConstructorInfo[] constructors = type.GetTypeInfo().GetConstructors();
-
-            if (constructors.Length == 0)
-                return InjectEverything(Activator.CreateInstance(type), factory);
-
-            if (constructors.Length == 1)
-                return InjectEverything(constructors[0].Invoke(BuildArguments(constructors[0], factory, args)), factory);
-
-            ConstructorInfo iocConstructor = null;
-            for (int i = 0; i < constructors.Length; i++)
-            {
-                if (constructors[i].GetCustomAttribute<IoCConstructorAttribute>() != null)
-                {
-                    if (iocConstructor != null)
-                        throw new ArgumentException($"The type {type.Name} has more than one IoC constructors", nameof(type));
-                    iocConstructor = constructors[i];
-                }
-            }
-
-            if (iocConstructor == null)
-                throw new ArgumentException($"The type {type.Name} has multiple constructors but none of attributed as IoC constructor", nameof(type));
-            return InjectEverything(iocConstructor.Invoke(BuildArguments(iocConstructor, factory, args)), factory);       
-#endif
         }
     }
 }
