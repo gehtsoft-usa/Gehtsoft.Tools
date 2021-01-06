@@ -11,8 +11,8 @@
     <copyright>Gehtsoft USA LLC 2016-2017</copyright>
     <dependencies>
       <group targetFramework="netstandard2.0" >
-       <dependency id="Microsoft.Extensions.DependencyModel" version="3.1.6" />
-       <dependency id="Microsoft.Extensions.DependencyInjection" version="3.1.8" />
+       <dependency id="Microsoft.Extensions.DependencyModel" version="5.0.0" />
+       <dependency id="Microsoft.Extensions.DependencyInjection" version="5.0.1" />
        <dependency id="System.Runtime.Loader" version="4.3.0" />
       </group>
     </dependencies>

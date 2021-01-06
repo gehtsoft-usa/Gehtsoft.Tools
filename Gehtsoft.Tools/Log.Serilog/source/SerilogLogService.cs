@@ -95,8 +95,7 @@ namespace Gehtsoft.Tools.Log.Serilog
 
 
             LoggerConfiguration logconfig = new LoggerConfiguration();
-            logconfig.WriteTo.RollingFile(mLogPath + mLogPrefix + "-{Date}" + mLogExtension);
-
+            logconfig.WriteTo.File(mLogPath + mLogPrefix + mLogExtension, rollingInterval: RollingInterval.Day);
 
             switch (mLogLevel)
             {
