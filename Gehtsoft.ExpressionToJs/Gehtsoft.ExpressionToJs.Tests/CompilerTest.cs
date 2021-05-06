@@ -10,6 +10,10 @@ using Jint;
 using Jint.Native;
 using NUnit.Framework;
 
+//all code pieces causes warning made for purpose to test nuances
+//of proper expression compilation
+#pragma warning disable S1940, S1125, S1905, S2589, S2699, S2184, RCS1163, IDE0057, RCS1068, RCS1077, IDE1006, RCS1033
+
 namespace Gehtsoft.ExpressionToJs.Tests
 {
     [TestFixture]
@@ -29,7 +33,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             public SubEntity SubEntity { get; set; }
         }
 
-        private Regex mRe = new Regex($"^a.+f$");
+        private readonly Regex mRe = new Regex("^a.+f$");
 
         private Engine SetupJint()
         {
@@ -63,13 +67,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
                 Assert.That(((DateTime)(object)expectedResult).ToUniversalTime(), Is.EqualTo(v.AsDate().ToDateTime()).Within(TimeSpan.FromMilliseconds(950)));
             }
             else
-
                 Assert.AreEqual(expectedResult, engine.Execute(jsExpression).GetCompletionValue().ToObject());
-        }
-
-        [Test]
-        public void TestMemberAccess()
-        {
         }
 
         [Test]
@@ -110,7 +108,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<double, double>(doubleVal => Math.Sign(12.234), 1);
             TestExpression<double, double>(doubleVal => Math.Sign(-12.234), -1);
 
-            int j = 50;
+            const int j = 50;
             TestExpression<int, int>(intVal => intVal * j / (j + 50), 5);
         }
 
@@ -156,7 +154,6 @@ namespace Gehtsoft.ExpressionToJs.Tests
         [Test]
         public void TestChar()
         {
-            //engine.SetValue("stringVal2", "Bb1, ");
             TestExpression<string, bool>(stringVal2 => char.IsUpper(stringVal2[0]), true);
             TestExpression<string, bool>(stringVal2 => char.IsUpper(stringVal2[1]), false);
             TestExpression<string, bool>(stringVal2 => char.IsLower(stringVal2[0]), false);
@@ -243,7 +240,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             public int Five { get; set; } = 5;
         }
 
-        private Constants mConstants = new Constants();
+        private readonly Constants mConstants = new Constants();
 
         [Test]
         public void TestConvertors()
@@ -261,12 +258,6 @@ namespace Gehtsoft.ExpressionToJs.Tests
         {
             Expression<Func<string, int>> f1 = s => s.Length;
             Expression<Func<string, int>> f2 = s => s.Length;
-            Expression<Func<string, int>> f3 = s => s.Trim().Length;
-
-            Assert.IsTrue(f1.Equals(f1));
-            Assert.IsFalse(f1.Equals(f2));
-            Assert.IsFalse(f1.Equals(f3));
-            Assert.IsFalse(f2.Equals(f3));
 
             ExpressionCompiler c11 = new ExpressionCompiler(f1);
             ExpressionCompiler c12 = new ExpressionCompiler(f1);
@@ -307,13 +298,11 @@ namespace Gehtsoft.ExpressionToJs.Tests
         {
             ValidationExpressionCompiler compiler;
 
-            Expression<Func<Entity, bool>> entityExpression;
-
-            entityExpression = e => e.arrayProp.Length > 1;
+            Expression<Func<Entity, bool>> entityExpression = e => e.arrayProp.Length > 1;
             compiler = new ValidationExpressionCompiler(entityExpression, entityParameterIndex: 0);
             Assert.AreEqual("jsv_greater(jsv_length(reference('arrayProp')), 1)", compiler.JavaScriptExpression);
 
-            int i = 1;
+            const int i = 1;
             entityExpression = e => e.SubEntity.index < 4 + i;
             compiler = new ValidationExpressionCompiler(entityExpression, entityParameterIndex: 0);
             Assert.AreEqual("jsv_less(reference('SubEntity.index'), 5)", compiler.JavaScriptExpression);

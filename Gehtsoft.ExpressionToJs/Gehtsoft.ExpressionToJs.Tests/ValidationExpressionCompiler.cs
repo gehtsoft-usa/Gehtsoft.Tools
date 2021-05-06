@@ -13,7 +13,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
         public ValidationExpressionCompiler(LambdaExpression lambdaExpression, int? entityParameterIndex = null, int? valueParameterIndex = null) : base(lambdaExpression)
         {
             if ((lambdaExpression.Parameters.Count < 1 && (entityParameterIndex != null || valueParameterIndex != null)) || lambdaExpression.Parameters.Count > 2)
-                throw new ArgumentException("The expression must have only one or two parameters", nameof(Expression));
+                throw new ArgumentException("The expression must have only one or two parameters", nameof(lambdaExpression));
 
             if (entityParameterIndex != null)
                 mEntityParameter = lambdaExpression.Parameters[(int) entityParameterIndex];
@@ -58,6 +58,4 @@ namespace Gehtsoft.ExpressionToJs.Tests
             return result;
         }
     }
-
-
 }

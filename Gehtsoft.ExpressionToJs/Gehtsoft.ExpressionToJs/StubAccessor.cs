@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Gehtsoft.ExpressionToJs
 {
-    public class ExpressionToJsStubAccessor
+    public static class ExpressionToJsStubAccessor
     {
         private static byte[] gJsIncludesAsBytes = null;
         private static string gJsIncludesAsString = null;
@@ -19,7 +19,6 @@ namespace Gehtsoft.ExpressionToJs
 
             using (Stream stream = typeof(ExpressionToJsStubAccessor).Assembly.GetManifestResourceStream("Gehtsoft.ExpressionToJs.stub.js"))
             {
-                BinaryReader br = new BinaryReader(stream);
                 byte[] ba = new byte[stream.Length];
                 stream.Read(ba, 0, ba.Length);
                 gJsIncludesAsBytes = ba;
@@ -33,7 +32,6 @@ namespace Gehtsoft.ExpressionToJs
                 return Encoding.UTF8.GetString(ba, 3, ba.Length - 3);
             else
                 return encoding.GetString(ba);
-
         }
 
         public static string GetJsIncludesAsString() => gJsIncludesAsString ?? (gJsIncludesAsString = BytesToString(GetJsIncludesAsBytes(), Encoding.UTF8));

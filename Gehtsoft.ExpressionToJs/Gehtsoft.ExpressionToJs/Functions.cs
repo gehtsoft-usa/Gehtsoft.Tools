@@ -10,19 +10,19 @@ namespace Gehtsoft.ExpressionToJs
 
         public static double DaysSince(DateTime args0, DateTime args1)
         {
-            return new TimeSpan(((DateTime)args0).Date.Subtract(((DateTime)args1).Date).Ticks).Days;
+            return new TimeSpan(args0.Date.Subtract(args1.Date).Ticks).Days;
         }
 
         public static double MonthsSince(DateTime args0, DateTime args1)
         {
-            var diff = new DateTime(Math.Abs(((DateTime)args0).Date.Subtract(((DateTime)args1).Date).Ticks), DateTimeKind.Unspecified);
-            return (DateTime)args0 > (DateTime)args1 ? (diff.Year - 1) * 12 + (diff.Month - 1) : -((diff.Year - 1) * 12 + (diff.Month - 1));
+            var diff = new DateTime(Math.Abs(args0.Date.Subtract(args1.Date).Ticks), DateTimeKind.Unspecified);
+            return args0 > args1 ? (diff.Year - 1) * 12 + (diff.Month - 1) : -((diff.Year - 1) * 12 + (diff.Month - 1));
         }
 
         public static double YearsSince(DateTime args0, DateTime args1)
         {
-            var diff = new DateTime(Math.Abs(((DateTime)args0).Date.Subtract(((DateTime)args1).Date).Ticks), DateTimeKind.Unspecified);
-            return (DateTime)args0 > (DateTime)args1 ? diff.Year - 1 : -(diff.Year - 1);
+            var diff = new DateTime(Math.Abs(args0.Date.Subtract(args1.Date).Ticks), DateTimeKind.Unspecified);
+            return args0 > args1 ? diff.Year - 1 : -(diff.Year - 1);
         }
 
         public static bool IsCreditCardNumberCorrect(string value)
@@ -48,7 +48,7 @@ namespace Gehtsoft.ExpressionToJs
                 int digitValue = (digit - '0');
 
                 if (evenDigit)
-                    digitValue = digitValue * 2;
+                    digitValue *= 2;
 
                 evenDigit = !evenDigit;
 
@@ -71,22 +71,22 @@ namespace Gehtsoft.ExpressionToJs
 
             if (v is string sv)
             {
-                if (string.Compare(sv, "true", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(sv, "yes", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(sv, "1", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(sv, "on", StringComparison.OrdinalIgnoreCase) == 0)
+                if (string.Equals(sv, "true", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sv, "yes", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sv, "1", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sv, "on", StringComparison.OrdinalIgnoreCase))
                     return true;
 
-                if (string.Compare(sv, "false", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(sv, "no", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(sv, "0", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(sv, "off", StringComparison.OrdinalIgnoreCase) == 0)
+                if (string.Equals(sv, "false", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sv, "no", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sv, "0", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sv, "off", StringComparison.OrdinalIgnoreCase))
                     return false;
 
-                throw new ArgumentException($"Wrong value {v.ToString()}", nameof(v));
+                throw new ArgumentException($"Wrong value {v}", nameof(v));
             }
 
-            throw new ArgumentException($"Wrong value type {v.GetType().ToString()}", nameof(v));
+            throw new ArgumentException($"Wrong value type {v.GetType()}", nameof(v));
         }
 
         public static int ToInt(object v)
@@ -102,15 +102,15 @@ namespace Gehtsoft.ExpressionToJs
                 return Int32.Parse(sv);
             }
 
-            throw new ArgumentException($"Wrong value type {v.GetType().ToString()}", nameof(v));
+            throw new ArgumentException($"Wrong value type {v.GetType()}", nameof(v));
         }
 
         public static bool IsNull(this object v) => v == null;
 
-        public static bool IsNullOrEmpty(this string v) => v == null || v.Length == 0;
+        public static bool IsNullOrEmpty(this string v) => string.IsNullOrEmpty(v);
 
         public static bool IsNotNull(this object v) => v != null;
 
-        public static bool IsNotNullOrEmpty(this string v) => !(v == null || v.Length == 0);
+        public static bool IsNotNullOrEmpty(this string v) => !string.IsNullOrEmpty(v);
     }
 }

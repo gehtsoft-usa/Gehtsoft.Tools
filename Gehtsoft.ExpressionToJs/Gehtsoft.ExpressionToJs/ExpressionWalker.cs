@@ -7,30 +7,29 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 
+#pragma warning disable S1199, S4035
+
 namespace Gehtsoft.ExpressionToJs
 {
     public class ExpressionCompiler : IEquatable<ExpressionCompiler>, IEquatable<Expression>
     {
-        private readonly Type mReturnType;
-        private LambdaExpression mExpression;
+        private readonly LambdaExpression mExpression;
         private string mJavaScriptExpression = null;
 
-        public Type ReturnType => mReturnType;
+        public Type ReturnType { get; }
 
         public string JavaScriptExpression
         {
             get
             {
-                if (mJavaScriptExpression == null)
-                    mJavaScriptExpression = WalkExpression(mExpression.Body);
-                return mJavaScriptExpression;
+                return mJavaScriptExpression ?? (mJavaScriptExpression = WalkExpression(mExpression.Body));
             }
         }
 
         public ExpressionCompiler(LambdaExpression lambdaExpression)
         {
             mExpression = lambdaExpression;
-            mReturnType = lambdaExpression.ReturnType;
+            ReturnType = lambdaExpression.ReturnType;
         }
 
         protected virtual string WalkExpression(Expression expression)
@@ -161,40 +160,39 @@ namespace Gehtsoft.ExpressionToJs
                 return "null";
 
             if (constantValue is string || constantValue is Regex)
-                return $"'{constantValue.ToString()}'";
+                return $"'{constantValue}'";
 
-            if (constantValue is bool)
-                return (bool)constantValue ? "true" : "false";
+            if (constantValue is bool bv)
+                return bv ? "true" : "false";
 
-            if (constantValue is DateTime)
+            if (constantValue is DateTime dt)
             {
-                DateTime dt = (DateTime)constantValue;
                 if (dt.Hour == 0 && dt.Minute == 0 && dt.Second == 0)
                     return string.Format("new Date({0:D},{1:D},{2:D})", dt.Year, dt.Month - 1, dt.Day);
                 else
                     return string.Format("new Date({0:D},{1:D},{2:D},{3:D},{4:D},{5:D})", dt.Year, dt.Month - 1, dt.Day, dt.Hour, dt.Minute, dt.Second);
             }
 
-            if (constantValue is int)
-                return ((int)constantValue).ToString(CultureInfo.InvariantCulture);
+            if (constantValue is int iv)
+                return (iv).ToString(CultureInfo.InvariantCulture);
 
-            if (constantValue is double)
-                return ((double)constantValue).ToString(CultureInfo.InvariantCulture);
+            if (constantValue is double dv)
+                return (dv).ToString(CultureInfo.InvariantCulture);
 
-            if (constantValue is decimal)
-                return ((decimal)constantValue).ToString(CultureInfo.InvariantCulture);
+            if (constantValue is decimal dcv)
+                return (dcv).ToString(CultureInfo.InvariantCulture);
 
-            if (constantValue is long)
-                return ((long)constantValue).ToString(CultureInfo.InvariantCulture);
+            if (constantValue is long lv)
+                return (lv).ToString(CultureInfo.InvariantCulture);
 
-            if (constantValue is short)
-                return ((short)constantValue).ToString(CultureInfo.InvariantCulture);
+            if (constantValue is short sv)
+                return (sv).ToString(CultureInfo.InvariantCulture);
 
-            if (constantValue is float)
-                return ((float)constantValue).ToString(CultureInfo.InvariantCulture);
+            if (constantValue is float fv)
+                return (fv).ToString(CultureInfo.InvariantCulture);
 
-            if (constantValue is TimeSpan)
-                return ((TimeSpan)constantValue).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            if (constantValue is TimeSpan ts)
+                return (ts).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
 
             throw new ArgumentException($"Constant type {constantValue.GetType().Name} isn't supported");
         }
@@ -206,7 +204,7 @@ namespace Gehtsoft.ExpressionToJs
             if (expression.Member.DeclaringType == typeof(DateTime))
             {
                 if (expression.Member.Name == nameof(DateTime.Now))
-                    return $"new Date()";
+                    return "new Date()";
                 if (expression.Member.Name == nameof(DateTime.Year))
                     return $"{WalkExpression(expression.Expression)}.getFullYear()";
                 if (expression.Member.Name == nameof(DateTime.Month))
@@ -317,7 +315,7 @@ namespace Gehtsoft.ExpressionToJs
             else if (expression.NodeType == ExpressionType.Parameter)
                 return ((ParameterExpression)expression).Name;
 
-            throw new Exception($"Unexpected expression for the parameter access {expression.NodeType}");
+            throw new InvalidOperationException($"Unexpected expression for the parameter access {expression.NodeType}");
         }
 
         protected virtual string AddArrayIndex(BinaryExpression expression)
@@ -573,18 +571,18 @@ namespace Gehtsoft.ExpressionToJs
                 if (expression.Method.Name == nameof(Functions.ToInt))
                     return $"jsv_string2int({WalkExpression(expression.Arguments[0])})";
                 if (expression.Method.Name == nameof(Functions.IsNull))
-                    return $"(({WalkExpression(expression.Arguments[0])}) == null)"; ;
+                    return $"(({WalkExpression(expression.Arguments[0])}) == null)";
                 if (expression.Method.Name == nameof(Functions.IsNullOrEmpty))
-                    return $"jsv_isempty({WalkExpression(expression.Arguments[0])})"; ;
+                    return $"jsv_isempty({WalkExpression(expression.Arguments[0])})";
                 if (expression.Method.Name == nameof(Functions.IsNotNull))
-                    return $"(({WalkExpression(expression.Arguments[0])}) != null)"; ;
+                    return $"(({WalkExpression(expression.Arguments[0])}) != null)";
                 if (expression.Method.Name == nameof(Functions.IsNotNullOrEmpty))
-                    return $"jsv_not(jsv_isempty({WalkExpression(expression.Arguments[0])}))"; ;
+                    return $"jsv_not(jsv_isempty({WalkExpression(expression.Arguments[0])}))";
                 if (expression.Method.Name == nameof(Functions.Fractional))
-                    return $"jsv_fractional({WalkExpression(expression.Arguments[0])})"; ;
+                    return $"jsv_fractional({WalkExpression(expression.Arguments[0])})";
             }
 
-            if (expression.Arguments != null && expression.Arguments.Count >= 1 && (typeof(IEnumerable).IsAssignableFrom(expression.Arguments[0].Type)))
+            if (expression.Arguments?.Count >= 1 && (typeof(IEnumerable).IsAssignableFrom(expression.Arguments[0].Type)))
             {
                 if (expression.Arguments.Count == 2 && expression.Arguments[1].NodeType == ExpressionType.Lambda)
                 {

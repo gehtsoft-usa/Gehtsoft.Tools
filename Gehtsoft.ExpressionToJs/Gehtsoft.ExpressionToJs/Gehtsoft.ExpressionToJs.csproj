@@ -8,4 +8,9 @@
   <ItemGroup>
     <EmbeddedResource Include="stub.js" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 </Project>

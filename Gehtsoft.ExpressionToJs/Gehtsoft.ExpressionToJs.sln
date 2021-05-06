@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gehtsoft.ExpressionToJs", "Gehtsoft.ExpressionToJs\Gehtsoft.ExpressionToJs.csproj", "{D9E709EB-ADCB-4A53-AA16-78B4FF33C93B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gehtsoft.ExpressionToJs.Tests", "Gehtsoft.ExpressionToJs.Tests\Gehtsoft.ExpressionToJs.Tests.csproj", "{4DACABCC-36C9-40AC-A373-3DF38BB586DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47D3A77C-548A-437F-BFE2-65EDA31114B7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,7 +31,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		        SolutionGuid = {666EF69F-7EA2-47CA-A832-E23E7ACA893D}
 		SolutionGuid = {0F89917C-4253-45B6-BA14-1F3A214FFFCE}
+		        SolutionGuid = {666EF69F-7EA2-47CA-A832-E23E7ACA893D}
 	EndGlobalSection
 EndGlobal
