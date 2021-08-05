@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net50</TargetFrameworks>
     <DefineConstants Condition=" '$(TargetFramework)' == 'net50' ">NETCORE</DefineConstants>
+    <DocumentationFile>bin/doc.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

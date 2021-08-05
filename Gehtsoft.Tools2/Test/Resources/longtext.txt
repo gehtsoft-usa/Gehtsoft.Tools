@@ -1,0 +1,328 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Gehtsoft.Tools.FileUtils;
+using Gehtsoft.Tools.Log;
+using Gehtsoft.Tools.Log.RollingFile;
+using NUnit.Framework;
+using NUnit.Framework.Constraints;
+
+namespace Gehtsoft.Tools.UnitTest
+{
+    [TestFixture]
+    public class TestRollingFileLog
+    {
+        [Test]
+        public void LogTest()
+        {
+            string path = TypePathUtil.TypeFolder(typeof(TestRollingFileLog));
+            DateTime now = DateTime.Now;
+            string logfile = Path.Combine(path, $"rflog-{now.Year:D4}{now.Month:D2}{now.Day:D2}.txt");
+            if (File.Exists(logfile))
+                File.Delete(logfile);
+
+            RollingFileLogService logger = new RollingFileLogService(LogLevel.Debug, path, "rflog");
+            logger.WriteTimeout = TimeSpan.FromDays(1);
+            Assert.IsNotNull(logger.Debug);
+            Assert.IsNotNull(logger.Info);
+            Assert.IsNotNull(logger.Warning);
+            Assert.IsNotNull(logger.Error);
+            Assert.IsNotNull(logger.Fatal);
+
+            Assert.AreEqual(LogLevel.Debug, logger.Debug.Level);
+            Assert.AreEqual(LogLevel.Info, logger.Info.Level);
+            Assert.AreEqual(LogLevel.Warning, logger.Warning.Level);
+            Assert.AreEqual(LogLevel.Error, logger.Error.Level);
+            Assert.AreEqual(LogLevel.Fatal, logger.Fatal.Level);
+
+            logger.Debug?.Log("testdebug1");
+            logger.Debug?.Log("testdebug1formatted {0:D5}", 123);
+            logger.Info?.Log("testinfo1");
+            logger.Warning?.Log("testwarning1");
+            logger.Error?.Log("testerror1");
+            logger.Fatal?.Log("testfatal1");
+
+            try
+            {
+                throw new InvalidOperationException("exceptionmessage");
+            }
+            catch (Exception e)
+            {
+                logger.Error?.Log(e, "testexception1");
+            }
+
+            logger.Log(LogLevel.Debug, "testdebug2");
+            logger.Log(LogLevel.Info, "testinfo2");
+            logger.Log(LogLevel.Warning, "testwarning2");
+            logger.Log(LogLevel.Error, "testerror2");
+            logger.Log(LogLevel.Fatal, "testfatal2");
+
+            logger.Level = LogLevel.Error;
+
+            Assert.IsNull(logger.Debug);
+            Assert.IsNull(logger.Info);
+            Assert.IsNull(logger.Warning);
+            Assert.IsNotNull(logger.Error);
+            Assert.IsNotNull(logger.Fatal);
+            logger.Error?.Log("testerror3");
+            logger.Fatal?.Log("testfatal3");
+
+            logger.Log(LogLevel.Debug, "testdebug4");
+            logger.Log(LogLevel.Info, "testinfo4");
+            logger.Log(LogLevel.Warning, "testwarning4");
+            logger.Log(LogLevel.Error, "testerror4");
+            logger.Log(LogLevel.Fatal, "testfatal4");
+            logger.Log(LogLevel.Off, "off");
+
+            logger.Level = LogLevel.Off;
+
+            logger.Log(LogLevel.Debug, "testdebug5");
+            logger.Log(LogLevel.Info, "testinfo5");
+            logger.Log(LogLevel.Warning, "testwarning5");
+            logger.Log(LogLevel.Error, "testerror5");
+            logger.Log(LogLevel.Fatal, "testfatal5");
+
+            logger.Dispose();
+
+            List<string> lines = ReadFile(logfile);
+            Assert.IsTrue(Contains(lines, LogLevel.Debug, "debug1"));
+            Assert.IsTrue(Contains(lines, LogLevel.Debug, "testdebug1formatted 00123"));
+            Assert.IsTrue(Contains(lines, LogLevel.Info, "info1"));
+            Assert.IsTrue(Contains(lines, LogLevel.Warning, "warning1"));
+            Assert.IsTrue(Contains(lines, LogLevel.Error, "error1"));
+            Assert.IsTrue(Contains(lines, LogLevel.Error, "testexception1"));
+            Assert.IsTrue(Contains(lines, LogLevel.Off, "System.InvalidOperationException: exceptionmessage"));
+            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal1"));
+
+            Assert.IsTrue(Contains(lines, LogLevel.Debug, "debug2"));
+            Assert.IsTrue(Contains(lines, LogLevel.Info, "info2"));
+            Assert.IsTrue(Contains(lines, LogLevel.Warning, "warning2"));
+            Assert.IsTrue(Contains(lines, LogLevel.Error, "error2"));
+            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal2"));
+
+            Assert.IsTrue(Contains(lines, LogLevel.Error, "error3"));
+            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal3"));
+
+            Assert.IsFalse(Contains(lines, LogLevel.Debug, "debug4"));
+            Assert.IsFalse(Contains(lines, LogLevel.Info, "info4"));
+            Assert.IsFalse(Contains(lines, LogLevel.Warning, "warning4"));
+            Assert.IsTrue(Contains(lines, LogLevel.Error, "error4"));
+            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal4"));
+
+            Assert.IsFalse(Contains(lines, LogLevel.Debug, "debug5"));
+            Assert.IsFalse(Contains(lines, LogLevel.Info, "info5"));
+            Assert.IsFalse(Contains(lines, LogLevel.Warning, "warning5"));
+            Assert.IsFalse(Contains(lines, LogLevel.Error, "error5"));
+            Assert.IsFalse(Contains(lines, LogLevel.Fatal, "fatal5"));
+            Assert.IsFalse(Contains(lines, LogLevel.Off, "off"));
+
+        }
+
+        private List<string> ReadFile(string logfile)
+        {
+            List<string> lines = new List<string>();
+
+            if (!File.Exists(logfile))
+                return lines;
+
+            using (FileStream fs = new FileStream(logfile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (StreamReader r = new StreamReader(fs))
+                {
+                    string line;
+                    while ((line = r.ReadLine()) != null)
+                        lines.Add(line);
+                }
+            }
+
+            return lines;
+        }
+
+        private bool Contains(List<string>list, LogLevel level, string message)
+        {
+            foreach (string line in list)
+            {
+                bool rc1 = false;
+                switch (level)
+                {
+                case LogLevel.Debug:
+                    rc1 = line.Contains("[Debug]");
+                    break;
+                    case LogLevel.Info:
+                        rc1 = line.Contains("[Info]");
+                        break;
+                    case LogLevel.Warning:
+                        rc1 = line.Contains("[Warning]");
+                        break;
+                    case LogLevel.Error:
+                        rc1 = line.Contains("[Error]");
+                        break;
+                    case LogLevel.Fatal:
+                        rc1 = line.Contains("[Fatal]");
+                        break;
+                    case LogLevel.Off:
+                        rc1 = true;
+                        break;
+                }
+
+                bool rc2 = line.Contains(message);
+                if (rc1 && rc2)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void ConcurrentWriteThread(object _id)
+        {
+            int id = (int)_id;
+            using (RollingFileLogService service = new RollingFileLogService(LogLevel.Debug, TypePathUtil.TypeFolder(typeof(TestRollingFileLog)), "conlog", ".txt", RollingPeriod.None))
+            {
+                for (int i = 0; i < 1000; i++)
+                {
+                    for (int j = 0; j < 5; j++)
+                        service.Log(LogLevel.Debug, "thread {0} message {1}-{2}", id, i + 1, j + 1, Thread.CurrentThread.ManagedThreadId);
+                    service.Flush();
+                    Thread.Sleep(1);
+                }
+            }
+        }
+
+        [Test]
+        public void ConcurrentWriteTest()
+        {
+            string path = TypePathUtil.TypeFolder(typeof(TestRollingFileLog));
+            string logfile = Path.Combine(path, $"conlog.txt");
+            if (File.Exists(logfile))
+                File.Delete(logfile);
+
+
+            Thread[] threads = new Thread[5];
+
+            for (int i = 0; i < threads.Length; i++)
+                threads[i] = new Thread(ConcurrentWriteThread);
+            for (int i = 0; i < threads.Length; i++)
+                threads[i].Start(i);
+            while (true)
+            {
+                bool rc = false;
+                for (int i = 0; i < threads.Length; i++)
+                    rc |= threads[i].IsAlive;
+                if (!rc)
+                    break;
+                Thread.Sleep(100);
+                ;
+            }
+
+            List<string> lines = ReadFile(logfile);
+            bool[] f = new bool[threads.Length * 1000 * 5];
+            Regex re = new Regex(@"thread (\d+) message (\d+)-(\d+)");
+            foreach (string s in lines)
+            {
+                Match m = re.Match(s);
+                if (m.Success)
+                {
+                    int thread = Int32.Parse(m.Groups[1].Value);
+                    int ms = Int32.Parse(m.Groups[2].Value) - 1;
+                    int sms = Int32.Parse(m.Groups[3].Value) - 1;
+
+                    int index = thread * 5000 + ms * 5 + sms;
+                    f[index] = true;
+                }
+            }
+
+            foreach (bool ff in f)
+                Assert.IsTrue(ff);
+        }
+
+        public class DateProvider
+        {
+            public DateTime Now { get; set; }
+            public DateTime Provide() => Now;
+        }
+
+
+        [Test]
+        public void RollingTest()
+        {
+            string path = TypePathUtil.TypeFolder(typeof(TestRollingFileLog));
+            if (!path.EndsWith(@"\") && !path.EndsWith(@"/"))
+                path += "/";
+            string[] files = Directory.GetFiles(path, "rolllogtest*.*");
+            foreach (string file in files)
+                File.Delete(file);
+
+            DateProvider provider = new DateProvider();
+            RollingFileWriter writer = null;
+
+            writer = new RollingFileWriter(path, "rolllogtest", ".txt", RollingPeriod.Hour);
+            writer.DateTimeProvider = provider.Provide;
+            provider.Now = new DateTime(2016, 10, 01, 10, 00, 00);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161001-10.txt")));
+            provider.Now = new DateTime(2016, 10, 01, 10, 59, 00);
+            Assert.IsFalse(writer.SetupWriter());
+            provider.Now = new DateTime(2016, 10, 01, 11, 00, 00);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161001-11.txt")));
+            Assert.IsFalse(writer.SetupWriter());
+            provider.Now = new DateTime(2016, 10, 02, 11, 00, 00);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161002-11.txt")));
+            writer.Dispose();
+
+
+            writer = new RollingFileWriter(path, "rolllogtest", ".txt", RollingPeriod.Day);
+            writer.DateTimeProvider = provider.Provide;
+            provider.Now = new DateTime(2016, 10, 01, 10, 00, 00);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161001.txt")));
+            provider.Now = new DateTime(2016, 10, 01, 10, 59, 00);
+            Assert.IsFalse(writer.SetupWriter());
+            provider.Now = new DateTime(2016, 10, 01, 11, 00, 00);
+            Assert.IsFalse(writer.SetupWriter());
+            provider.Now = new DateTime(2016, 10, 02, 11, 00, 00);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161002.txt")));
+            provider.Now = new DateTime(2016, 11, 02, 11, 00, 00);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161102.txt")));
+
+            FileStream fs = new FileStream(Path.Combine(path, $"rolllogtest-20161103.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
+            provider.Now = new DateTime(2016, 11, 03, 00, 00, 01);
+            Assert.IsTrue(writer.SetupWriter());
+            Assert.IsTrue(File.Exists(Path.Combine(path, $"rolllogtest-20161103-1.txt")));
+            fs.Close();
+            writer.Dispose();
+
+        }
+
+        [Test]
+        public void PoolingTest()
+        {
+            string path = TypePathUtil.TypeFolder(typeof(TestRollingFileLog));
+            DateTime now = DateTime.Now;
+            string logfile = Path.Combine(path, $"pllog-{now.Year:D4}{now.Month:D2}{now.Day:D2}.txt");
+
+            if (File.Exists(logfile))
+                File.Delete(logfile);
+
+            RollingFileLogService logger = new RollingFileLogService(LogLevel.Debug, path, "pllog");
+            logger.WriteTimeout = TimeSpan.FromSeconds(1);
+
+            logger.Debug.Log("message1");
+            List<string> lines = ReadFile(logfile);
+            Assert.IsFalse(Contains(lines, LogLevel.Debug, "message1"));
+            Thread.Sleep(1500);
+
+            lines = ReadFile(logfile);
+            Assert.IsTrue(Contains(lines, LogLevel.Debug, "message1"));
+        }
+    }
+}

@@ -7,7 +7,7 @@
   <owners>Gehtsoft</owners>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <licenseUrl>http://asp.gehtsoftusa.com/licenses/private.html</licenseUrl>
-  <description>Windows-profile style initialiation/configuration files.</description>
+  <description>DEPRECATED: Use Microsoft.Extensions.Configuration intead</description>
   <copyright>Gehtsoft USA LLC 2016-2017</copyright>
  </metadata>
   <files>

@@ -7,7 +7,7 @@
     <owners>Gehtsoft</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://asp.gehtsoftusa.com/licenses/private.html</licenseUrl>
-    <description>Additional data storage structures.</description>
+    <description>DEPRECATED: Use either new classes provided in netstandard 2.0 or Gehtsoft.Tools2 package. Additional data storage structures.</description>
     <copyright>Gehtsoft USA LLC 2016-2017</copyright>
     <dependencies>
       <group targetFramework="netstandard2.0">
