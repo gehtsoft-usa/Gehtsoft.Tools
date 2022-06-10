@@ -41,7 +41,7 @@ namespace Gehtsoft.Tools2.Extensions
                 if (action(value))
                     return ix;
             }
-            return ix;
+            return -1;
         }
 
         /// <summary>

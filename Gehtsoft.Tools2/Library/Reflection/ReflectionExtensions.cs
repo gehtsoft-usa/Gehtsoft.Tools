@@ -87,7 +87,7 @@ namespace Gehtsoft.Tools2.Reflection
         /// <summary>
         /// Filters only the types that implements the interface (specified as an argument).
         ///
-        /// If the generic interface definition is specified, e.g. `typeof(IEnumerable<>)`,
+        /// If the generic interface definition is specified, e.g. `typeof(IEnumerable&lt;&gt;)`,
         /// the implementation with any parameter will match the condition.
         /// </summary>
         /// <param name="types"></param>
@@ -107,7 +107,7 @@ namespace Gehtsoft.Tools2.Reflection
         /// <summary>
         /// Filters only the types that implements the interface (specified as a generic parameter).
         ///
-        /// If the generic interface definition is specified, e.g. `typeof(IEnumerable<>)`,
+        /// If the generic interface definition is specified, e.g. `typeof(IEnumerable&lt;&gt;)`,
         /// the implementation with any parameter will match the condition.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -121,7 +121,7 @@ namespace Gehtsoft.Tools2.Reflection
         /// Filters only the types that implements the interface or a derived from the type (specified as an argument).
         /// </summary>
         /// <param name="types"></param>
-        /// <param name="interfaceType"></param>
+        /// <param name="parentType"></param>
         public static IEnumerable<Type> WhichDerivedFrom(this IEnumerable<Type> types, Type parentType)
         {
             if (!parentType.IsClass)
@@ -140,7 +140,6 @@ namespace Gehtsoft.Tools2.Reflection
         /// Filters only the types that implements the interface or a derived from the type (specified as an argument).
         /// </summary>
         /// <param name="types"></param>
-        /// <param name="interfaceType"></param>
         public static IEnumerable<Type> WhichDerivedFrom<T>(this IEnumerable<Type> types)
             where T : class
             => WhichDerivedFrom(types, typeof(T));
@@ -151,13 +150,16 @@ namespace Gehtsoft.Tools2.Reflection
         /// The method registers all the types in the service collection
         /// with the lifeTime specified. The types may be registered "as is" or
         /// as an implementation of an interface (e.g. `IEnumerable`) or
-        /// a generic interface definition (e.g. `IEnumerable<>`).
+        /// a generic interface definition (e.g. `IEnumerable&lt;&gt;`).
         /// </summary>
         /// <param name="types"></param>
         /// <param name="serviceCollection"></param>
         /// <param name="lifeTime"></param>
         /// <param name="registerAs">The interface or generic interface definition to register the type as.</param>
         public static void AddToServiceCollection(this IEnumerable<Type> types, IServiceCollection serviceCollection, ServiceLifetime lifeTime, Type registerAs = null)
-            => types.ForAll(type => serviceCollection.Add(new ServiceDescriptor(registerAs == null ? type : type.ExtractImplementation(registerAs), type, lifeTime)));
+        {
+            foreach (var type in types)
+                serviceCollection.Add(new ServiceDescriptor(registerAs == null ? type : type.ExtractImplementation(registerAs), type, lifeTime));
+        }
     }
 }

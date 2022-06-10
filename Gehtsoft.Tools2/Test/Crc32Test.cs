@@ -17,7 +17,7 @@ namespace Gehtsoft.Tools2.UnitTest
         [InlineData("Test vector from febooti.com", 0x0c877f61)]
         [InlineData("123456789", 0xcbf43926)]
         [InlineData("@Gehtsoft.Tools2.UnitTest.Resources.longtext.txt", 0xc3ac27a2)]
-        public void Vectors(string testString, uint crc32)
+        public void IEEE(string testString, uint crc32)
         {
             if (testString.StartsWith("@"))
             {
@@ -30,6 +30,30 @@ namespace Gehtsoft.Tools2.UnitTest
                 }
             }
             Crc32.GetHash(testString).Should().Be(crc32);
+        }
+
+        [Theory]
+        [InlineData("a", 0xc1d04330)]
+        [InlineData("Discard medicine more than two years old.", 0xb2cc01fe)]
+        public void iSCSI(string testString, uint crc32)
+        {
+            if (testString.StartsWith("@"))
+            {
+                using (var s = typeof(Crc32Test).Assembly.GetManifestResourceStream(testString.Substring(1)))
+                {
+                    s.Should().NotBeNull();
+                    byte[] b = new byte[s.Length];
+                    s.Read(b, 0, b.Length);
+                    testString = Encoding.UTF8.GetString(b);
+                }
+            }
+            Crc32 g = new Crc32(0x82f63b78);
+            g.UpdateHash(Encoding.UTF8.GetBytes(testString));
+            g.Checksum.Should().Be(crc32);
+            
+
+
+
         }
 
         [Theory]

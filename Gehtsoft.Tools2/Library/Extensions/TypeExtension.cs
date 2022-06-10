@@ -17,7 +17,7 @@ namespace Gehtsoft.Tools2.Extensions
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string ContainerFileName(Type type)
+        public static string ContainerFileName(this Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -32,12 +32,12 @@ namespace Gehtsoft.Tools2.Extensions
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string TypeFolder(Type type) => Path.GetDirectoryName(ContainerFileName(type));
+        public static string TypeFolder(this Type type) => Path.GetDirectoryName(ContainerFileName(type));
 
         /// <summary>
         /// Returns the type specified if the target type implements it.
         ///
-        /// If the type specified is a generic type definition (e.g. `typeof(IEnumerable<>)`) it
+        /// If the type specified is a generic type definition (e.g. `typeof(IEnumerable&lt;&gt;)`) it
         /// will return the first implementation of that generic type.
         /// </summary>
         /// <param name="type"></param>
@@ -68,7 +68,7 @@ namespace Gehtsoft.Tools2.Extensions
             }
             else
             {
-                if (!type.IsAssignableFrom(genericType))
+                if (!genericType.IsAssignableFrom(type))
                     throw new ArgumentException($"Type {type} is not derived from {genericType} nor it implements it", nameof(genericType));
                 return genericType;
             }

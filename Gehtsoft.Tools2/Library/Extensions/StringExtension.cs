@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Gehtsoft.Tools2.Extensions
 {
+    /// <summary>
+    /// The extension for string providing sql like and similarity functions. 
+    /// </summary>
     public static class StringExtensions
     {
         /// <summary>
@@ -14,7 +17,7 @@ namespace Gehtsoft.Tools2.Extensions
         /// </summary>
         /// <param name="text">The string to check for equality.</param>
         /// <param name="mask">The mask to check the string against.</param>
-        /// <param name="CaseInsensitive">True if the check should be case insensitive.</param>
+        /// <param name="caseInsensitive">True if the check should be case insensitive.</param>
         /// <returns>Returns true if the string matches the mask.</returns>
         /// <remarks>
         /// All matches are case-insensitive in the invariant culture.
@@ -80,7 +83,7 @@ namespace Gehtsoft.Tools2.Extensions
                     {
                         //If there is no character to advance we did not find a match.
                         if (j == text.Length)
-                            return false;
+                            return false;                       
                         j++;
                         continue;
                     }
@@ -196,10 +199,22 @@ namespace Gehtsoft.Tools2.Extensions
         private readonly static Regex mRe = new Regex("\\W*(\\w+(['’]\\w+)?)(.*)", RegexOptions.Multiline);
         private readonly static Regex mRe1 = new Regex("[^\\w\\%]*([\\w\\%]+(['’][\\w\\%]+)?)(.*)", RegexOptions.Multiline);
 
+        /// <summary>
+        /// Parse texts into words
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public static string[] ParseToWords(this string text)
         {
             return ParseToWords(text, false);
         }
+
+        /// <summary>
+        /// Parse texts into words
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="mask">Flag indicating whether the text is a like mask</param>
+        /// <returns></returns>
 
         public static string[] ParseToWords(this string text, bool mask)
         {
@@ -216,6 +231,17 @@ namespace Gehtsoft.Tools2.Extensions
             return words.ToArray();
         }
 
+        /// <summary>
+        /// Calculates the Levenshtein distance between words. 
+        /// 
+        /// The Levenshtein distance between two words is the minimum number of single-character edits (insertions, deletions or substitutions) required to change one word into the other. 
+        /// 
+        /// Read more on Levenshtein distance at wiki
+        /// https://en.wikipedia.org/wiki/Levenshtein_distance
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public static int LevenshteinDistanceTo(this string source, string target)
         {
             if(String.IsNullOrEmpty(source))
@@ -230,9 +256,7 @@ namespace Gehtsoft.Tools2.Extensions
 
             if(source.Length > target.Length)
             {
-                string temp = target;
-                target = source;
-                source = temp;
+                (source, target) = (target, source);
             }
 
             int m = target.Length;
@@ -261,10 +285,19 @@ namespace Gehtsoft.Tools2.Extensions
             return distance[currentRow, m];
         }
 
-        public static string RelativePathTo(this string absolutePathToConvert, string absoluteBasePath)
+
+        /// <summary>
+        /// Calculates a relative path between two absolute paths
+        /// </summary>
+        /// <param name="absolutePathToConvert"></param>
+        /// <param name="absoluteBasePath"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string RelativePathTo(this string absolutePathToConvert, string absoluteBasePath, char separator = '\\')
         {
-            string[] absDirs = absoluteBasePath.Split('\\');
-            string[] relDirs = absolutePathToConvert.Split('\\');
+            string[] absDirs = absoluteBasePath.Split(new char[] { '\\', '/', ':' });
+            string[] relDirs = absolutePathToConvert.Split(new char[] { '\\', '/', ':' });
 
             // Get the shortest of the two paths
             int len = absDirs.Length < relDirs.Length ? absDirs.Length : relDirs.Length;
@@ -292,12 +325,12 @@ namespace Gehtsoft.Tools2.Extensions
             // Add on the ..
             for (index = lastCommonRoot + 1; index < absDirs.Length; index++)
             {
-                if (absDirs[index].Length > 0) relativePath.Append("..\\");
+                if (absDirs[index].Length > 0) relativePath.Append("..").Append(separator);
             }
 
             // Add on the folders
             for (index = lastCommonRoot + 1; index < relDirs.Length - 1; index++)
-                relativePath.Append(relDirs[index]).Append('\\');
+                relativePath.Append(relDirs[index]).Append(separator);
 
             relativePath.Append(relDirs[relDirs.Length - 1]);
 

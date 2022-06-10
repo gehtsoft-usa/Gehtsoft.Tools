@@ -32,7 +32,7 @@ namespace Gehtsoft.Tools2.Algorithm
         /// </summary>
         /// <param name="polynomial"></param>
         /// <param name="seed"></param>
-        public Crc32(uint polynomial, uint seed)
+        public Crc32(uint polynomial, uint seed = DEFAULT_SEED)
         {
             mPolynomial = polynomial;
             mSeed = seed;
@@ -85,7 +85,7 @@ namespace Gehtsoft.Tools2.Algorithm
 
             int to = from + count - 1;
 
-            if (to <= from || to >= array.Length)
+            if (to < from || to >= array.Length)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
             uint hash = mHash;

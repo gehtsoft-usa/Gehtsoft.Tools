@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+
 #pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
 
 namespace Gehtsoft.Tools2.Extensions
@@ -41,6 +42,12 @@ namespace Gehtsoft.Tools2.Extensions
         /// <param name="obj"></param>
         /// <param name="provider"></param>
         public static void PopulateMembers(this object obj, IServiceProvider provider)
-            => PopulateMembers(obj, t => ActivatorUtilities.CreateInstance(provider, t));
+            => PopulateMembers(obj, t =>
+            {
+                var service = provider.GetService(t); 
+                if (!t.IsInterface && service == null)
+                    service = ActivatorUtilities.CreateInstance(provider, t);
+                return service;
+            });
     }
 }

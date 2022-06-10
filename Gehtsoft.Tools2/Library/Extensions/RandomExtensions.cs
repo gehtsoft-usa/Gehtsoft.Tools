@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Gehtsoft.Tools2.Extensions
 {
+    /// <summary>
+    /// Random 
+    /// </summary>
     public static class RandomExtensions
     {
         /// <summary>
@@ -31,7 +34,7 @@ namespace Gehtsoft.Tools2.Extensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="r"></param>
-        /// <param name="array"></param>
+        /// <param name="list"></param>
         /// <returns></returns>
         public static T Next<T>(this Random r, IList<T> list)
         {
@@ -92,8 +95,8 @@ namespace Gehtsoft.Tools2.Extensions
         /// Returns normally distributed data in range (from, to]
         /// </summary>
         /// <param name="r"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <returns></returns>
         public static DateTime Next(this Random r, DateTime from, DateTime to) => from.AddSeconds(r.NextDouble((to - from).TotalSeconds));
 
