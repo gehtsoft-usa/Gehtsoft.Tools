@@ -68,7 +68,7 @@ namespace Gehtsoft.Tools2.Reflection
         /// <returns></returns>
         public static IEnumerable<Type> WhichHaveAttribute(this IEnumerable<Type> types, Type attributeType)
         {
-            if (!attributeType.IsAssignableFrom(typeof(Attribute)))
+            if (!typeof(Attribute).IsAssignableFrom(attributeType))
                 throw new ArgumentException($"The type must be derived from the {nameof(Attribute)} type.", nameof(attributeType));
 
             return types.Where(t => t.GetCustomAttribute(attributeType) != null);
@@ -95,13 +95,28 @@ namespace Gehtsoft.Tools2.Reflection
         /// <returns></returns>
         public static IEnumerable<Type> WhichImplements(this IEnumerable<Type> types, Type interfaceType)
         {
-            if (!interfaceType.IsInterface)
-                throw new ArgumentException("The type must be an interface.", nameof(interfaceType));
 
             if (interfaceType.IsGenericTypeDefinition)
-                return types.Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType));
+            {
+                if (interfaceType.IsInterface)
+                    return types.Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType));
+                else
+                {
+                    return types.Where(t =>
+                    {
+                        var p = t.BaseType;
+                        while (p != null)
+                        {
+                            if (p == interfaceType || interfaceType.IsGenericTypeDefinition && p.IsGenericType && p.GetGenericTypeDefinition() == interfaceType)
+                                return true;
+                            p = p.BaseType;
+                        }
+                        return false;
+                    });
+                }
+            }
             else
-                return types.Where(t => t.GetInterfaces().Any(i => i.IsAssignableFrom(interfaceType)));
+                return types.Where(t => t.GetInterfaces().Any(i => interfaceType.IsAssignableFrom(i)));
         }
 
         /// <summary>
@@ -124,16 +139,13 @@ namespace Gehtsoft.Tools2.Reflection
         /// <param name="parentType"></param>
         public static IEnumerable<Type> WhichDerivedFrom(this IEnumerable<Type> types, Type parentType)
         {
-            if (!parentType.IsClass)
+            if (parentType.IsGenericTypeDefinition)
+                return WhichImplements(types, parentType);
+
+            if (!parentType.IsClass && !parentType.IsGenericType)
                 throw new ArgumentException("The type must be a reference type or an interface.", nameof(parentType));
 
-            if (parentType.IsGenericTypeDefinition)
-                if (parentType.IsInterface)
-                    return WhichImplements(types, parentType);
-                else
-                    throw new ArgumentException("Only generic interface definitions are supported, but the type is a generic class definition", nameof(parentType));
-
-            return types.Where(t => t.IsAssignableFrom(parentType));
+            return types.Where(t => parentType.IsAssignableFrom(t));
         }
 
         /// <summary>
