@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gehtsoft.Tools.FileUtils;
+using Gehtsoft.Tools2.Extensions;
 using NUnit.Framework;
 
 namespace Gehtsoft.UploadController.FileCollection.Test.Source
@@ -22,7 +22,7 @@ namespace Gehtsoft.UploadController.FileCollection.Test.Source
 
         private void Clear()
         {
-            mBasePath = Path.Combine(TypePathUtil.TypeFolder(typeof(ContainerTest)), "containers");
+            mBasePath = Path.Combine(typeof(ContainerTest).TypeFolder(), "containers");
             if (Directory.Exists(mBasePath))
             {
                 UploadedContainerFactory factory = new UploadedContainerFactory(mBasePath);
@@ -187,9 +187,6 @@ namespace Gehtsoft.UploadController.FileCollection.Test.Source
             Assert.IsFalse(file11.Exists);
             Assert.IsFalse(file12.Exists);
             Assert.IsFalse(container1.Exists);
-
-
         }
-
     }
 }
