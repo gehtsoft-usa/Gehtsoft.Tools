@@ -60,14 +60,14 @@ namespace Gehtsoft.ExpressionToJs.Tests
             string jsExpression = compiler.JavaScriptExpression;
             Engine engine = SetupJint();
             if (typeof(TR) == typeof(double))
-                Assert.AreEqual((double)(object)expectedResult, (double)engine.Execute(jsExpression).GetCompletionValue().ToObject(), 1e-9);
+                Assert.AreEqual((double)(object)expectedResult, (double)engine.Evaluate(jsExpression).ToObject(), 1e-9);
             else if (typeof(TR) == typeof(DateTime))
             {
-                JsValue v = engine.Execute(jsExpression).GetCompletionValue();
+                JsValue v = engine.Evaluate(jsExpression);
                 Assert.That(((DateTime)(object)expectedResult).ToUniversalTime(), Is.EqualTo(v.AsDate().ToDateTime()).Within(TimeSpan.FromMilliseconds(950)));
             }
             else
-                Assert.AreEqual(expectedResult, engine.Execute(jsExpression).GetCompletionValue().ToObject());
+                Assert.AreEqual(expectedResult, engine.Evaluate(jsExpression).ToObject());
         }
 
         [Test]

@@ -61,6 +61,29 @@ namespace Gehtsoft.Tools2.Reflection
         public static IEnumerable<Type> NearType(Type type) => InAssembly(type.Assembly);
 
         /// <summary>
+        /// Returns all types located in the same assembly as the types specified.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> NearType<T>() => InAssembly(typeof(T).Assembly);
+
+        /// <summary>
+        /// Filters only the types that implements the attribute (specified as an argument).
+        /// </summary>
+        /// <param name="types"></param>
+        /// <param name="attributeType"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> WhichHasAttribute(this IEnumerable<Type> types, Type attributeType) => WhichHaveAttribute(types, attributeType);
+
+        /// <summary>
+        /// Filters only the types that implements the attribute (specified as a generic parameter).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="types"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> WhichHasAttribute<T>(this IEnumerable<Type> types) where T : Attribute => WhichHaveAttribute(types, typeof(T));
+
+        /// <summary>
         /// Filters only the types that implements the attribute (specified as an argument).
         /// </summary>
         /// <param name="types"></param>

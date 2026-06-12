@@ -25,6 +25,26 @@ namespace Gehtsoft.Tools2.Extensions
         }
 
         /// <summary>
+        /// Wait for task finished and return the value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static T WaitAndReturn<T>(this ValueTask<T> task) => task.RunCoreSync();
+
+        /// <summary>
+        /// Run async task synchronously
+        /// </summary>
+        /// <param name="task"></param>
+        public static void RunCoreSync(this ValueTask task) => task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Run async task synchronously and returna  value
+        /// </summary>
+        /// <param name="task"></param>
+        public static T RunCoreSync<T>(this ValueTask<T> task) => task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+        /// <summary>
         /// Run async task synchronously
         /// </summary>
         /// <param name="task"></param>

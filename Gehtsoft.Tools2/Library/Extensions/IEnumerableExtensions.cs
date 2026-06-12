@@ -24,6 +24,18 @@ namespace Gehtsoft.Tools2.Extensions
         }
 
         /// <summary>
+        /// Calls the action specified for each element of the collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="values"></param>
+        /// <param name="action"></param>
+        public static void ForEach<T>(this IEnumerable<T> values, Action<T> action)
+        {
+            foreach (var value in values)
+                action(value);
+        }
+
+        /// <summary>
         /// Finds the index of the element which matches the predicate.
         /// 
         /// Please note that some collections do not support consistent elements order, e.g. dictionaries or hash sets. 
