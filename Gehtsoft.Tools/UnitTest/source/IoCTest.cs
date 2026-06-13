@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.IoC;
 using Gehtsoft.Tools.IoC.Attributes;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class IoCTest
     {
         public interface ITestInterface<T>
@@ -38,7 +37,7 @@ namespace Gehtsoft.Tools.UnitTest
             
             public Service(ITestInterface<T> testInterface, T value)
             {
-                Assert.IsNotNull(testInterface);
+                Assert.NotNull(testInterface);
                 Done = testInterface.Do(value);
             }
         }
@@ -46,7 +45,7 @@ namespace Gehtsoft.Tools.UnitTest
         public class DefaultConstructorClass
         {
             [Inject]
-            private DateTime mDateTime;
+            private DateTime mDateTime = default;   // assigned by IoC injection at runtime
 
             public DateTime DateTimeValue => mDateTime;
 
@@ -80,7 +79,7 @@ namespace Gehtsoft.Tools.UnitTest
             }
         }
 
-        [Test]
+        [Fact]
         public void TestConstructors()
         {
             IoCFactory factory = new IoCFactory();
@@ -96,36 +95,36 @@ namespace Gehtsoft.Tools.UnitTest
 
             o1 = factory.GetService<ITestInterface<int>>();
             o2 = factory.GetService<ITestInterface<int>>();
-            Assert.IsNotNull(o1);
-            Assert.IsNotNull(o2);
-            Assert.IsTrue(o1 is ITestInterface<int>);
-            Assert.IsTrue(ReferenceEquals(o1, o2));
+            Assert.NotNull(o1);
+            Assert.NotNull(o2);
+            Assert.True(o1 is ITestInterface<int>);
+            Assert.True(ReferenceEquals(o1, o2));
 
 
             o1 = factory.GetService<IServiceInterface<int>>((int)0);
             o2 = factory.GetService<IServiceInterface<int>>((int)0);
-            Assert.IsNotNull(o1);
-            Assert.IsNotNull(o2);
-            Assert.IsTrue(o1 is IServiceInterface<int>);
-            Assert.IsFalse(ReferenceEquals(o1, o2));
+            Assert.NotNull(o1);
+            Assert.NotNull(o2);
+            Assert.True(o1 is IServiceInterface<int>);
+            Assert.False(ReferenceEquals(o1, o2));
 
             IServiceInterface<int> is1 = factory.GetService<IServiceInterface<int>>(0);
-            Assert.IsFalse(is1.Done);
+            Assert.False(is1.Done);
             is1 = factory.GetService<IServiceInterface<int>>(0);
-            Assert.IsFalse(is1.Done);
+            Assert.False(is1.Done);
             is1 = factory.GetService<IServiceInterface<int>>(10);
-            Assert.IsTrue(is1.Done);
+            Assert.True(is1.Done);
 
             DefaultConstructorClass dcf = factory.GetService<DefaultConstructorClass>();
-            Assert.IsNotNull(dcf);
+            Assert.NotNull(dcf);
             #if NET45
-            Assert.AreEqual(dt, dcf.DateTimeValue);
-            Assert.AreEqual("12345", dcf.StringValue);
+            Assert.Equal(dt, dcf.DateTimeValue);
+            Assert.Equal("12345", dcf.StringValue);
             #endif
 
             MultiConstructorClass mcf = factory.GetService<MultiConstructorClass>(1.5);
-            Assert.IsNotNull(mcf);
-            Assert.AreEqual(1.5, mcf.v);
+            Assert.NotNull(mcf);
+            Assert.Equal(1.5, mcf.v);
         }
     }
 }

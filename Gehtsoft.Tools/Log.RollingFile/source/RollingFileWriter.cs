@@ -147,7 +147,9 @@ namespace Gehtsoft.Tools.Log.RollingFile
                         mCurrentNameStamp = now;
 
                         MD5 md5 = MD5.Create();
-                        string hash = Convert.ToBase64String(md5.ComputeHash(Encoding.UTF8.GetBytes(mCurrentName)));
+                        //Use a hex (rather than base64) digest: a base64 string may contain '/',
+                        //which is illegal in a named-mutex name on Unix (where it maps to a file path).
+                        string hash = BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(mCurrentName))).Replace("-", "");
                         mMutex = new Mutex(false, ".gsroflog" + hash);
                         isChanged = true;
                         break;

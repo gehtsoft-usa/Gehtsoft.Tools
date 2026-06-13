@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
-using NUnit.Framework;
+using Xunit;
 using System.Runtime.Serialization;
 using Gehtsoft.Tools.ConfigurationProfile;
 using Gehtsoft.Tools.Crypto;
@@ -10,10 +10,9 @@ using Gehtsoft.Tools.FileUtils;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class ProfileTest
     {
-        [Test]
+        [Fact]
         public void TestProfileStrings()
         {
             Profile profile = new Profile();
@@ -23,23 +22,23 @@ namespace Gehtsoft.Tools.UnitTest
             profile.Set("section1", "key3", "value3");
             profile.Set("section2", "key1", "value4");
 
-            Assert.IsTrue(profile.HasSection("section1"));
-            Assert.IsTrue(profile.HasSection("section2"));
-            Assert.IsFalse(profile.HasSection("section3"));
-            Assert.IsFalse(profile.HasSection("section10"));
-            Assert.IsTrue(profile.HasValue("section1", "key3"));
-            Assert.IsTrue(profile.HasValue("section2", "key1"));
-            Assert.IsFalse(profile.HasValue("section3", "key1"));
-            Assert.IsFalse(profile.HasValue("section3", "key1"));
+            Assert.True(profile.HasSection("section1"));
+            Assert.True(profile.HasSection("section2"));
+            Assert.False(profile.HasSection("section3"));
+            Assert.False(profile.HasSection("section10"));
+            Assert.True(profile.HasValue("section1", "key3"));
+            Assert.True(profile.HasValue("section2", "key1"));
+            Assert.False(profile.HasValue("section3", "key1"));
+            Assert.False(profile.HasValue("section3", "key1"));
 
-            Assert.AreEqual(profile.Get("section1", "key3"), "value3");
-            Assert.AreEqual(profile.Get<string>("section1", "key3", null), "value3");
-            Assert.AreEqual(profile.Get("section2", "key1"), "value4");
-            Assert.IsNull(profile.Get("section1", "key4"));
+            Assert.Equal("value3", profile.Get("section1", "key3"));
+            Assert.Equal("value3", profile.Get<string>("section1", "key3", null));
+            Assert.Equal("value4", profile.Get("section2", "key1"));
+            Assert.Null(profile.Get("section1", "key4"));
             profile.Set("section1", "key4", "value4");
-            Assert.IsNotNull(profile.Get("section1", "key4"));
+            Assert.NotNull(profile.Get("section1", "key4"));
             profile.RemoveKey("section1", "key4");
-            Assert.IsNull(profile.Get("section1", "key4"));
+            Assert.Null(profile.Get("section1", "key4"));
 
 
             IEnumerable<string> en;
@@ -52,7 +51,7 @@ namespace Gehtsoft.Tools.UnitTest
                 else if (s == "section2")
                     cc++;
             }
-            Assert.AreEqual(cc, 2);
+            Assert.Equal(2, cc);
             en = profile.GetKeys("section1");
              cc = 0;
             foreach (string s in en)
@@ -64,31 +63,31 @@ namespace Gehtsoft.Tools.UnitTest
                 else if (s == "key3")
                     cc++;
             }
-            Assert.AreEqual(cc, 3);
+            Assert.Equal(3, cc);
 
             profile.RemoveSection("section1");
-            Assert.IsFalse(profile.HasSection("section1"));
-            Assert.IsTrue(profile.HasSection("section2"));
+            Assert.False(profile.HasSection("section1"));
+            Assert.True(profile.HasSection("section2"));
         }
 
         [Serializable]
-        public class point : IEquatable<point>
+        public class Point : IEquatable<Point>
         {
             public int X { get; set; }
             public int Y { get; set; }
 
-            public point(int x, int y)
+            public Point(int x, int y)
             {
                 X = x;
                 Y = y;
             }
 
-            public point()
+            public Point()
             {
 
             }
 
-            public bool Equals(point other)
+            public bool Equals(Point other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
@@ -100,7 +99,7 @@ namespace Gehtsoft.Tools.UnitTest
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != this.GetType()) return false;
-                return Equals((point) obj);
+                return Equals((Point) obj);
             }
 
             public override int GetHashCode()
@@ -112,7 +111,7 @@ namespace Gehtsoft.Tools.UnitTest
             }
         }
 
-        [Test]
+        [Fact]
         public void TestProfileTypes()
         {
             Profile profile = new Profile();
@@ -125,20 +124,20 @@ namespace Gehtsoft.Tools.UnitTest
             profile.Set("", "bkey", true);
             profile.Set("", "tkey", now);
 
-            Assert.AreEqual(profile.Get<int>("", "ikey"), 10);
-            Assert.AreEqual(profile.Get<double>("", "dkey"), 3.1415);
-            Assert.AreEqual(profile.Get<bool>("", "bkey"), true);
-            Assert.AreEqual(profile.Get<DateTime>("", "tkey"), now);
+            Assert.Equal(10, profile.Get<int>("", "ikey"));
+            Assert.Equal(3.1415, profile.Get<double>("", "dkey"));
+            Assert.True(profile.Get<bool>("", "bkey"));
+            Assert.Equal(now, profile.Get<DateTime>("", "tkey"));
 
-            point pt1 = new point(10, 20);
+            Point pt1 = new Point(10, 20);
 
-            profile.Set<point>("", "okey", pt1);
-            point pt2 = profile.Get<point>("", "okey");
+            profile.Set<Point>("", "okey", pt1);
+            Point pt2 = profile.Get<Point>("", "okey");
 
-            Assert.AreEqual(pt1, pt2);
+            Assert.Equal(pt1, pt2);
         }
 
-        [Test]
+        [Fact]
         public void TestProfileRw()
         {
             Profile profile1 = new Profile(), profile2;
@@ -160,23 +159,23 @@ namespace Gehtsoft.Tools.UnitTest
             ProfileLoader.SaveProfile("test", profile1);
             profile2 = ProfileLoader.LoadProfile("test");
 
-            Assert.AreEqual(profile1, profile2);
+            Assert.Equal(profile1, profile2);
 
             profile1.Set("section3", "key1", "value5");
-            Assert.AreNotEqual(profile1, profile2);
+            Assert.NotEqual(profile1, profile2);
 
             profile2.Set("section3", "key1", "value5");
-            Assert.AreEqual(profile1, profile2);
+            Assert.Equal(profile1, profile2);
             profile2.Set("section3", "key2", "value6");
-            Assert.IsFalse((profile1 as object).Equals(profile2 as object));
-            Assert.AreEqual("value5", profile2.GetSecure("section2", "key2", "password", ""));
-            Assert.AreNotEqual("value5", profile2.GetSecure("section2", "key2", "wrongpasswordd", ""));
-            Assert.AreNotEqual("value5", profile2.Get("section2", "key2", ""));
+            Assert.False((profile1 as object).Equals(profile2 as object));
+            Assert.Equal("value5", profile2.GetSecure("section2", "key2", "password", ""));
+            Assert.NotEqual("value5", profile2.GetSecure("section2", "key2", "wrongpasswordd", ""));
+            Assert.NotEqual("value5", profile2.Get("section2", "key2", ""));
         }
 
         private bool mTestProfileFactoryReloaded = false;
 
-        [Test]
+        [Fact]
         public void TestProfileFactory()
         {
             string fullName = Path.Combine(TypePathUtil.TypeFolder(typeof(ProfileTest)), "myfile.ini");
@@ -185,7 +184,7 @@ namespace Gehtsoft.Tools.UnitTest
             ProfileFactory.Instance.Configure(fullName, true, true);
             Profile profile = ProfileFactory.Instance.Profile;
             ProfileFactory.Instance.ProfileChanged += () => mTestProfileFactoryReloaded = true;
-            Assert.AreEqual(profile.SectionsCount, 0);
+            Assert.Equal(0, profile.SectionsCount);
             mTestProfileFactoryReloaded = false;
             using (FileStream fs = new FileStream(fullName, FileMode.Create, FileAccess.Write))
             {
@@ -202,8 +201,8 @@ namespace Gehtsoft.Tools.UnitTest
                 Thread.Sleep(50);
             }
             profile = ProfileFactory.Instance.Profile;
-            Assert.IsTrue(profile.HasSection("section1"));
-            Assert.IsTrue(profile.HasValue("section1", "key1"));
+            Assert.True(profile.HasSection("section1"));
+            Assert.True(profile.HasValue("section1", "key1"));
 
             profile.Set("section2", "key2", "value");
             Thread.Sleep(1100);
@@ -212,7 +211,7 @@ namespace Gehtsoft.Tools.UnitTest
 
         private const string TestProfile = "  [section1]\n  key1=value1\nkey2=value2\n[section2]   \nkey3=[value3]";
 
-        [Test]
+        [Fact]
         public void TestProfileLoader()
         {
             string tfn = Path.GetTempPath() + Guid.NewGuid().ToString() + ".ini";
@@ -220,11 +219,11 @@ namespace Gehtsoft.Tools.UnitTest
             {
                 File.WriteAllText(tfn, TestProfile);
                 Profile profile = ProfileLoader.LoadProfile(tfn);
-                Assert.AreEqual("value1", profile.Get<string>("section1", "key1"));
-                Assert.AreEqual("value2", profile.Get<string>("section1", "key2"));
-                Assert.AreEqual("value2", profile.Get<string>("Section1", "Key2"));
-                Assert.AreEqual(null, profile.Get<string>("section1", "key3"));
-                Assert.AreEqual("[value3]", profile.Get<string>("section2", "key3"));
+                Assert.Equal("value1", profile.Get<string>("section1", "key1"));
+                Assert.Equal("value2", profile.Get<string>("section1", "key2"));
+                Assert.Equal("value2", profile.Get<string>("Section1", "Key2"));
+                Assert.Null(profile.Get<string>("section1", "key3"));
+                Assert.Equal("[value3]", profile.Get<string>("section2", "key3"));
             }
             finally
             {

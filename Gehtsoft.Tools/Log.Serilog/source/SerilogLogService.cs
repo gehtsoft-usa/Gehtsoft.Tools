@@ -95,7 +95,11 @@ namespace Gehtsoft.Tools.Log.Serilog
 
 
             LoggerConfiguration logconfig = new LoggerConfiguration();
-            logconfig.WriteTo.File(mLogPath + mLogPrefix + mLogExtension, rollingInterval: RollingInterval.Day);
+            //Render the full level name in square brackets ([Debug], [Information], ...).
+            //The Serilog default uses the 3-char form ({Level:u3} => [DBG], [INF], ...),
+            //which is inconsistent with the other log backends and the expected contract.
+            logconfig.WriteTo.File(mLogPath + mLogPrefix + mLogExtension, rollingInterval: RollingInterval.Day,
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message:lj}{NewLine}{Exception}");
 
             switch (mLogLevel)
             {

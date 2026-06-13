@@ -12,3 +12,4 @@ TestResults/
 **/prepare/src/
 **/prepare/dst/
 **/doc/dst/
+settings.local.json

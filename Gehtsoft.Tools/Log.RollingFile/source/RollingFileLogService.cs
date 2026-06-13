@@ -44,7 +44,7 @@ namespace Gehtsoft.Tools.Log.RollingFile
             set => mMessageQueueWriter.WriteTimeout = value;
         }
 
-        public RollingFileLogService(LogLevel level = LogLevel.Off, string path = "./log/", string prefix = "log", string extension=".txt", RollingPeriod period = RollingPeriod.Day)
+        public RollingFileLogService(LogLevel level = LogLevel.Off, string path = "./log/", string prefix = "log", string extension=".txt", RollingPeriod period = RollingPeriod.Day, TimeSpan? writeTimeout = null)
         {
             mQueue = new MessageQueue();
 
@@ -54,7 +54,7 @@ namespace Gehtsoft.Tools.Log.RollingFile
             if (!extension.StartsWith("."))
                 path = "." + path;
 
-            mMessageQueueWriter = new MessageQueueWriter(level, path, prefix, extension, period, mQueue);
+            mMessageQueueWriter = new MessageQueueWriter(level, path, prefix, extension, period, mQueue, writeTimeout ?? TimeSpan.FromSeconds(10));
            
             mDebug = new QueuedLogStream(this, LogLevel.Debug);
             mInfo = new QueuedLogStream(this, LogLevel.Info);

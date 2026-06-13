@@ -1,0 +1,17 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Gehtsoft.Tools.FileUtils -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\FileUtils\bin\Debug\netstandard2.0\Gehtsoft.Tools.FileUtils.dll
+  Gehtsoft.Tools.Log -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\Log\bin\Debug\netstandard2.0\Gehtsoft.Tools.Log.dll
+  Gehtsoft.Tools.TypeUtils -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\TypeUtils\bin\Debug\netstandard2.0\Gehtsoft.Tools.TypeUtils.dll
+  Gehtsoft.Tools.Profile -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\Profile\bin\Debug\netstandard2.0\Gehtsoft.Tools.Profile.dll
+  Gehtsoft.Tools.IoC -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\IoC\bin\Debug\netstandard2.0\Gehtsoft.Tools.IoC.dll
+  Gehtsoft.Tools.Crypto -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\Crypto\bin\Debug\netstandard2.0\Gehtsoft.Tools.Crypto.dll
+  Gehtsoft.Tools.Log.RollingFile -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\Log.RollingFile\bin\Debug\netstandard2.0\Gehtsoft.Tools.Log.RollingFile.dll
+  Gehtsoft.Tools.Log.Serilog -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\Log.Serilog\bin\Debug\netstandard2.0\Gehtsoft.Tools.Log.Serilog.dll
+  Gehtsoft.Tools.Structures -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\Structures\bin\Debug\netstandard2.0\Gehtsoft.Tools.Structures.dll
+  Gehtsoft.Tools.CommandLine -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\CommandLine\bin\Debug\netstandard2.0\Gehtsoft.Tools.CommandLine.dll
+  Gehtsoft.Tools.UnitTest -> D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\UnitTest\bin\Debug\net8.0\Gehtsoft.Tools.UnitTest.dll
+Test run for D:\develop\components\Gehtsoft.Tools\Gehtsoft.Tools\UnitTest\bin\Debug\net8.0\Gehtsoft.Tools.UnitTest.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    43, Skipped:     0, Total:    43, Duration: 19 s - Gehtsoft.Tools.UnitTest.dll (net8.0)

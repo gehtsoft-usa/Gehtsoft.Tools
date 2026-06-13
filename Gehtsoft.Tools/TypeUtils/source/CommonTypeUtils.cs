@@ -63,10 +63,27 @@ namespace Gehtsoft.Tools.TypeUtils
         {
             if (assembly == null)
                 return null;
-            UriBuilder uri = new UriBuilder(assembly.CodeBase);
-            string path = Uri.UnescapeDataString(uri.Path);
-            FileInfo fi = new FileInfo(Path.GetFullPath(path));
-            return fi.DirectoryName;
+            //Assembly.CodeBase is obsolete and unsupported on modern .NET; Location is the
+            //cross-platform replacement (returns an empty string for in-memory assemblies).
+            string location = assembly.Location;
+            if (string.IsNullOrEmpty(location))
+                return null;
+            return Path.GetDirectoryName(location);
+        }
+
+        internal static string NuGetGlobalPackagesFolder()
+        {
+            string env = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
+            if (!string.IsNullOrEmpty(env))
+                return env;
+
+            string profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (string.IsNullOrEmpty(profile))
+                profile = Environment.GetEnvironmentVariable("HOME") ?? Environment.GetEnvironmentVariable("USERPROFILE");
+            if (string.IsNullOrEmpty(profile))
+                return null;
+
+            return Path.Combine(profile, ".nuget", "packages");
         }
 
         private static bool ExistIn(string path, string file) => File.Exists(Path.Combine(path, file));
@@ -124,17 +141,23 @@ namespace Gehtsoft.Tools.TypeUtils
                     return LoadAssemblyFromPath(Path.Combine(path, assemblyName));
             }
 
-            string nugetFolder = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), ".nuget\\packages");
-            string resolvedPath = ResolveInRepository(nugetFolder, assemblyName);
+            string nugetFolder = NuGetGlobalPackagesFolder();
+            if (nugetFolder != null)
+            {
+                string resolvedPath = ResolveInRepository(nugetFolder, assemblyName);
+                if (resolvedPath != null)
+                    return LoadAssemblyFromPath(resolvedPath);
+            }
 
-            if (resolvedPath != null)
-                return LoadAssemblyFromPath(resolvedPath);
-
-            string nugetFallbackFolder = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"), "dotnet\\sdk\\NuGetFallbackFolder");
-            resolvedPath = ResolveInRepository(nugetFallbackFolder, assemblyName);
-
-            if (resolvedPath != null)
-                return LoadAssemblyFromPath(resolvedPath);
+            //NuGetFallbackFolder only ever existed on Windows (and was dropped after .NET Core 3).
+            string programFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+            if (!string.IsNullOrEmpty(programFiles))
+            {
+                string nugetFallbackFolder = Path.Combine(programFiles, "dotnet", "sdk", "NuGetFallbackFolder");
+                string resolvedPath = ResolveInRepository(nugetFallbackFolder, assemblyName);
+                if (resolvedPath != null)
+                    return LoadAssemblyFromPath(resolvedPath);
+            }
 
             return null;
         }

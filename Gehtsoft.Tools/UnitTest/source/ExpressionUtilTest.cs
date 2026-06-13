@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.TypeUtils;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
@@ -36,32 +36,32 @@ namespace Gehtsoft.Tools.UnitTest
         }
 
 
-        [Test]
+        [Fact]
         public void TestGetName()
         {
             Expression<Func<TestTarget2, object>> expression1;
             expression1 = target2 => target2;
-            Assert.AreEqual("", ExpressionUtils.ExpressionToName(expression1));
+            Assert.Equal("", ExpressionUtils.ExpressionToName(expression1));
             expression1 = target2 => target2.ID;
-            Assert.AreEqual("ID", ExpressionUtils.ExpressionToName(expression1));
+            Assert.Equal("ID", ExpressionUtils.ExpressionToName(expression1));
             expression1 = target2 => target2.SelfReference.ID;
-            Assert.AreEqual("SelfReference.ID", ExpressionUtils.ExpressionToName(expression1));
+            Assert.Equal("SelfReference.ID", ExpressionUtils.ExpressionToName(expression1));
             expression1 = target2 => target2.MultiReference[1];
-            Assert.AreEqual("MultiReference[1]", ExpressionUtils.ExpressionToName(expression1));
+            Assert.Equal("MultiReference[1]", ExpressionUtils.ExpressionToName(expression1));
             expression1 = target2 => target2.MultiReference[1].Names[2];
-            Assert.AreEqual("MultiReference[1].Names[2]", ExpressionUtils.ExpressionToName(expression1));
+            Assert.Equal("MultiReference[1].Names[2]", ExpressionUtils.ExpressionToName(expression1));
         }
 
-        [Test]
+        [Fact]
         public void TestGetMemberInfo()
         {
             Expression<Func<TestTarget2, object>> expression1;
             expression1 = target2 => target2.ID;
-            Assert.AreEqual(typeof(TestTarget2).GetTypeInfo().GetProperty(nameof(TestTarget2.ID)), ExpressionUtils.ExpressionToMemberInfo(expression1));
+            Assert.Equal(typeof(TestTarget2).GetTypeInfo().GetProperty(nameof(TestTarget2.ID)), ExpressionUtils.ExpressionToMemberInfo(expression1));
             expression1 = target2 => target2.SelfReference.ID;
-            Assert.AreEqual(typeof(TestTarget2).GetTypeInfo().GetProperty(nameof(TestTarget2.ID)), ExpressionUtils.ExpressionToMemberInfo(expression1));
+            Assert.Equal(typeof(TestTarget2).GetTypeInfo().GetProperty(nameof(TestTarget2.ID)), ExpressionUtils.ExpressionToMemberInfo(expression1));
             expression1 = target2 => target2.SelfReference.MultiReference;
-            Assert.AreEqual(typeof(TestTarget2).GetTypeInfo().GetProperty(nameof(TestTarget2.MultiReference)), ExpressionUtils.ExpressionToMemberInfo(expression1));
+            Assert.Equal(typeof(TestTarget2).GetTypeInfo().GetProperty(nameof(TestTarget2.MultiReference)), ExpressionUtils.ExpressionToMemberInfo(expression1));
 
 
         }

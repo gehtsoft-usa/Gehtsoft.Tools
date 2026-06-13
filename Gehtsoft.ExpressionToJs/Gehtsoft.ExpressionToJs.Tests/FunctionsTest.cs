@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
-using NUnit.Framework.Internal;
+using Xunit;
 
 namespace Gehtsoft.ExpressionToJs.Tests
 {
-    [TestFixture]
     public class FunctionsTest
     {
-        [Test]
+        [Fact]
         public void TestCcnValidator()
         {
-            Assert.IsTrue(Functions.IsCreditCardNumberCorrect("4444333322221111"));
-            Assert.IsTrue(Functions.IsCreditCardNumberCorrect("4444 3333 2222 1111"));
-            Assert.IsFalse(Functions.IsCreditCardNumberCorrect("4444 3333 2222 1112"));
+            Assert.True(Functions.IsCreditCardNumberCorrect("4444333322221111"));
+            Assert.True(Functions.IsCreditCardNumberCorrect("4444 3333 2222 1111"));
+            Assert.False(Functions.IsCreditCardNumberCorrect("4444 3333 2222 1112"));
         }
     }
 }

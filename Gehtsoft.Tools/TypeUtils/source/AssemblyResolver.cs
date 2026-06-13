@@ -43,18 +43,25 @@ namespace Gehtsoft.Tools.TypeUtils
             FileInfo fi = new FileInfo(path);
             this.Assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
             this.dependencyContext = DependencyContext.Load(this.Assembly);
-            string nugetFolder = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), ".nuget\\packages");
-            string nugetFallbackFolder = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"), "dotnet\\sdk\\NuGetFallbackFolder");
 
-            this.assemblyResolver = new CompositeCompilationAssemblyResolver
-            (new ICompilationAssemblyResolver[]
+            var resolvers = new List<ICompilationAssemblyResolver>
             {
                 new ReferenceAssemblyPathResolver(),
                 new ReferenceAssemblyPathResolver(fi.DirectoryName, new string[] {}),
-                new PackageCompilationAssemblyResolver(nugetFolder),
-                new PackageCompilationAssemblyResolver(nugetFallbackFolder),
-                new AssemblyFolderResolver(fi.DirectoryName),
-            });
+            };
+
+            string nugetFolder = AssemblyUtils.NuGetGlobalPackagesFolder();
+            if (nugetFolder != null)
+                resolvers.Add(new PackageCompilationAssemblyResolver(nugetFolder));
+
+            //NuGetFallbackFolder only ever existed on Windows (and was dropped after .NET Core 3).
+            string programFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+            if (!string.IsNullOrEmpty(programFiles))
+                resolvers.Add(new PackageCompilationAssemblyResolver(Path.Combine(programFiles, "dotnet", "sdk", "NuGetFallbackFolder")));
+
+            resolvers.Add(new AssemblyFolderResolver(fi.DirectoryName));
+
+            this.assemblyResolver = new CompositeCompilationAssemblyResolver(resolvers.ToArray());
 
             this.loadContext = AssemblyLoadContext.GetLoadContext(this.Assembly);
             this.loadContext.Resolving += OnResolving;

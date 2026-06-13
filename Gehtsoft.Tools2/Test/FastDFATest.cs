@@ -3,7 +3,6 @@ using Xunit;
 using FluentAssertions;
 using Gehtsoft.Tools2.Algorithm.DFA;
 using System.Diagnostics;
-using Xunit.Abstractions;
 
 namespace Gehtsoft.Tools2.UnitTest
 {

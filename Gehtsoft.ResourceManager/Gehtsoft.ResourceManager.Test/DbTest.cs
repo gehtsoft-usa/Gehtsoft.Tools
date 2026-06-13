@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 using Gehtsoft.EF.Db.SqlDb;
 using Gehtsoft.EF.Db.SqliteDb;
 using Gehtsoft.ResourceManager.Db;
-using NUnit.Framework;
+using Xunit;
+
+// These tests mutate global static ResourceManager / TextMessageLoader state and were
+// written for the sequential NUnitLite runner; keep them sequential under xUnit.
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace Gehtsoft.ResourceManager.Test
 {
-    [TestFixture]
     public class DbTest
     {
-        [Test]
+        [Fact]
         public static void Test()
         {
             DbComponent component1, component2;
@@ -58,46 +61,45 @@ namespace Gehtsoft.ResourceManager.Test
                 }
 
                 int[] languages = MessagesDao.GetComponentLanguages(connection, component1);
-                Assert.AreEqual(2, languages.Length);
+                Assert.Equal(2, languages.Length);
                 languages = MessagesDao.GetComponentLanguages(connection, component2);
-                Assert.AreEqual(1, languages.Length);
-                Assert.AreEqual(language1.ID, languages[0]);
+                Assert.Equal(language1.ID, Assert.Single(languages));
 
                 TextMessageBlock block = MessagesDao.ReadMessageTextBlock(connection, component1, language1);
-                Assert.AreEqual(10, block.Count);
-                Assert.AreEqual("component1", block.Component);
-                Assert.AreEqual("en", block.Language);
+                Assert.Equal(10, block.Count);
+                Assert.Equal("component1", block.Component);
+                Assert.Equal("en", block.Language);
                 foreach (TextMessage message in block)
-                    Assert.AreEqual(message.Name + "en", message.Value);
+                    Assert.Equal(message.Name + "en", message.Value);
 
                 block = MessagesDao.ReadMessageTextBlock(connection, component1, language2);
 
-                Assert.AreEqual(10, block.Count);
-                Assert.AreEqual("component1", block.Component);
-                Assert.AreEqual("ru", block.Language);
+                Assert.Equal(10, block.Count);
+                Assert.Equal("component1", block.Component);
+                Assert.Equal("ru", block.Language);
                 foreach (TextMessage message in block)
-                    Assert.AreEqual(message.Name + "ru", message.Value);
+                    Assert.Equal(message.Name + "ru", message.Value);
 
                 block = MessagesDao.ReadMessageTextBlock(connection, component2, language1);
 
-                Assert.AreEqual(5, block.Count);
-                Assert.AreEqual("component2", block.Component);
-                Assert.AreEqual("en", block.Language);
+                Assert.Equal(5, block.Count);
+                Assert.Equal("component2", block.Component);
+                Assert.Equal("en", block.Language);
                 foreach (TextMessage message in block)
-                    Assert.AreEqual(message.Name + "default", message.Value);
+                    Assert.Equal(message.Name + "default", message.Value);
 
                 block = MessagesDao.ReadMessageTextBlock(connection, component2, language2);
-                Assert.AreEqual(0, block.Count);
+                Assert.Equal(0, block.Count);
 
                 MessagesDao.DeleteComponent(connection, component2);
 
-                Assert.IsNull(MessagesDao.ReadComponent(connection, component2.ID));
-                Assert.AreEqual(0, MessagesDao.GetMessagesCount(connection, component2));
-                Assert.AreEqual(0, MessagesDao.GetMessageTextsCount(connection, component2, null, null));
+                Assert.Null(MessagesDao.ReadComponent(connection, component2.ID));
+                Assert.Equal(0, MessagesDao.GetMessagesCount(connection, component2));
+                Assert.Equal(0, MessagesDao.GetMessageTextsCount(connection, component2, null, null));
 
                 TextMessageBlock[] blocks = TextMessageLoaderDb.LoadDb("component1", connection);
-                Assert.IsNotNull(blocks);
-                Assert.AreEqual(2, blocks.Length);
+                Assert.NotNull(blocks);
+                Assert.Equal(2, blocks.Length);
 
 
                 MessagesDao.DropTables(connection);

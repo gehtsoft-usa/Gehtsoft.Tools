@@ -5,43 +5,42 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.Crypto;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class TestCrypto
     {
-        [Test]
+        [Fact]
         public void TestCrc32()
         {
-            Assert.AreEqual(0x0, Crc32.GetHash(""));
-            Assert.AreEqual(0x414fa339, Crc32.GetHash("The quick brown fox jumps over the lazy dog"));
-            Assert.AreEqual(0x0c877f61, Crc32.GetHash("Test vector from febooti.com"));
-            Assert.AreEqual(0xcbf43926, Crc32.GetHash("123456789"));
+            Assert.Equal(0x0u, Crc32.GetHash(""));
+            Assert.Equal(0x414fa339u, Crc32.GetHash("The quick brown fox jumps over the lazy dog"));
+            Assert.Equal(0x0c877f61u, Crc32.GetHash("Test vector from febooti.com"));
+            Assert.Equal(0xcbf43926, Crc32.GetHash("123456789"));
         }
 
 
-        [Test]
+        [Fact]
         public void RC4Test1()
         {
             string source1 = "source text is here", source2 = "текст для кодирования";
             string key1 = "", key2 = "the key for encoding", key3 = "wrongkey";
             Assert.Throws<ArgumentNullException>(() => Rc4Decode(Rc4Encode(source1, key1), key1));
-            Assert.AreEqual(source1, Rc4Decode(Rc4Encode(source1, key2), key2));
-            Assert.AreEqual(source2, Rc4Decode(Rc4Encode(source2, key2), key2));
-            Assert.AreEqual(source2, Rc4Decode(Rc4Encode(source2, key2), key2));
-            Assert.AreNotEqual(source1, Rc4Decode(Rc4Encode(source1, key2), key3));
-            Assert.AreNotEqual(source2, Rc4Decode(Rc4Encode(source1, key3), key2));
-            Assert.AreNotEqual(source1, Rc4Decode(Rc4Encode(source2, key3), key3));
-            Assert.AreNotEqual(source1, Rc4Decode(Rc4Encode(source2, key2), key2));
+            Assert.Equal(source1, Rc4Decode(Rc4Encode(source1, key2), key2));
+            Assert.Equal(source2, Rc4Decode(Rc4Encode(source2, key2), key2));
+            Assert.Equal(source2, Rc4Decode(Rc4Encode(source2, key2), key2));
+            Assert.NotEqual(source1, Rc4Decode(Rc4Encode(source1, key2), key3));
+            Assert.NotEqual(source2, Rc4Decode(Rc4Encode(source1, key3), key2));
+            Assert.NotEqual(source1, Rc4Decode(Rc4Encode(source2, key3), key3));
+            Assert.NotEqual(source1, Rc4Decode(Rc4Encode(source2, key2), key2));
 
             byte[] key = new byte[] { 0x61, 0x8A, 0x63, 0xD2, 0xFB };
             byte[] plaintext = new byte[] { 0xDC, 0xEE, 0x4C, 0xF9, 0x2C };
             byte[] ciphertext = new byte[] { 0xF1, 0x38, 0x29, 0xC9, 0xDE };
             byte[] result = DecodeVector(plaintext, key);
 
-            Assert.AreEqual(ciphertext, result);
+            Assert.Equal(ciphertext, result);
         }
 
         private byte[] DecodeVector(byte[] vector, byte[] key)
@@ -78,16 +77,16 @@ namespace Gehtsoft.Tools.UnitTest
             return ret.ToString();
         }
 
-        [Test]
+        [Fact]
         public void TestMD4()
         {
             MDFourHash hash = new MDFourHash();
-            Assert.AreEqual("31d6cfe0d16ae931b73c59d7e0c089c0", GetHash(hash, ""));
-            Assert.AreEqual("d9130a8164549fe818874806e1c7014b", GetHash(hash, "message digest"));
-            Assert.AreEqual("043f8582f241db351ce627e153e7f0e4", GetHash(hash, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"));
+            Assert.Equal("31d6cfe0d16ae931b73c59d7e0c089c0", GetHash(hash, ""));
+            Assert.Equal("d9130a8164549fe818874806e1c7014b", GetHash(hash, "message digest"));
+            Assert.Equal("043f8582f241db351ce627e153e7f0e4", GetHash(hash, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"));
         }
 
-        [Test]
+        [Fact]
         public void WriteUInt32()
         {
             Random r = new Random((int)(DateTime.Now.Ticks % 65536));
@@ -104,10 +103,10 @@ namespace Gehtsoft.Tools.UnitTest
                 ByteSaver.WriteUInt32(arr, 0, v, false);
                 r2 = ByteSaver.ReadUInt32(arr, 0, false);
                 r4 = ByteSaver.ReadUInt32(arr, 0, true);
-                Assert.AreEqual(v, r1);
-                Assert.AreEqual(v, r2);
-                Assert.AreNotEqual(v, r3);
-                Assert.AreNotEqual(v, r4);
+                Assert.Equal(v, r1);
+                Assert.Equal(v, r2);
+                Assert.NotEqual(v, r3);
+                Assert.NotEqual(v, r4);
             }
         }
 

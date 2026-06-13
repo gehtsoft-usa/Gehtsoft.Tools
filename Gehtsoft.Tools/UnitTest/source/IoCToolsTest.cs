@@ -8,10 +8,17 @@ using Gehtsoft.Tools.ConfigurationProfile;
 using Gehtsoft.Tools.IoC;
 using Gehtsoft.Tools.IoC.Tools;
 using Gehtsoft.Tools.TypeUtils;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
+    // Marker attribute used by ClassFilterTest to exercise TypeFinder.WhichHasAttribute.
+    // Replaces NUnit's [TestFixture], which was used as the marker before the xUnit migration.
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class TestFixtureAttribute : Attribute
+    {
+    }
+
     [TestFixture]
     public class IoCToolsTest
     {
@@ -51,15 +58,15 @@ namespace Gehtsoft.Tools.UnitTest
 
             public static void Do(int p1, double p2, string p3, IoCToolsTest test)
             {
-                Assert.IsNotNull(test);
+                Assert.NotNull(test);
                 test.f1 = true;
-                Assert.AreEqual(1, p1);
-                Assert.AreEqual(2.0, p2);
-                Assert.AreEqual("3", p3);
+                Assert.Equal(1, p1);
+                Assert.Equal(2.0, p2);
+                Assert.Equal("3", p3);
             }
         }
 
-        [Test]
+        [Fact]
         public void ClassFilterTest()
         {
             IList<Type> types;
@@ -67,64 +74,64 @@ namespace Gehtsoft.Tools.UnitTest
             
             types = TypeFinder.InAllAssemblies().GetTypes().ToList();
 
-            Assert.AreEqual(1, types.Count(t => t == typeof(IoCToolsTest)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestAttributeAttribute)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(Profile)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(1, types.Count(t => t == typeof(IoCToolsTest)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestAttributeAttribute)));
+            Assert.Equal(1, types.Count(t => t == typeof(Profile)));
+            Assert.Equal(1, types.Count(t => t == typeof(ITestInterface1)));
 
             //find by attribute
             types = TypeFinder.NearClass<IoCToolsTest>().WhichHasAttribute<TestFixtureAttribute>().GetTypes().ToList();
-            Assert.AreEqual(1, types.Count(t => t == typeof(IoCToolsTest)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(ExpressionUtilTest)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestAttributeAttribute)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(1, types.Count(t => t == typeof(IoCToolsTest)));
+            Assert.Equal(1, types.Count(t => t == typeof(ExpressionUtilTest)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestAttributeAttribute)));
+            Assert.Equal(0, types.Count(t => t == typeof(ITestInterface1)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().WhichImplements<IEnumerable>().GetTypes().ToList();
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass1)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass2)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass3)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass2)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass3)));
+            Assert.Equal(1, types.Count(t => t == typeof(ITestInterface1)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().WhichImplements<IEnumerable>().WhichIsClass().GetTypes().ToList();
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass1)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass2)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass3)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass2)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass3)));
+            Assert.Equal(0, types.Count(t => t == typeof(ITestInterface1)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().WhichImplements(typeof(IEnumerable<>)).GetTypes().ToList();
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass1)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass2)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass3)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass1)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass2)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass3)));
+            Assert.Equal(1, types.Count(t => t == typeof(ITestInterface1)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().WhichImplements(typeof(IEnumerable<int>)).GetTypes().ToList();
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass1)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass2)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass3)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass1)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass2)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass3)));
+            Assert.Equal(0, types.Count(t => t == typeof(ITestInterface1)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().WhichImplements(typeof(IEnumerable<Attribute>)).GetTypes().ToList();
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass1)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass2)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass3)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(ITestInterface1)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass1)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass2)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass3)));
+            Assert.Equal(0, types.Count(t => t == typeof(ITestInterface1)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().WhichImplements(typeof(IEnumerable)).WhichHasAttribute<TestAttributeAttribute>().GetTypes().ToList();
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass1)));
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestClass2)));
-            Assert.AreEqual(0, types.Count(t => t == typeof(TestClass3)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass1)));
+            Assert.Equal(1, types.Count(t => t == typeof(TestClass2)));
+            Assert.Equal(0, types.Count(t => t == typeof(TestClass3)));
 
             types = TypeFinder.NearClass<IoCToolsTest>().Which(type => type.Name == "TestAttributeAttribute").GetTypes().ToList();
-            Assert.AreEqual(1, types.Count);
-            Assert.AreEqual(1, types.Count(t => t == typeof(TestAttributeAttribute)));
+            Assert.Single(types);
+            Assert.Equal(1, types.Count(t => t == typeof(TestAttributeAttribute)));
 
             int count = 0;
             TypeFinder.NearClass<IoCToolsTest>().ForAll(type => count += (type.Name == "TestAttributeAttribute" ? 1 : 0));
-            Assert.AreEqual(1, count);
+            Assert.Equal(1, count);
 
             f1 = false;
             TypeFinder.NearClass<IoCToolsTest>().Which(type => type.Name == nameof(TestCallClass)).InvokeForAll(nameof(TestCallClass.Do), null, new object[] {2.0, "3", 1, this});
-            Assert.IsTrue(f1);
+            Assert.True(f1);
 
             List<Tuple<Type, Type>> registry = new List<Tuple<Type, Type>>();
 
@@ -151,27 +158,27 @@ namespace Gehtsoft.Tools.UnitTest
             public void Clear() => Registry.Clear();
         }
 
-        [Test]
+        [Fact]
         public void ClassRegisterAction()
         {
             TestRegisry registry = new TestRegisry();
             TypeFinder.NearClass<IoCToolsTest>().WhichHasAttribute<TestAttributeAttribute>().RegisterAll(registry);
-            Assert.AreEqual(1, registry.Registry.Count);
-            Assert.IsTrue(registry.Contains(typeof(TestClass2), typeof(TestClass2), RegistryMode.CreateEveryTime));
+            Assert.Single(registry.Registry);
+            Assert.True(registry.Contains(typeof(TestClass2), typeof(TestClass2), RegistryMode.CreateEveryTime));
 
             registry.Clear();
             TypeFinder.NearClass<IoCToolsTest>().WhichImplements<IEnumerable>().WhichIsClass().RegisterAll(registry, RegistryMode.Singleton, typeof(IEnumerable));
-            Assert.IsTrue(registry.Contains(typeof(IEnumerable), typeof(TestClass1), RegistryMode.Singleton));
-            Assert.IsTrue(registry.Contains(typeof(IEnumerable), typeof(TestClass2), RegistryMode.Singleton));
-            Assert.IsTrue(registry.Contains(typeof(IEnumerable), typeof(TestClass3), RegistryMode.Singleton));
-            Assert.IsFalse(registry.Contains(typeof(ITestInterface1)));
+            Assert.True(registry.Contains(typeof(IEnumerable), typeof(TestClass1), RegistryMode.Singleton));
+            Assert.True(registry.Contains(typeof(IEnumerable), typeof(TestClass2), RegistryMode.Singleton));
+            Assert.True(registry.Contains(typeof(IEnumerable), typeof(TestClass3), RegistryMode.Singleton));
+            Assert.False(registry.Contains(typeof(ITestInterface1)));
 
             registry.Clear();
             TypeFinder.NearClass<IoCToolsTest>().WhichImplements(typeof(IEnumerable<>)).WhichIsClass().RegisterAll(registry, RegistryMode.Singleton, typeof(IEnumerable<>));
-            Assert.IsTrue(registry.Contains(typeof(IEnumerable<int>), typeof(TestClass1), RegistryMode.Singleton));
-            Assert.IsFalse(registry.Contains(typeof(TestClass2)));
-            Assert.IsTrue(registry.Contains(typeof(IEnumerable<Attribute>), typeof(TestClass3), RegistryMode.Singleton));
-            Assert.IsFalse(registry.Contains(typeof(ITestInterface1)));
+            Assert.True(registry.Contains(typeof(IEnumerable<int>), typeof(TestClass1), RegistryMode.Singleton));
+            Assert.False(registry.Contains(typeof(TestClass2)));
+            Assert.True(registry.Contains(typeof(IEnumerable<Attribute>), typeof(TestClass3), RegistryMode.Singleton));
+            Assert.False(registry.Contains(typeof(ITestInterface1)));
         }
 
         public class TestArgumentClass1
@@ -219,8 +226,8 @@ namespace Gehtsoft.Tools.UnitTest
         {
             public static void TestMethod(IoCToolsTest test, TestClass1 arg)
             {
-                Assert.IsNotNull(test);
-                Assert.IsNotNull(arg);
+                Assert.NotNull(test);
+                Assert.NotNull(arg);
                 test.f1 = true;
                 
             }
@@ -231,8 +238,8 @@ namespace Gehtsoft.Tools.UnitTest
         {
             public void TestMethod(TestClass2 arg, IoCToolsTest test)
             {
-                Assert.IsNotNull(test);
-                Assert.IsNotNull(arg);
+                Assert.NotNull(test);
+                Assert.NotNull(arg);
                 test.f2 = true;
                 
             }
@@ -240,12 +247,12 @@ namespace Gehtsoft.Tools.UnitTest
 
         public bool f1, f2;
 
-        [Test]
+        [Fact]
         public void ClassInvokeAction()
         {
             f1 = f2 = false;
             TypeFinder.NearClass<IoCToolsTest>().WhichHasAttribute<TestInvokeAttribute>().InvokeForAll("TestMethod", new InvokeClassFactory(this));
-            Assert.IsTrue(f1 && f2);
+            Assert.True(f1 && f2);
         }
 
     }

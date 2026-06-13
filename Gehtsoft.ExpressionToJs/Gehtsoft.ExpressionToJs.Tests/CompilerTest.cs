@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Jint;
 using Jint.Native;
-using NUnit.Framework;
+using Xunit;
 
 //all code pieces causes warning made for purpose to test nuances
 //of proper expression compilation
@@ -16,7 +16,6 @@ using NUnit.Framework;
 
 namespace Gehtsoft.ExpressionToJs.Tests
 {
-    [TestFixture]
     public class CompilerTest
     {
         public class SubEntity
@@ -50,27 +49,46 @@ namespace Gehtsoft.ExpressionToJs.Tests
 
             engine.SetValue("dateVal", new DateTime(2001, 11, 9, 8, 46, 0));
             engine.SetValue("entityVal", new Entity() { intProp = 20, stringProp = "eklmn", arrayProp = new int[] { 1, 2, 3 }, SubEntity = new SubEntity() { subIntProp = 515, index = 2 } });
+            engine.SetValue("nullStr", JsValue.Null);
+            engine.SetValue("entityNull", new Entity() { intProp = 0, stringProp = null, arrayProp = null, SubEntity = null });
             engine.Execute(ExpressionToJsStubAccessor.GetJsIncludesAsString());
             return engine;
         }
 
-        public void TestExpression<TA, TR>(Expression<Func<TA, TR>> expression, TR expectedResult)
+        private void TestExpression<TA, TR>(Expression<Func<TA, TR>> expression, TR expectedResult)
         {
             ExpressionCompiler compiler = new ExpressionCompiler(expression);
             string jsExpression = compiler.JavaScriptExpression;
             Engine engine = SetupJint();
             if (typeof(TR) == typeof(double))
-                Assert.AreEqual((double)(object)expectedResult, (double)engine.Evaluate(jsExpression).ToObject(), 1e-9);
+                Assert.Equal((double)(object)expectedResult, (double)engine.Evaluate(jsExpression).ToObject(), 1e-9);
             else if (typeof(TR) == typeof(DateTime))
             {
                 JsValue v = engine.Evaluate(jsExpression);
-                Assert.That(((DateTime)(object)expectedResult).ToUniversalTime(), Is.EqualTo(v.AsDate().ToDateTime()).Within(TimeSpan.FromMilliseconds(950)));
+                Assert.Equal(v.AsDate().ToDateTime(), ((DateTime)(object)expectedResult).ToUniversalTime(), TimeSpan.FromMilliseconds(950));
             }
             else
-                Assert.AreEqual(expectedResult, engine.Evaluate(jsExpression).ToObject());
+            {
+                object actual = engine.Evaluate(jsExpression).ToObject();
+                if (expectedResult is null)
+                {
+                    Assert.Null(actual);
+                }
+                else if (actual is not null && actual.GetType() != typeof(TR))
+                {
+                    // Jint returns JS numbers as double; coerce to the expected numeric type
+                    // to preserve NUnit's loose numeric equality (e.g. int 1 == double 1.0).
+                    Type target = Nullable.GetUnderlyingType(typeof(TR)) ?? typeof(TR);
+                    Assert.Equal(expectedResult, (TR)Convert.ChangeType(actual, target));
+                }
+                else
+                {
+                    Assert.Equal((object)expectedResult, actual);
+                }
+            }
         }
 
-        [Test]
+        [Fact]
         public void TestMath()
         {
             //primitives
@@ -112,7 +130,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<int, int>(intVal => intVal * j / (j + 50), 5);
         }
 
-        [Test]
+        [Fact]
         public void TestString()
         {
             TestExpression<string, int>(stringVal => stringVal.Length, 6);
@@ -151,7 +169,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<string, int>(stringVal => stringVal.IndexOf("BC", 2, StringComparison.OrdinalIgnoreCase), -1);
         }
 
-        [Test]
+        [Fact]
         public void TestChar()
         {
             TestExpression<string, bool>(stringVal2 => char.IsUpper(stringVal2[0]), true);
@@ -169,7 +187,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<string, bool>(stringVal2 => char.IsWhiteSpace(stringVal2[4]), true);
         }
 
-        [Test]
+        [Fact]
         public void TestLinq()
         {
             TestExpression<string, bool>(stringVal2 => stringVal2.Any(c => char.IsLower(c)), true);
@@ -188,7 +206,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<int[], bool>(intArr => intArr.Any(v => v == 10), true);
         }
 
-        [Test]
+        [Fact]
         public void TestRegexp()
         {
             TestExpression<string, bool>(stringVal => Regex.IsMatch(stringVal, "^a.+"), true);
@@ -202,7 +220,22 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<string, bool>(entityVal => Functions.IsCreditCardNumberCorrect("378282246310005"), true);
         }
 
-        [Test]
+        [Fact]
+        public void TestNullSafetyAndShortCircuit()
+        {
+            //jsv_match must be null-safe: a null value matches nothing (mirrors the server,
+            //where DoesMatch(null) == false and DoesNotMatch(null) == true) instead of throwing.
+            TestExpression<string, bool>(nullStr => Regex.IsMatch(nullStr, "^a.+"), false);
+            TestExpression<string, bool>(nullStr => !Regex.IsMatch(nullStr, "^a.+"), true);
+
+            //&& / || must short-circuit like C#, so the guarded second operand is never
+            //evaluated when the first already decides the result - otherwise these would throw
+            //(arrayProp is null -> arrayProp[0] is null[0]).
+            TestExpression<Entity, bool>(entityNull => entityNull.arrayProp == null || entityNull.arrayProp[0] > 0, true);
+            TestExpression<Entity, bool>(entityNull => entityNull.arrayProp != null && entityNull.arrayProp[0] > 0, false);
+        }
+
+        [Fact]
         public void TestAccess()
         {
             TestExpression<Entity, int>(entityVal => entityVal.arrayProp[1], 2);
@@ -215,7 +248,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<Entity, int>(entityVal => entityVal.arrayProp[entityVal.SubEntity.index], 3);
         }
 
-        [Test]
+        [Fact]
         public void TestDateTime()
         {
             TestExpression<DateTime, DateTime>(d => DateTime.Now, DateTime.UtcNow);
@@ -242,7 +275,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
 
         private readonly Constants mConstants = new Constants();
 
-        [Test]
+        [Fact]
         public void TestConvertors()
         {
             TestExpression<string, bool>(stringVal3 => Functions.ToBool(stringVal3), true);
@@ -253,7 +286,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<string, bool>(stringVal4 => Functions.ToInt(stringVal4) + mConstants.Five * 5 > 70, true);
         }
 
-        [Test]
+        [Fact]
         public void TestEquality()
         {
             Expression<Func<string, int>> f1 = s => s.Length;
@@ -262,17 +295,17 @@ namespace Gehtsoft.ExpressionToJs.Tests
             ExpressionCompiler c11 = new ExpressionCompiler(f1);
             ExpressionCompiler c12 = new ExpressionCompiler(f1);
 
-            Assert.IsTrue(c12.Equals(c11));
-            Assert.IsTrue(c12.Equals(f1));
-            Assert.IsFalse(c12.Equals(f2));
+            Assert.True(c12.Equals(c11));
+            Assert.True(c12.Equals(f1));
+            Assert.False(c12.Equals(f2));
 
             ExpressionCompiler c2 = new ExpressionCompiler(f2);
-            Assert.IsTrue(c2.Equals(f2));
-            Assert.IsFalse(c2.Equals(f1));
-            Assert.IsFalse(c2.Equals(c11));
+            Assert.True(c2.Equals(f2));
+            Assert.False(c2.Equals(f1));
+            Assert.False(c2.Equals(c11));
         }
 
-        [Test]
+        [Fact]
         public void TestComparison()
         {
             TestExpression<int, bool>(intVal => intVal == 10, true);
@@ -293,26 +326,26 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<int, int>(intVal => intVal != 10 ? intVal * 30 : intVal / 2, 5);
         }
 
-        [Test]
+        [Fact]
         public void TestCustomValidation()
         {
             ValidationExpressionCompiler compiler;
 
             Expression<Func<Entity, bool>> entityExpression = e => e.arrayProp.Length > 1;
             compiler = new ValidationExpressionCompiler(entityExpression, entityParameterIndex: 0);
-            Assert.AreEqual("jsv_greater(jsv_length(reference('arrayProp')), 1)", compiler.JavaScriptExpression);
+            Assert.Equal("jsv_greater(jsv_length(reference('arrayProp')), 1)", compiler.JavaScriptExpression);
 
             const int i = 1;
             entityExpression = e => e.SubEntity.index < 4 + i;
             compiler = new ValidationExpressionCompiler(entityExpression, entityParameterIndex: 0);
-            Assert.AreEqual("jsv_less(reference('SubEntity.index'), 5)", compiler.JavaScriptExpression);
+            Assert.Equal("jsv_less(reference('SubEntity.index'), 5)", compiler.JavaScriptExpression);
 
             entityExpression = e => (2 + 2 + (int)Math.PI) == 7;
             compiler = new ValidationExpressionCompiler(entityExpression, entityParameterIndex: 0);
-            Assert.AreEqual("true", compiler.JavaScriptExpression);
+            Assert.Equal("true", compiler.JavaScriptExpression);
         }
 
-        [Test]
+        [Fact]
         public void TestTimeSpan()
         {
             DateTime dt = new DateTime(2002, 1, 31, 12, 30, 19), dt1;

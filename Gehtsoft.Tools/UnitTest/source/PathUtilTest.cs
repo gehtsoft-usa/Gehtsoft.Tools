@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.FileUtils;
-using NUnit.Framework;
-using NUnit.Framework.Internal;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class PathUtilTest
     {
-        [Test]
+        [Fact]
         public void TestSuccessfulDelete()
         {
             string basePath = Path.Combine(TypePathUtil.TypeFolder(typeof(PathUtilTest)), "foldertest1");
@@ -25,22 +24,28 @@ namespace Gehtsoft.Tools.UnitTest
             File.WriteAllText(Path.Combine(Path.Combine(basePath, "folder1", "file1")), "");
             File.WriteAllText(Path.Combine(Path.Combine(basePath, "folder2", "file1")), "");
 
-            Assert.IsTrue(Directory.Exists(basePath));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1")));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1", "folder11")));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder2")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "file1")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file1")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file2")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder2", "file1")));
+            Assert.True(Directory.Exists(basePath));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1", "folder11")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder2")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "file1")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file1")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file2")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder2", "file1")));
 
-            Assert.IsTrue(PathUtil.DeleteDirectory(basePath));
-            Assert.IsFalse(Directory.Exists(basePath));
+            Assert.True(PathUtil.DeleteDirectory(basePath));
+            Assert.False(Directory.Exists(basePath));
         }
 
-        [Test]
+        [Fact]
         public void TestUnsuccessfulDelete()
         {
+            //This test relies on Windows file-locking: an open file blocks its deletion.
+            //On POSIX systems a file open for read can still be unlinked, so the delete
+            //would succeed and the assertions below would not hold.
+            Assert.SkipUnless(RuntimeInformation.IsOSPlatform(OSPlatform.Windows),
+                "Open-file delete blocking is Windows-only behavior; POSIX allows unlinking an open file.");
+
             string basePath = Path.Combine(TypePathUtil.TypeFolder(typeof(PathUtilTest)), "foldertest2");
             Directory.CreateDirectory(Path.Combine(basePath, "folder1"));
             Directory.CreateDirectory(Path.Combine(basePath, "folder1", "folder11"));
@@ -51,35 +56,35 @@ namespace Gehtsoft.Tools.UnitTest
             File.WriteAllText(Path.Combine(Path.Combine(basePath, "folder1", "file1")), "");
             File.WriteAllText(Path.Combine(Path.Combine(basePath, "folder2", "file1")), "");
 
-            Assert.IsTrue(Directory.Exists(basePath));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1")));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1", "folder11")));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1", "folder12")));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder2")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "file1")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file1")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file2")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder2", "file1")));
+            Assert.True(Directory.Exists(basePath));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1", "folder11")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1", "folder12")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder2")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "file1")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file1")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file2")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder2", "file1")));
 
             using (FileStream fs = new FileStream(Path.Combine(basePath, "folder1", "folder11", "file2"), FileMode.Open, FileAccess.Read))
-                Assert.IsFalse(PathUtil.DeleteDirectory(basePath));
+                Assert.False(PathUtil.DeleteDirectory(basePath));
 
-            Assert.IsTrue(Directory.Exists(basePath));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1")));
-            Assert.IsTrue(Directory.Exists(Path.Combine(basePath, "folder1", "folder11")));
-            Assert.IsFalse(Directory.Exists(Path.Combine(basePath, "folder1", "folder12")));
-            Assert.IsFalse(Directory.Exists(Path.Combine(basePath, "folder2")));
-            Assert.IsFalse(File.Exists(Path.Combine(basePath, "folder1", "file1")));
-            Assert.IsFalse(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file1")));
-            Assert.IsTrue(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file2")));
-            Assert.IsFalse(File.Exists(Path.Combine(basePath, "folder2", "file1")));
+            Assert.True(Directory.Exists(basePath));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "folder1", "folder11")));
+            Assert.False(Directory.Exists(Path.Combine(basePath, "folder1", "folder12")));
+            Assert.False(Directory.Exists(Path.Combine(basePath, "folder2")));
+            Assert.False(File.Exists(Path.Combine(basePath, "folder1", "file1")));
+            Assert.False(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file1")));
+            Assert.True(File.Exists(Path.Combine(basePath, "folder1", "folder11", "file2")));
+            Assert.False(File.Exists(Path.Combine(basePath, "folder2", "file1")));
         }
 
-        [Test]
+        [Fact]
         public void RelativePathTest()
         {
-            Assert.AreEqual(@"..\dir3", PathUtil.RelativePath(@"c:\dir1\dir2", @"c:\dir1\dir3"));
-            Assert.AreEqual(@"..\..\dir3\dir4", PathUtil.RelativePath(@"c:\dir1\dir2", @"c:\dir3\dir4"));
+            Assert.Equal(@"..\dir3", PathUtil.RelativePath(@"c:\dir1\dir2", @"c:\dir1\dir3"));
+            Assert.Equal(@"..\..\dir3\dir4", PathUtil.RelativePath(@"c:\dir1\dir2", @"c:\dir3\dir4"));
             Assert.Throws<ArgumentException>(() => PathUtil.RelativePath(@"c:\dir1", @"d:\dir1"));
         }
 

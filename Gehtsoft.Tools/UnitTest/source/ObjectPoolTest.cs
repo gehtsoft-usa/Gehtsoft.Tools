@@ -6,13 +6,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.Structures;
-using NUnit;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
     
-    [TestFixture]
     public class PoolTest
     {
         public const int WORKERS = 10;
@@ -69,7 +67,7 @@ namespace Gehtsoft.Tools.UnitTest
             }
         }
 
-        class worker
+        class Worker
         {
             private ObjectPoolWithLifeSpan<pooledClass> mPool;
             private char mID;
@@ -78,7 +76,7 @@ namespace Gehtsoft.Tools.UnitTest
 
             public bool IsAlive => mThread.IsAlive;
 
-            public worker(ObjectPoolWithLifeSpan<pooledClass> pool, char id)
+            public Worker(ObjectPoolWithLifeSpan<pooledClass> pool, char id)
             {
                 mPool = pool;
                 mID = id;
@@ -118,16 +116,16 @@ namespace Gehtsoft.Tools.UnitTest
             }
         }
 
-        [Test]
+        [Fact]
         public static void TestObjectPool()
         {
             pooledClassFactory factory = new pooledClassFactory();
             using (ObjectPoolWithLifeSpan<pooledClass> pool = new ObjectPoolWithLifeSpan<pooledClass>(factory, 4, TimeSpan.FromMilliseconds(750)))
             {
-                worker[] workers = new worker[WORKERS];
+                Worker[] workers = new Worker[WORKERS];
 
                 for (int i = 0; i < WORKERS; i++)
-                    workers[i] = new worker(pool, (char) (0x30 + i));
+                    workers[i] = new Worker(pool, (char) (0x30 + i));
 
                 while (true)
                 {
@@ -140,15 +138,15 @@ namespace Gehtsoft.Tools.UnitTest
                         break;
 
                     Thread.Sleep(50);
-                    Assert.IsTrue(pool.InUseObjects <= 4, "Too many objects");
-                    Assert.IsTrue(pool.TotalObjects <= 4, "Too many objects");
+                    Assert.True(pool.InUseObjects <= 4, "Too many objects");
+                    Assert.True(pool.TotalObjects <= 4, "Too many objects");
                 }
 
                 List<pooledClass> pooled = factory.mPooled;
-                Assert.IsTrue(pooled.Count == 4, "Pool size");
+                Assert.True(pooled.Count == 4, "Pool size");
 
                 long limit = TimeSpan.FromMilliseconds(DELAY * 2 + 50).Ticks;
-                Assert.IsTrue(workers[0].MaxWaitTime < limit, "Wait time");
+                Assert.True(workers[0].MaxWaitTime < limit, "Wait time");
 
                 int[] count = new int[WORKERS];
                 for (int i = 0; i < WORKERS; i++)
@@ -165,14 +163,14 @@ namespace Gehtsoft.Tools.UnitTest
                 }
 
                 for (int i = 0; i < WORKERS; i++)
-                    Assert.IsTrue(count[i] == REPEAT, $"count of {i}");
+                    Assert.True(count[i] == REPEAT, $"count of {i}");
 
                 Thread.Sleep(1500);
                 limit = TimeSpan.FromMilliseconds(750 + 550).Ticks;
                 for (int i = 0; i < pooled.Count; i++)
                 {
-                    Assert.IsTrue(pooled[i].Disposed, "No disposed yet");
-                    Assert.IsTrue(pooled[i].BetweenUseAndDispose < limit, "Too long to dispose");
+                    Assert.True(pooled[i].Disposed, "No disposed yet");
+                    Assert.True(pooled[i].BetweenUseAndDispose < limit, "Too long to dispose");
                 }
             }
         }

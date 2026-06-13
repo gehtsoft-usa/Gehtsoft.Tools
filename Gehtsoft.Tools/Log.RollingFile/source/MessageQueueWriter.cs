@@ -13,7 +13,19 @@ namespace Gehtsoft.Tools.Log.RollingFile
         private LogLevel mLevel;
         private readonly MessageQueue mQueue;
         private readonly Thread mWriterThread;
-        public TimeSpan WriteTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        //Signaled when WriteTimeout changes or on dispose, so the writer thread re-reads
+        //the interval (or exits) instead of staying stuck in a sleep for the old duration.
+        private readonly AutoResetEvent mWake = new AutoResetEvent(false);
+        private TimeSpan mWriteTimeout = TimeSpan.FromSeconds(10);
+        public TimeSpan WriteTimeout
+        {
+            get => mWriteTimeout;
+            set
+            {
+                mWriteTimeout = value;
+                mWake.Set();
+            }
+        }
         private RollingFileWriter mFileWriter;
 
         public LogLevel Level
@@ -24,10 +36,13 @@ namespace Gehtsoft.Tools.Log.RollingFile
 
         public bool IsAlive => mWriterThread.IsAlive;
 
-        public MessageQueueWriter(LogLevel level, string path, string prefix, string extension, RollingPeriod period, MessageQueue queue)
+        public MessageQueueWriter(LogLevel level, string path, string prefix, string extension, RollingPeriod period, MessageQueue queue, TimeSpan writeTimeout)
         {
             mLevel = level;
             mQueue = queue;
+            //Set the interval on the field (not via the property) before the thread starts,
+            //so the very first wait already uses the requested value - no signal needed yet.
+            mWriteTimeout = writeTimeout;
             mFileWriter = new RollingFileWriter(path, prefix, extension, period);
             mWriterThread = new Thread(WriterThreadProc);
             mWriterThread.IsBackground = true;
@@ -44,7 +59,9 @@ namespace Gehtsoft.Tools.Log.RollingFile
                 try
                 {
                     WriteQueue();
-                    Thread.Sleep(WriteTimeout);
+                    //Block until the interval elapses, or until WriteTimeout changes / we are
+                    //disposed (mWake is signaled), then loop and re-read the current interval.
+                    mWake.WaitOne(WriteTimeout);
                 }
                 catch (Exception )
                 {
@@ -93,6 +110,11 @@ namespace Gehtsoft.Tools.Log.RollingFile
             Flush();
             mFileWriter?.Dispose();
             mFileWriter = null;
+            //Wake the writer thread so it observes mFileWriter == null and exits promptly,
+            //rather than lingering in a (possibly long) wait. The handle itself is intentionally
+            //not disposed: the worker may still be about to WaitOne on it, and the SafeWaitHandle
+            //finalizer reclaims it. This also keeps Dispose idempotent.
+            mWake.Set();
         }
     }
 }

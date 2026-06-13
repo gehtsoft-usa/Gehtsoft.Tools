@@ -8,35 +8,33 @@ using System.Threading.Tasks;
 using Gehtsoft.Tools.FileUtils;
 using Gehtsoft.Tools.Log;
 using Gehtsoft.Tools.Log.Serilog;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class TestSerologLog
     {
-        [Test]
+        [Fact]
         public void SerilogTest()
         {
             string path = TypePathUtil.TypeFolder(typeof(TestSerologLog));
             DateTime now = DateTime.Now;
-            string logfile = Path.Combine(path, $"log-{now.Year:D4}{now.Month:D2}{now.Day:D2}.txt");
+            string logfile = Path.Combine(path, $"log{now.Year:D4}{now.Month:D2}{now.Day:D2}.txt");
             if (File.Exists(logfile))
                 File.Delete(logfile);
 
             ILogService logger = new SerilogLogService(LogLevel.Debug, path);
-            Assert.IsNotNull(logger.Debug);
-            Assert.IsNotNull(logger.Info);
-            Assert.IsNotNull(logger.Warning);
-            Assert.IsNotNull(logger.Error);
-            Assert.IsNotNull(logger.Fatal);
+            Assert.NotNull(logger.Debug);
+            Assert.NotNull(logger.Info);
+            Assert.NotNull(logger.Warning);
+            Assert.NotNull(logger.Error);
+            Assert.NotNull(logger.Fatal);
 
-            Assert.AreEqual(LogLevel.Debug, logger.Debug.Level);
-            Assert.AreEqual(LogLevel.Info, logger.Info.Level);
-            Assert.AreEqual(LogLevel.Warning, logger.Warning.Level);
-            Assert.AreEqual(LogLevel.Error, logger.Error.Level);
-            Assert.AreEqual(LogLevel.Fatal, logger.Fatal.Level);
+            Assert.Equal(LogLevel.Debug, logger.Debug.Level);
+            Assert.Equal(LogLevel.Info, logger.Info.Level);
+            Assert.Equal(LogLevel.Warning, logger.Warning.Level);
+            Assert.Equal(LogLevel.Error, logger.Error.Level);
+            Assert.Equal(LogLevel.Fatal, logger.Fatal.Level);
 
             logger.Debug?.Log("testdebug1");
             logger.Debug?.Log("testdebug1formatted {0:D5}", 123);
@@ -62,11 +60,11 @@ namespace Gehtsoft.Tools.UnitTest
 
             logger.Level = LogLevel.Error;
             
-            Assert.IsNull(logger.Debug);
-            Assert.IsNull(logger.Info);
-            Assert.IsNull(logger.Warning);
-            Assert.IsNotNull(logger.Error);
-            Assert.IsNotNull(logger.Fatal);
+            Assert.Null(logger.Debug);
+            Assert.Null(logger.Info);
+            Assert.Null(logger.Warning);
+            Assert.NotNull(logger.Error);
+            Assert.NotNull(logger.Fatal);
             logger.Error?.Log("testerror3");
             logger.Fatal?.Log("testfatal3");
 
@@ -88,36 +86,36 @@ namespace Gehtsoft.Tools.UnitTest
             logger.Dispose();
 
             List<string> lines = ReadFile(logfile);
-            Assert.IsTrue(Contains(lines, LogLevel.Debug, "debug1"));
-            Assert.IsTrue(Contains(lines, LogLevel.Debug, "testdebug1formatted 00123"));
-            Assert.IsTrue(Contains(lines, LogLevel.Info, "info1"));
-            Assert.IsTrue(Contains(lines, LogLevel.Warning, "warning1"));
-            Assert.IsTrue(Contains(lines, LogLevel.Error, "error1"));
-            Assert.IsTrue(Contains(lines, LogLevel.Error, "testexception1"));
-            Assert.IsTrue(Contains(lines, LogLevel.Off, "System.InvalidOperationException: exceptionmessage"));
-            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal1"));
+            Assert.True(Contains(lines, LogLevel.Debug, "debug1"));
+            Assert.True(Contains(lines, LogLevel.Debug, "testdebug1formatted 00123"));
+            Assert.True(Contains(lines, LogLevel.Info, "info1"));
+            Assert.True(Contains(lines, LogLevel.Warning, "warning1"));
+            Assert.True(Contains(lines, LogLevel.Error, "error1"));
+            Assert.True(Contains(lines, LogLevel.Error, "testexception1"));
+            Assert.True(Contains(lines, LogLevel.Off, "System.InvalidOperationException: exceptionmessage"));
+            Assert.True(Contains(lines, LogLevel.Fatal, "fatal1"));
 
-            Assert.IsTrue(Contains(lines, LogLevel.Debug, "debug2"));
-            Assert.IsTrue(Contains(lines, LogLevel.Info, "info2"));
-            Assert.IsTrue(Contains(lines, LogLevel.Warning, "warning2"));
-            Assert.IsTrue(Contains(lines, LogLevel.Error, "error2"));
-            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal2"));
+            Assert.True(Contains(lines, LogLevel.Debug, "debug2"));
+            Assert.True(Contains(lines, LogLevel.Info, "info2"));
+            Assert.True(Contains(lines, LogLevel.Warning, "warning2"));
+            Assert.True(Contains(lines, LogLevel.Error, "error2"));
+            Assert.True(Contains(lines, LogLevel.Fatal, "fatal2"));
 
-            Assert.IsTrue(Contains(lines, LogLevel.Error, "error3"));
-            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal3"));
+            Assert.True(Contains(lines, LogLevel.Error, "error3"));
+            Assert.True(Contains(lines, LogLevel.Fatal, "fatal3"));
 
-            Assert.IsFalse(Contains(lines, LogLevel.Debug, "debug4"));
-            Assert.IsFalse(Contains(lines, LogLevel.Info, "info4"));
-            Assert.IsFalse(Contains(lines, LogLevel.Warning, "warning4"));
-            Assert.IsTrue(Contains(lines, LogLevel.Error, "error4"));
-            Assert.IsTrue(Contains(lines, LogLevel.Fatal, "fatal4"));
+            Assert.False(Contains(lines, LogLevel.Debug, "debug4"));
+            Assert.False(Contains(lines, LogLevel.Info, "info4"));
+            Assert.False(Contains(lines, LogLevel.Warning, "warning4"));
+            Assert.True(Contains(lines, LogLevel.Error, "error4"));
+            Assert.True(Contains(lines, LogLevel.Fatal, "fatal4"));
 
-            Assert.IsFalse(Contains(lines, LogLevel.Debug, "debug5"));
-            Assert.IsFalse(Contains(lines, LogLevel.Info, "info5"));
-            Assert.IsFalse(Contains(lines, LogLevel.Warning, "warning5"));
-            Assert.IsFalse(Contains(lines, LogLevel.Error, "error5"));
-            Assert.IsFalse(Contains(lines, LogLevel.Fatal, "fatal5"));
-            Assert.IsFalse(Contains(lines, LogLevel.Off, "off"));
+            Assert.False(Contains(lines, LogLevel.Debug, "debug5"));
+            Assert.False(Contains(lines, LogLevel.Info, "info5"));
+            Assert.False(Contains(lines, LogLevel.Warning, "warning5"));
+            Assert.False(Contains(lines, LogLevel.Error, "error5"));
+            Assert.False(Contains(lines, LogLevel.Fatal, "fatal5"));
+            Assert.False(Contains(lines, LogLevel.Off, "off"));
         }
 
         private List<string> ReadFile(string logfile)

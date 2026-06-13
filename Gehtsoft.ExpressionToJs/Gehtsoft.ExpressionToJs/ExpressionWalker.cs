@@ -143,10 +143,15 @@ namespace Gehtsoft.ExpressionToJs
             if (expression.NodeType == ExpressionType.Subtract && expression.Left.Type == typeof(DateTime) && expression.Right.Type == typeof(DateTime))
                 return $"(({WalkExpression(expression.Left)}).getTime() - ({WalkExpression(expression.Right)}).getTime())";
 
-            if (expression.NodeType == ExpressionType.OrElse && expression.Left.Type == typeof(bool) && expression.Right.Type == typeof(bool))
+            //Logical && / || must short-circuit like C# does, so emit the native JS operators
+            //rather than the eager jsv_and / jsv_or helper calls. Cover bool and nullable bool
+            //operands (the latter appears as a lifted comparison, e.g. (bool?) == true).
+            bool IsBoolean(Type t) => t == typeof(bool) || t == typeof(bool?);
+
+            if (expression.NodeType == ExpressionType.OrElse && IsBoolean(expression.Left.Type) && IsBoolean(expression.Right.Type))
                 return $"(({WalkExpression(expression.Left)}) || ({WalkExpression(expression.Right)}))";
 
-            if (expression.NodeType == ExpressionType.AndAlso && expression.Left.Type == typeof(bool) && expression.Right.Type == typeof(bool))
+            if (expression.NodeType == ExpressionType.AndAlso && IsBoolean(expression.Left.Type) && IsBoolean(expression.Right.Type))
                 return $"(({WalkExpression(expression.Left)}) && ({WalkExpression(expression.Right)}))";
 
             return $"{function}({WalkExpression(expression.Left)}, {WalkExpression(expression.Right)})";

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Gehtsoft.Tools2.UnitTest
 {

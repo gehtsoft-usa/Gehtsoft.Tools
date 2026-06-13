@@ -72,6 +72,8 @@ function jsv_concat(str1, str2) {
 }
 
 function jsv_match(pattern, str) {
+    if (str === null || str === undefined)
+        return false;
     var result = str.match(pattern);
     return result != null && result.length > 0;
 }

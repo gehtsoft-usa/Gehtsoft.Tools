@@ -2,16 +2,20 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net451;netcoreapp2.0</TargetFrameworks>
-    <DefineConstants Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">NETCORE</DefineConstants>
+    <TargetFramework>net10.0</TargetFramework>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gehtsoft.EF.Db.SqliteDb" Version="1.1.3.6" />
+    <PackageReference Include="Gehtsoft.EF.Db.SqliteDb" Version="1.9.5" />
     <PackageReference Include="Gehtsoft.Tools.FileUtils" Version="1.0.3" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnitLite" Version="3.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+    <PackageReference Include="xunit.analyzers" Version="1.27.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -20,13 +24,14 @@
   </ItemGroup>
 
   <Target Name="CompilingMessages" BeforeTargets="Build">
-    <Exec Command="msxsl.exe .\component1.xml ..\Gehtsoft.ResourceManager\xslt\resources2cs.xslt  -o messages1.cs" />
+    <XslTransformation XmlInputPaths="component1.xml"
+                       XslInputPath="../Gehtsoft.ResourceManager/xslt/resources2cs.xslt"
+                       OutputPaths="messages1.cs" />
   </Target>
 
   <ItemGroup>
     <Compile Include="DbTest.cs" />
     <Compile Include="messages1.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Test1.cs" />
     <None Include="component1.xml" CopyToOutputDirectory="Always" />
   </ItemGroup>

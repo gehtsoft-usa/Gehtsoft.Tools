@@ -5,94 +5,93 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.Structures.Channels;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class TestChannel
     {
-        [Test]
-        public void TestChannel1()
+        [Fact]
+        public async Task TestChannel1()
         {
             Channel<int?> channel = new Channel<int?>();
-            Assert.IsFalse(channel.IsClosed);
-            Assert.IsTrue(channel.IsEmpty);
-            Assert.IsNull(channel.Peek());
+            Assert.False(channel.IsClosed);
+            Assert.True(channel.IsEmpty);
+            Assert.Null(channel.Peek());
             for (int i = 0; i < 1000; i++)
-                Assert.IsTrue(channel.Post(i));
-            Assert.IsFalse(channel.IsClosed);
-            Assert.IsFalse(channel.IsEmpty);
-            Assert.AreEqual(1000, channel.Count);
-            Assert.AreEqual(0, channel.Peek());
-            Assert.AreEqual(1000, channel.Count);
+                Assert.True(channel.Post(i));
+            Assert.False(channel.IsClosed);
+            Assert.False(channel.IsEmpty);
+            Assert.Equal(1000, channel.Count);
+            Assert.Equal(0, channel.Peek());
+            Assert.Equal(1000, channel.Count);
 
             for (int i = 0; i < 1000; i++)
             {
-                Assert.AreEqual(i, channel.Peek());
-                Assert.AreEqual(i, channel.Receive());
-                Assert.AreEqual(1000 - i - 1, channel.Count);
+                Assert.Equal(i, channel.Peek());
+                Assert.Equal(i, channel.Receive(TestContext.Current.CancellationToken));
+                Assert.Equal(1000 - i - 1, channel.Count);
             }
 
-            Task<int?> receive = channel.ReceiveAsync();
-            Assert.IsFalse(receive.IsCompleted);
+            Task<int?> receive = channel.ReceiveAsync(TestContext.Current.CancellationToken);
+            Assert.False(receive.IsCompleted);
             Thread.Sleep(10);
             channel.Post(123);
             Thread.Sleep(10);
-            Assert.IsTrue(receive.IsCompleted);
-            Assert.AreEqual(123, receive.Result);
+            Assert.True(receive.IsCompleted);
+            Assert.Equal(123, await receive);
 
 
             channel.Close();
             Assert.Throws<ChannelIsClosedException>(() => channel.Post(1));
             while (!channel.IsEmpty)
-                channel.Receive();
-            Assert.Throws<ChannelIsClosedException>(() => channel.Receive());
+                channel.Receive(TestContext.Current.CancellationToken);
+            Assert.Throws<ChannelIsClosedException>(() => channel.Receive(TestContext.Current.CancellationToken));
         }
 
-        [Test]
+        [Fact]
         public void TestChannel2()
         {
             Channel<int?> channel = new Channel<int?>(5);
             for (int i = 0; i < 5; i++)
             {
-                Assert.IsTrue(channel.Post(i));
+                Assert.True(channel.Post(i));
             }
-            Assert.AreEqual(5, channel.Count);
-            Assert.IsFalse(channel.Post(6));
-            Assert.AreEqual(5, channel.Count);
-            Task sender = channel.SendAsync(7);
+            Assert.Equal(5, channel.Count);
+            Assert.False(channel.Post(6));
+            Assert.Equal(5, channel.Count);
+            Task sender = channel.SendAsync(7, TestContext.Current.CancellationToken);
             Thread.Sleep(10);
-            Assert.AreEqual(5, channel.Count);
-            Assert.IsFalse(sender.IsCompleted);
+            Assert.Equal(5, channel.Count);
+            Assert.False(sender.IsCompleted);
             bool got7 = false;
             while (!channel.IsEmpty)
             {
-                got7 = got7 | (channel.Receive() == 7);
+                got7 = got7 | (channel.Receive(TestContext.Current.CancellationToken) == 7);
                 Thread.Sleep(10);
             }
             Thread.Sleep(10);
-            Assert.IsTrue(sender.IsCompleted);
+            Assert.True(sender.IsCompleted);
 
             Task filler = Task.Run(() => {
-                for (int i = 0; i < 10; i++) 
+                for (int i = 0; i < 10; i++)
                     channel.Send(i);
-            });
+            }, TestContext.Current.CancellationToken);
 
             Thread.Sleep(10);
-            Assert.AreEqual(5, channel.Count);
-            Assert.IsFalse(filler.IsCompleted);
+            Assert.Equal(5, channel.Count);
+            Assert.False(filler.IsCompleted);
             while (!channel.IsEmpty)
             {
                Thread.Sleep(10);
-                if (channel.Receive() == 9)
+                if (channel.Receive(TestContext.Current.CancellationToken) == 9)
                     break;
             }
             Thread.Sleep(10);
-            Assert.IsTrue(filler.IsCompleted);
+            Assert.True(filler.IsCompleted);
         }
 
-        [Test]
+        [Fact]
         public void TestPrioritizedChannel()
         {
             PrioritizedChannel<int> channel = new PrioritizedChannel<int>();
@@ -114,15 +113,15 @@ namespace Gehtsoft.Tools.UnitTest
                     
                     cc++;
                     int v0 = channel.Peek();
-                    int v = channel.Receive();
-                    Assert.AreEqual(v0, v);
+                    int v = channel.Receive(TestContext.Current.CancellationToken);
+                    Assert.Equal(v0, v);
                     check[v] = true;
                 }
 
-                Assert.AreEqual(1000, cc);
+                Assert.Equal(1000, cc);
                 foreach (int k in check.Keys)
                 {
-                    Assert.IsTrue(check[k]);
+                    Assert.True(check[k]);
                 }
             }
 
@@ -130,8 +129,8 @@ namespace Gehtsoft.Tools.UnitTest
 
         }
 
-        [Test]
-        public void SelectorTest()
+        [Fact]
+        public async Task SelectorTest()
         {
             Channel<int?> channel1 = new Channel<int?>();
             Channel<string> channel2 = new Channel<string>();
@@ -140,11 +139,11 @@ namespace Gehtsoft.Tools.UnitTest
             for (int i = 0; i < 50; i++)
             {
                 int i1 = i;
-                Task.Run(() =>
+                _ = Task.Run(() =>
                 {
                     channel1.Post(i1);
                     channel2.Post("text" + i1);
-                });
+                }, TestContext.Current.CancellationToken);
 
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(1));
@@ -197,8 +196,8 @@ namespace Gehtsoft.Tools.UnitTest
                 });
 
                 Thread.Sleep(50);
-                Assert.IsTrue(receiver.IsCompleted);
-                Assert.IsTrue(receiver.Result);
+                Assert.True(receiver.IsCompleted);
+                Assert.True(await receiver);
                 while (!receiver.IsCompleted)
                 {
                     Console.WriteLine("Cancelling...");
@@ -207,8 +206,8 @@ namespace Gehtsoft.Tools.UnitTest
             }
         }
 
-        [Test]
-        public void MTChannelTest()
+        [Fact]
+        public async Task MTChannelTest()
         {
             Channel<int> channel = new Channel<int>();
             ConcurrentDictionary<int, int> handled = new ConcurrentDictionary<int, int>();
@@ -235,7 +234,7 @@ namespace Gehtsoft.Tools.UnitTest
                         }
 
                     }
-                });
+                }, TestContext.Current.CancellationToken);
             }
 
             Task sender = Task.Run(() => {
@@ -243,22 +242,22 @@ namespace Gehtsoft.Tools.UnitTest
                     channel.Send(i);
                 Thread.Sleep(2000);
                 channel.Close();
-            });
+            }, TestContext.Current.CancellationToken);
 
-            Task.WaitAll(handlers);
-            Assert.AreEqual(10000, handled.Count);
+            await Task.WhenAll(handlers);
+            Assert.Equal(10000, handled.Count);
             int[] handledCount = new int[WORKERS];
             for (int i = 0; i < 10000; i++)
             {
-                Assert.IsTrue(handled.ContainsKey(i));
-                Assert.GreaterOrEqual(handled[i], 0);
-                Assert.LessOrEqual(handled[i], WORKERS);
+                Assert.True(handled.ContainsKey(i));
+                Assert.True(handled[i] >= 0);
+                Assert.True(handled[i] <= WORKERS);
                 handledCount[handled[i]]++;
 
             }
 
             for (int i = 0; i < WORKERS; i++)
-                Assert.Greater(handledCount[i], 10000 / (WORKERS * 2));
+                Assert.True(handledCount[i] > 10000 / (WORKERS * 2));
 
             
             for (int i = 0; i < handledCount.Length; i++)

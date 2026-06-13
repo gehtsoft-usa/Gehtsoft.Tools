@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" name="Gehtsoft.ResourceManager.Test.dll" fullname="Gehtsoft.ResourceManager.Test.dll" testcasecount="3" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.112764" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="73" random-seed="532308589">
+  <command-line><![CDATA[/mnt/d/develop/components/Gehtsoft.Tools/Gehtsoft.ResourceManager/Gehtsoft.ResourceManager.Test/bin/Debug/net10.0/Gehtsoft.ResourceManager.Test.dll]]></command-line>
+  <filter />
+  <test-suite type="Assembly" id="1005" name="Gehtsoft.ResourceManager.Test.dll" fullname="Gehtsoft.ResourceManager.Test.dll" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.112764" total="3" passed="3" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="73">
+    <environment framework-version="3.11.0.0" clr-version="10.0.9" os-version="Ubuntu 24.04.4 LTS" platform="Unix" cwd="/mnt/d/develop/components/Gehtsoft.Tools/Gehtsoft.ResourceManager/Gehtsoft.ResourceManager.Test" machine-name="ng-desk-2" user="ngeht" user-domain="ng-desk-2" culture="" uiculture="" os-architecture="x64" />
+    <settings>
+      <setting name="WorkDirectory" value="/mnt/d/develop/components/Gehtsoft.Tools/Gehtsoft.ResourceManager/Gehtsoft.ResourceManager.Test" />
+      <setting name="NumberOfTestWorkers" value="32" />
+    </settings>
+    <properties>
+      <property name="_PID" value="62230" />
+      <property name="_APPDOMAIN" value="Gehtsoft.ResourceManager.Test" />
+    </properties>
+    <test-suite type="TestSuite" id="1006" name="Gehtsoft" fullname="Gehtsoft" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.110650" total="3" passed="3" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="73">
+      <test-suite type="TestSuite" id="1007" name="ResourceManager" fullname="Gehtsoft.ResourceManager" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.110375" total="3" passed="3" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="73">
+        <test-suite type="TestSuite" id="1008" name="Test" fullname="Gehtsoft.ResourceManager.Test" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.110360" total="3" passed="3" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="73">
+          <test-suite type="TestFixture" id="1000" name="DbTest" fullname="Gehtsoft.ResourceManager.Test.DbTest" classname="Gehtsoft.ResourceManager.Test.DbTest" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.088375" total="1" passed="1" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="43">
+            <test-case id="1001" name="Test" fullname="Gehtsoft.ResourceManager.Test.DbTest.Test" methodname="Test" classname="Gehtsoft.ResourceManager.Test.DbTest" runstate="Runnable" seed="623240053" result="Passed" start-time="2026-06-12 22:30:09Z" end-time="2026-06-12 22:30:10Z" duration="0.086256" asserts="43" />
+          </test-suite>
+          <test-suite type="TestFixture" id="1002" name="Test1" fullname="Gehtsoft.ResourceManager.Test.Test1" classname="Gehtsoft.ResourceManager.Test.Test1" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-06-12 22:30:10Z" end-time="2026-06-12 22:30:10Z" duration="0.020824" total="2" passed="2" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="30">
+            <test-case id="1004" name="TestResources" fullname="Gehtsoft.ResourceManager.Test.Test1.TestResources" methodname="TestResources" classname="Gehtsoft.ResourceManager.Test.Test1" runstate="Runnable" seed="863482082" result="Passed" start-time="2026-06-12 22:30:10Z" end-time="2026-06-12 22:30:10Z" duration="0.008805" asserts="6" />
+            <test-case id="1003" name="TestXmlAndBasics" fullname="Gehtsoft.ResourceManager.Test.Test1.TestXmlAndBasics" methodname="TestXmlAndBasics" classname="Gehtsoft.ResourceManager.Test.Test1" runstate="Runnable" seed="1787129954" result="Passed" start-time="2026-06-12 22:30:10Z" end-time="2026-06-12 22:30:10Z" duration="0.011661" asserts="24" />
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

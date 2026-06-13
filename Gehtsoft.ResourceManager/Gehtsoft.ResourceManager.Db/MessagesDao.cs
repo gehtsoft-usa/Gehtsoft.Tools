@@ -69,26 +69,22 @@ namespace Gehtsoft.ResourceManager.Db
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            SelectEntityQueryBuilderBase selectBuilder = new SelectEntityQueryBuilderBase(typeof(DbMessage), connection);
-            selectBuilder.AddToResultset(nameof(DbMessage.ID));
-            selectBuilder.AddWhereFilter(nameof(DbMessage.Component), CmpOp.Eq, "component");
-
-            DeleteEntityQueryBuilder deleteBuilder = new DeleteEntityQueryBuilder(typeof(DbMessageText), connection);
-            deleteBuilder.AddWhereFilter(nameof(DbMessageText.Message), CmpOp.In, selectBuilder);
-
-            using (SqlDbQuery query = connection.GetQuery(deleteBuilder))
+            using (SelectEntitiesQueryBase messages = connection.GetGenericSelectEntityQuery(typeof(DbMessage)))
             {
-                query.BindParam("component", value.ID);
-                query.ExecuteNoData();
+                messages.AddToResultset(nameof(DbMessage.ID), "id");
+                messages.AddWhereFilter(nameof(DbMessage.Component), CmpOp.Eq, value.ID);
+
+                using (MultiDeleteEntityQuery query = connection.GetMultiDeleteEntityQuery(typeof(DbMessageText)))
+                {
+                    query.AddWhereFilter(nameof(DbMessageText.Message), CmpOp.In, messages);
+                    query.Execute();
+                }
             }
 
-            deleteBuilder = new DeleteEntityQueryBuilder(typeof(DbMessage), connection);
-            deleteBuilder.AddWhereFilter(nameof(DbMessage.Component), CmpOp.Eq, "component");
-
-            using (SqlDbQuery query = connection.GetQuery(deleteBuilder))
+            using (MultiDeleteEntityQuery query = connection.GetMultiDeleteEntityQuery(typeof(DbMessage)))
             {
-                query.BindParam("component", value.ID);
-                query.ExecuteNoData();
+                query.AddWhereFilter(nameof(DbMessage.Component), CmpOp.Eq, value.ID);
+                query.Execute();
             }
 
             using (ModifyEntityQuery query = connection.GetDeleteEntityQuery(typeof(DbComponent)))
@@ -146,15 +142,11 @@ namespace Gehtsoft.ResourceManager.Db
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            DeleteEntityQueryBuilder deleteBuilder = new DeleteEntityQueryBuilder(typeof(DbMessageText), connection);
-            deleteBuilder.AddWhereFilter(nameof(DbMessageText.Language), CmpOp.Eq, "language");
-
-            using (SqlDbQuery query = connection.GetQuery(deleteBuilder))
+            using (MultiDeleteEntityQuery query = connection.GetMultiDeleteEntityQuery(typeof(DbMessageText)))
             {
-                query.BindParam("language", value.ID);
-                query.ExecuteNoData();
+                query.AddWhereFilter(nameof(DbMessageText.Language), CmpOp.Eq, value.ID);
+                query.Execute();
             }
-
 
             using (ModifyEntityQuery query = connection.GetDeleteEntityQuery(typeof(DbLanguage)))
                 query.Execute(value);
@@ -211,13 +203,10 @@ namespace Gehtsoft.ResourceManager.Db
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            DeleteEntityQueryBuilder deleteBuilder = new DeleteEntityQueryBuilder(typeof(DbMessageText), connection);
-            deleteBuilder.AddWhereFilter(nameof(DbMessageText.Message), CmpOp.Eq, "message");
-
-            using (SqlDbQuery query = connection.GetQuery(deleteBuilder))
+            using (MultiDeleteEntityQuery query = connection.GetMultiDeleteEntityQuery(typeof(DbMessageText)))
             {
-                query.BindParam("message", value.ID);
-                query.ExecuteNoData();
+                query.AddWhereFilter(nameof(DbMessageText.Message), CmpOp.Eq, value.ID);
+                query.Execute();
             }
 
             using (ModifyEntityQuery query = connection.GetDeleteEntityQuery(typeof(DbMessage)))
@@ -325,24 +314,23 @@ namespace Gehtsoft.ResourceManager.Db
 
         public static int[] GetComponentLanguages(SqlDbConnection connection, DbComponent component)
         {
-            SelectEntityQueryBuilderBase builder1 = new SelectEntityQueryBuilderBase(typeof(DbMessage), connection);
-            builder1.Distinct = true;
-            builder1.AddToResultset(nameof(DbMessage.ID), "id");
-            builder1.AddWhereFilter(typeof(DbMessage), nameof(DbMessage.Component), CmpOp.Eq, "component");
-
-            SelectEntityQueryBuilderBase builder = new SelectEntityQueryBuilderBase(typeof(DbMessageText), connection);
-            builder.Distinct = true;
-            builder.AddToResultset(nameof(DbMessageText.Language), "language");
-            builder.AddWhereFilter(nameof(DbMessageText.Message), CmpOp.In, builder1);
-
-            using (SqlDbQuery query = connection.GetQuery(builder))
+            using (SelectEntitiesQueryBase messages = connection.GetGenericSelectEntityQuery(typeof(DbMessage)))
             {
-                query.BindParam("component", component.ID);
-                query.ExecuteReader();
-                List<int> v = new List<int>();
-                while (query.ReadNext())
-                    v.Add(query.GetValue<int>(0));
-                return v.ToArray();
+                messages.Distinct = true;
+                messages.AddToResultset(nameof(DbMessage.ID), "id");
+                messages.AddWhereFilter(nameof(DbMessage.Component), CmpOp.Eq, component.ID);
+
+                using (SelectEntitiesQueryBase query = connection.GetGenericSelectEntityQuery(typeof(DbMessageText)))
+                {
+                    query.Distinct = true;
+                    query.AddToResultset(nameof(DbMessageText.Language), "language");
+                    query.AddWhereFilter(nameof(DbMessageText.Message), CmpOp.In, messages);
+                    query.Execute();
+                    List<int> v = new List<int>();
+                    while (query.ReadNext())
+                        v.Add(query.GetValue<int>(0));
+                    return v.ToArray();
+                }
             }
         }
 
@@ -350,24 +338,20 @@ namespace Gehtsoft.ResourceManager.Db
         {
             TextMessageBlock block = new TextMessageBlock() {Component = component.Name, Language = language.Name};
 
-            SelectEntityQueryBuilderBase builder = new SelectEntityQueryBuilderBase(typeof(DbMessageText), connection);
-            builder.AddEntity(typeof(DbMessage));
-            builder.AddToResultset(typeof(DbMessage), nameof(DbMessage.Name), "name");
-            builder.AddToResultset(typeof(DbMessageText), nameof(DbMessageText.Value), "value");
-
-            builder.AddWhereFilter(typeof(DbMessage), nameof(DbMessage.Component), CmpOp.Eq, "component");
-            builder.AddWhereFilter(typeof(DbMessageText), nameof(DbMessageText.Language), CmpOp.Eq, "language");
-
-            using (SqlDbQuery query = connection.GetQuery(builder))
+            using (SelectEntitiesQueryBase query = connection.GetGenericSelectEntityQuery(typeof(DbMessageText)))
             {
-                query.BindParam("component", component.ID);
-                query.BindParam("language", language.ID);
-                query.ExecuteReader();
+                query.AddEntity(typeof(DbMessage));
+                query.AddToResultset(typeof(DbMessage), nameof(DbMessage.Name), "name");
+                query.AddToResultset(typeof(DbMessageText), nameof(DbMessageText.Value), "value");
+
+                query.AddWhereFilter(typeof(DbMessage), nameof(DbMessage.Component), CmpOp.Eq, component.ID);
+                query.AddWhereFilter(typeof(DbMessageText), nameof(DbMessageText.Language), CmpOp.Eq, language.ID);
+
+                query.Execute();
                 while (query.ReadNext())
                     block.Add(new TextMessage() {Name = query.GetValue<string>(0), Value = query.GetValue<string>(1)});
                 return block;
             }
-
         }
 
     }

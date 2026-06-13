@@ -5,17 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools2.Extensions;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.UploadController.FileCollection.Test.Source
 {
-    [TestFixture]
     public class ContainerTest
     {
         private string mBasePath;
 
-        [OneTimeSetUp]
-        public void Setup()
+        public ContainerTest()
         {
             Clear();
         }
@@ -26,67 +24,67 @@ namespace Gehtsoft.UploadController.FileCollection.Test.Source
             if (Directory.Exists(mBasePath))
             {
                 UploadedContainerFactory factory = new UploadedContainerFactory(mBasePath);
-                Assert.IsTrue(factory.Clear());
+                Assert.True(factory.Clear());
             }
-            Assert.IsFalse(Directory.Exists(mBasePath));
+            Assert.False(Directory.Exists(mBasePath));
         }
 
-        [Test]
+        [Fact]
         public void Test()
         {
             Clear();
             UploadedContainerFactory factory = new UploadedContainerFactory(Path.Combine(mBasePath, "test1"));
-            Assert.IsNull(factory.GetAllTypes());
-            Assert.IsNull(factory.GetAllContainers("type1"));
+            Assert.Null(factory.GetAllTypes());
+            Assert.Null(factory.GetAllContainers("type1"));
 
             UploadedFileContainer container = factory.GetContainer("type1", 1);
-            Assert.IsFalse(Directory.Exists(container.FullName));
-            Assert.IsFalse(container.Exists);
-            Assert.AreEqual(0, container.Count);
-            Assert.IsNotNull(container.GetEnumerator());
-            Assert.IsFalse(container.GetEnumerator().MoveNext());
+            Assert.False(Directory.Exists(container.FullName));
+            Assert.False(container.Exists);
+            Assert.Equal(0, container.Count);
+            Assert.NotNull(container.GetEnumerator());
+            Assert.False(container.GetEnumerator().MoveNext());
 
-            Assert.Throws<IndexOutOfRangeException>(() => Assert.IsNotNull(container[0]));
-            Assert.IsNull(container["file1.txt", false]);
+            Assert.Throws<IndexOutOfRangeException>(() => Assert.NotNull(container[0]));
+            Assert.Null(container["file1.txt", false]);
             UploadedFile file = container["file1.txt", true];
-            Assert.IsNotNull(file);
-            Assert.IsFalse(file.Exists);
-            Assert.AreEqual("file1.txt", file.Name);
-            Assert.AreEqual("text/plain", file.MineType);
+            Assert.NotNull(file);
+            Assert.False(file.Exists);
+            Assert.Equal("file1.txt", file.Name);
+            Assert.Equal("text/plain", file.MineType);
 
-            Assert.IsTrue(Directory.Exists(container.FullName));
-            Assert.IsTrue(container.Exists);
-            Assert.AreEqual(1, container.Count);
+            Assert.True(Directory.Exists(container.FullName));
+            Assert.True(container.Exists);
+            Assert.Equal(1, container.Count);
 
             FileInfo fi = new FileInfo(file.FullName);
-            Assert.AreEqual(container.FullName, fi.DirectoryName);
-            Assert.AreEqual("file1.txt", fi.Name);
+            Assert.Equal(container.FullName, fi.DirectoryName);
+            Assert.Equal("file1.txt", fi.Name);
 
             file.AppendChunk(new byte[] {1, 2, 3});
-            Assert.IsTrue(file.Exists);
-            Assert.AreEqual(3, file.Length);
+            Assert.True(file.Exists);
+            Assert.Equal(3, file.Length);
             file.AppendChunk(new byte[] {4, 5, 6});
-            Assert.AreEqual(6, file.Length);
+            Assert.Equal(6, file.Length);
 
-            Assert.AreEqual(file.Directory, container.FullName);
+            Assert.Equal(file.Directory, container.FullName);
 
             byte[] c = file.ReadAll();
-            Assert.AreEqual(new byte[] {1, 2, 3, 4, 5, 6}, c);
+            Assert.Equal(new byte[] {1, 2, 3, 4, 5, 6}, c);
             c = file.ReadPiece(1, 2);
-            Assert.AreEqual(new byte[] {2, 3}, c);
+            Assert.Equal(new byte[] {2, 3}, c);
 
 
             string[] types = factory.GetAllTypes();
-            Assert.IsNotNull(types);
-            Assert.AreEqual(1, types.Length);
-            Assert.AreEqual("type1", types[0]);
+            Assert.NotNull(types);
+            Assert.Single(types);
+            Assert.Equal("type1", types[0]);
             
 
             UploadedFileContainer[] containers = factory.GetAllContainers("type1");
-            Assert.IsNotNull(containers);
-            Assert.AreEqual(1, containers.Length);
-            Assert.AreEqual(container.ContainerID, containers[0].ContainerID);
-            Assert.AreEqual("type1", containers[0].ContainerType);
+            Assert.NotNull(containers);
+            Assert.Single(containers);
+            Assert.Equal(container.ContainerID, containers[0].ContainerID);
+            Assert.Equal("type1", containers[0].ContainerType);
 
             UploadedFileContainer container1 = factory.GetContainer("type2", 1);
             UploadedFile file11 = container1["file1.txt", true];
@@ -94,79 +92,79 @@ namespace Gehtsoft.UploadController.FileCollection.Test.Source
             UploadedFile file12 = container1["file2.txt", true];
             file12.AppendChunk(new byte[] {1, 2, 3});
 
-            Assert.IsTrue(file11.Exists);
-            Assert.IsTrue(file12.Exists);
-            Assert.IsTrue(container1.Exists);
+            Assert.True(file11.Exists);
+            Assert.True(file12.Exists);
+            Assert.True(container1.Exists);
 
             file12.Delete();
-            Assert.IsTrue(file11.Exists);
-            Assert.IsFalse(file12.Exists);
-            Assert.IsTrue(container1.Exists);
+            Assert.True(file11.Exists);
+            Assert.False(file12.Exists);
+            Assert.True(container1.Exists);
 
             container1.Delete();
-            Assert.IsFalse(file11.Exists);
-            Assert.IsFalse(file12.Exists);
-            Assert.IsFalse(container1.Exists);
+            Assert.False(file11.Exists);
+            Assert.False(file12.Exists);
+            Assert.False(container1.Exists);
 
 
         }
 
-        [Test]
-        public void TestAsync()
+        [Fact]
+        public async Task TestAsync()
         {
             Clear();
             UploadedContainerFactory factory = new UploadedContainerFactory(Path.Combine(mBasePath, "test1"));
-            Assert.IsNull(factory.GetAllTypesAsync().Result);
-            Assert.IsNull(factory.GetAllContainersAsync("type1").Result);
+            Assert.Null(await factory.GetAllTypesAsync());
+            Assert.Null(await factory.GetAllContainersAsync("type1"));
 
-            UploadedFileContainer container = factory.GetContainerAsync("type1", 1).Result;
-            Assert.IsFalse(Directory.Exists(container.FullName));
-            Assert.IsFalse(container.Exists);
-            Assert.AreEqual(0, container.Count);
-            Assert.IsNotNull(container.GetEnumerator());
-            Assert.IsFalse(container.GetEnumerator().MoveNext());
+            UploadedFileContainer container = await factory.GetContainerAsync("type1", 1);
+            Assert.False(Directory.Exists(container.FullName));
+            Assert.False(container.Exists);
+            Assert.Equal(0, container.Count);
+            Assert.NotNull(container.GetEnumerator());
+            Assert.False(container.GetEnumerator().MoveNext());
 
-            Assert.Throws<IndexOutOfRangeException>(() => Assert.IsNotNull(container[0]));
-            Assert.IsNull(container["file1.txt", false]);
+            Assert.Throws<IndexOutOfRangeException>(() => Assert.NotNull(container[0]));
+            Assert.Null(container["file1.txt", false]);
             UploadedFile file = container["file1.txt", true];
-            Assert.IsNotNull(file);
-            Assert.IsFalse(file.Exists);
-            Assert.AreEqual("file1.txt", file.Name);
-            Assert.AreEqual("text/plain", file.MineType);
+            Assert.NotNull(file);
+            Assert.False(file.Exists);
+            Assert.Equal("file1.txt", file.Name);
+            Assert.Equal("text/plain", file.MineType);
 
-            Assert.IsTrue(Directory.Exists(container.FullName));
-            Assert.IsTrue(container.Exists);
-            Assert.AreEqual(1, container.Count);
+            Assert.True(Directory.Exists(container.FullName));
+            Assert.True(container.Exists);
+            Assert.Equal(1, container.Count);
 
             FileInfo fi = new FileInfo(file.FullName);
-            Assert.AreEqual(container.FullName, fi.DirectoryName);
-            Assert.AreEqual("file1.txt", fi.Name);
+            Assert.Equal(container.FullName, fi.DirectoryName);
+            Assert.Equal("file1.txt", fi.Name);
 
-            file.AppendChunkAsync(new byte[] { 1, 2, 3 }).Wait();
-            Assert.IsTrue(file.Exists);
-            Assert.AreEqual(3, file.Length);
-            file.AppendChunkAsync(new byte[] { 4, 5, 6 }).Wait();
-            Assert.AreEqual(6, file.Length);
+            await file.AppendChunkAsync(new byte[] { 1, 2, 3 });
+            Assert.True(file.Exists);
+            Assert.Equal(3, file.Length);
+            await file.AppendChunkAsync(new byte[] { 4, 5, 6 });
+            Assert.Equal(6, file.Length);
 
-            Assert.AreEqual(file.Directory, container.FullName);
+            Assert.Equal(file.Directory, container.FullName);
 
-            byte[] c = file.ReadAllAsync().Result;
-            Assert.AreEqual(new byte[] { 1, 2, 3, 4, 5, 6 }, c);
-            c = file.ReadPieceAsync(1, 2).Result;
-            Assert.AreEqual(new byte[] { 2, 3 }, c);
+            byte[] c = await file.ReadAllAsync();
+            Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, c);
+            c = await file.ReadPieceAsync(1, 2);
+            Assert.Equal(new byte[] { 2, 3 }, c);
 
 
             string[] types = factory.GetAllTypes();
-            Assert.IsNotNull(types);
-            Assert.AreEqual(1, types.Length);
-            Assert.AreEqual("type1", types[0]);
+            Assert.NotNull(types);
+            Assert.Single(types);
+            Assert.Equal("type1", types[0]);
 
 
             UploadedFileContainer[] containers = factory.GetAllContainers("type1");
-            Assert.IsNotNull(containers);
-            Assert.AreEqual(1, containers.Length);
-            Assert.AreEqual(container.ContainerID, containers[0].ContainerID);
-            Assert.AreEqual("type1", containers[0].ContainerType);
+            Assert.NotNull(containers);
+            Assert.Single(containers);
+            Assert.Equal(container.ContainerID, containers[0].ContainerID);
+            Assert.Equal("type1", containers[0].ContainerType);
 
             UploadedFileContainer container1 = factory.GetContainer("type2", 1);
             UploadedFile file11 = container1["file1.txt", true];
@@ -174,19 +172,19 @@ namespace Gehtsoft.UploadController.FileCollection.Test.Source
             UploadedFile file12 = container1["file2.txt", true];
             file12.AppendChunk(new byte[] { 1, 2, 3 });
 
-            Assert.IsTrue(file11.Exists);
-            Assert.IsTrue(file12.Exists);
-            Assert.IsTrue(container1.Exists);
+            Assert.True(file11.Exists);
+            Assert.True(file12.Exists);
+            Assert.True(container1.Exists);
 
             file12.Delete();
-            Assert.IsTrue(file11.Exists);
-            Assert.IsFalse(file12.Exists);
-            Assert.IsTrue(container1.Exists);
+            Assert.True(file11.Exists);
+            Assert.False(file12.Exists);
+            Assert.True(container1.Exists);
 
             container1.Delete();
-            Assert.IsFalse(file11.Exists);
-            Assert.IsFalse(file12.Exists);
-            Assert.IsFalse(container1.Exists);
+            Assert.False(file11.Exists);
+            Assert.False(file12.Exists);
+            Assert.False(container1.Exists);
         }
     }
 }

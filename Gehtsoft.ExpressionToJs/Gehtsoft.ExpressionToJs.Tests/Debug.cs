@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.ExpressionToJs.Tests
 {
-    [TestFixture]
     public class Debug
     {
         public class Entity
@@ -21,8 +20,7 @@ namespace Gehtsoft.ExpressionToJs.Tests
             public int[] C { get; set; }
         }
 
-        [Explicit]
-        [Test]
+        [Fact(Explicit = true)]
         public void Debug1()
         {
             Expression<Func<string, bool>> function = s => Functions.ToInt(s) > 10;

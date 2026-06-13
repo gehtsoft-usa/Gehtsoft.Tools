@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gehtsoft.Tools.TypeUtils;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gehtsoft.Tools.UnitTest
 {
-    [TestFixture]
     public class EnumUtilTest
     {
         public enum Enum1 : int
@@ -36,19 +35,19 @@ namespace Gehtsoft.Tools.UnitTest
             B4 = 8,
         }
 
-        [Test]
+        [Fact]
         public void Test()
         {
             EnumValue<Enum1, int>[] v1 = EnumUtils.GetEnumValues<Enum1, int>();
-            Assert.AreEqual(4, v1?.Length ?? 0);
-            Assert.AreEqual(1, v1[0].Value);
-            Assert.AreEqual(Enum1.A1, v1[0].EnumerationValue);
-            Assert.IsNotNull(v1[0].FieldInfo);
-            Assert.AreEqual(1, v1[0].FieldInfo.GetRawConstantValue());
-            Assert.AreEqual("A1D", v1[0].Description);
-            Assert.AreEqual(4, v1[3].Value);
-            Assert.AreEqual(Enum1.A4, v1[3].EnumerationValue);
-            Assert.AreEqual("A4D", v1[3].Description);
+            Assert.Equal(4, v1?.Length ?? 0);
+            Assert.Equal(1, v1[0].Value);
+            Assert.Equal(Enum1.A1, v1[0].EnumerationValue);
+            Assert.NotNull(v1[0].FieldInfo);
+            Assert.Equal(1, v1[0].FieldInfo.GetRawConstantValue());
+            Assert.Equal("A1D", v1[0].Description);
+            Assert.Equal(4, v1[3].Value);
+            Assert.Equal(Enum1.A4, v1[3].EnumerationValue);
+            Assert.Equal("A4D", v1[3].Description);
         }
 
     }
