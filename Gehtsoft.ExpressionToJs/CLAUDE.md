@@ -13,8 +13,17 @@ JS, evaluated in the browser). Typical use is boolean validation expressions.
 
 - `Gehtsoft.ExpressionToJs/` — the library (`netstandard2.0`, `LangVersion 14.0`).
   - `ExpressionWalker.cs` — `ExpressionCompiler`, the core. Recursively walks the expression
-    tree (`WalkExpression`) and emits JS. Each node type maps to a `jsv_*` helper call or inline
-    JS. Most emit methods are `protected virtual` so subclasses can override.
+    tree (`WalkExpression`) and emits JS. Operators map to `jsv_*` calls inline; calls, member
+    access and constants dispatch through translator pipelines (see below). Most emit methods are
+    `protected virtual` so subclasses can override.
+  - `MethodTranslators.cs` — the method-call translation pipeline: `IExpressionEmitContext`,
+    `IMethodCallTranslator`, the registry interfaces (`IJsMethodRegistry`/`IJsConstantRegistry`/
+    `IJsMemberRegistry`), the data-driven `TableMethodTranslator`, and focused translators
+    (Regex, IndexOf, StartsWith/EndsWith comparisons, Contains, LINQ, indexer, ToString, DateDiff).
+    Also defines `enum DateTimeMode`.
+  - `ValueTranslators.cs` — constant and member-access translators: `IConstantTranslator` /
+    `IMemberTranslator`, `DateTimeConstantTranslator`/`DateTimeMemberTranslator` (mode-aware),
+    `NullableMemberTranslator`, `TableMemberTranslator`, the parameter-access fallback, etc.
   - `Functions.cs` — `static class Functions`. Server-side C# implementations of helpers that
     have no direct BCL equivalent (`DaysSince`, `MonthsSince`, `YearsSince`,
     `IsCreditCardNumberCorrect`, `ToBool`, `ToInt`, `Fractional`, `IsNull`/`IsNotNull` etc.).
@@ -27,7 +36,11 @@ JS, evaluated in the browser). Typical use is boolean validation expressions.
 - `Gehtsoft.ExpressionToJs.Tests/` — xUnit v3 tests (`net8.0`), run on **Jint** (an in-process
   JS engine). The key pattern: compile a C# lambda → evaluate the emitted JS in Jint with the
   stub loaded → assert the JS result equals the C# expected value.
-  - `CompilerTest.cs` — the main suite (`TestExpression<TA,TR>` helper + `SetupJint`).
+  - `Complete/` — the comprehensive differential suite (the bulk of the tests). `DifferentialTestBase`
+    checks each case three ways: compiled C# delegate, emitted JS in Jint, and the two against each
+    other. Organized by area: operators, math, strings, LINQ, enums, XOR, constant folding, the
+    `Methods`/`Constants`/`Members` registries, `DateTimeMode`, etc.
+  - `CompilerTest.cs` — the original round-trip suite (`TestExpression<TA,TR>` helper + `SetupJint`).
   - `ValidationExpressionCompiler.cs` — a sample `ExpressionCompiler` subclass that maps the
     lambda's parameters onto `reference('path')` / `value` for the form-validation use case.
   - `FunctionsTest.cs` — direct tests of `Functions`. `Debug.cs` — scratch/explicit tests.
@@ -65,7 +78,8 @@ frame as `DateMode`. Set it before reading `JavaScriptExpression`. `DateTime.Now
 emitted dynamically (`new Date()` / `jsv_today(...)`), so they evaluate at validation time, not compile time.
 
 Server/client parity is maintained **by hand**: every `Functions.X` must have a behaviorally
-identical `jsv_x` in `stub.js`. This is the main correctness risk (see PLAN.md).
+identical `jsv_x` in `stub.js` — historically the main correctness risk. The `Complete/` differential
+suite now guards it by running both sides and comparing (see PLAN.md).
 
 ## Build & test
 
@@ -80,10 +94,11 @@ Tests depend on `Jint` (4.x), `xunit.v3` (3.x), `Microsoft.NET.Test.Sdk`.
 
 - The library targets `netstandard2.0` for reach; do **not** add newer-TFM-only APIs there.
 - Tests are xUnit **v3** (`xunit.v3` package, `using Xunit;`), not v2.
-- When adding support for a new C# construct you must change **three** places in lockstep:
-  (1) emit logic in `ExpressionWalker.cs`, (2) the `jsv_*` helper in `stub.js`, and
-  (3) — if it has no BCL form — a server-side method in `Functions.cs`. Then add a round-trip
-  test in `CompilerTest.cs`.
+- When adding support for a new C# construct you typically change **three** places in lockstep:
+  (1) emit logic — usually a `Table*Translator` entry (or a focused translator) in
+  `MethodTranslators.cs`/`ValueTranslators.cs`, occasionally a `WalkExpression` switch case;
+  (2) the `jsv_*` helper in `stub.js`; and (3) — if it has no BCL form — a server-side method in
+  `Functions.cs`. Then add a differential test under `Complete/`.
 - Numeric/date/null semantics differ between C# and JS; new features need a round-trip test that
   actually exercises the divergent cases (integer division, rounding mode, timezones, loose
   equality). See PLAN.md §1 for known divergences.
@@ -95,5 +110,8 @@ by **Gehtsoft.Tools2**. Confirm whether new investment should target Tools2 befo
 
 ## Improvement backlog
 
-See **PLAN.md** for the full prioritized assessment: known correctness bugs, the proposed
-differential test harness, the `AddCall` registry refactor, and feature gaps.
+See **PLAN.md** for the full history and status. Most of it is done — correctness/parity fixes,
+the differential harness, the translator-pipeline refactor, extensibility registries, enums, XOR,
+extra string/LINQ methods, and the Local/UTC `DateTimeMode` (incl. dynamic `Now`/`Today`/`UtcNow`).
+Remaining items are small §4 stragglers (`Average`, predicate-less `FirstOrDefault`/`LastOrDefault`,
+bit shifts, `TryParse`) plus optional per-`DateTimeKind` constant normalization.
