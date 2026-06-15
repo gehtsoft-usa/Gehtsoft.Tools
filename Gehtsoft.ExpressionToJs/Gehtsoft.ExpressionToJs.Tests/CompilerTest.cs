@@ -242,7 +242,9 @@ namespace Gehtsoft.ExpressionToJs.Tests
             TestExpression<Entity, int>(entityVal => entityVal.arrayProp.Length, 3);
             TestExpression<int[], int>(intArr => intArr.Length, 5);
             TestExpression<int[], int>(intArr => intArr[2], 30);
-            TestExpression<int[], double>(intArr => intArr.Length / 2, 2.5);
+            //integer division truncates in C# (Length is 5 -> 5 / 2 == 2), then widens to 2.0;
+            //the JS side now truncates to match instead of yielding 2.5.
+            TestExpression<int[], double>(intArr => intArr.Length / 2, 2.0);
             TestExpression<int[], int>(intArr => intArr[intArr.Length / 2], 30);
             TestExpression<Entity, int>(entityVal => entityVal.SubEntity.subIntProp, 515);
             TestExpression<Entity, int>(entityVal => entityVal.arrayProp[entityVal.SubEntity.index], 3);
