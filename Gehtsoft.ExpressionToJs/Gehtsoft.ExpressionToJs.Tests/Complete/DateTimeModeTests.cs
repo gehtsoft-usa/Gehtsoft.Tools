@@ -37,6 +37,62 @@ namespace Gehtsoft.ExpressionToJs.Tests.Complete
             Assert.Contains("getUTCDay()", Js<DateTime, bool>(d => d.DayOfWeek == DayOfWeek.Thursday, DateTimeMode.Utc));
         }
 
+        // ---------- ambient now is dynamic, not frozen at compile time ----------
+
+        [Fact]
+        public void Now_IsDynamic_NotFolded()
+        {
+            // Emits new Date() (re-evaluated client-side), not a baked-in literal like new Date(2026,...).
+            string js = Js<DateTime, bool>(d => d >= DateTime.Now, DateTimeMode.Local);
+            Assert.Contains("new Date()", js);
+        }
+
+        [Fact]
+        public void UtcNow_IsDynamic()
+        {
+            Assert.Contains("new Date()", Js<DateTime, bool>(d => d >= DateTime.UtcNow, DateTimeMode.Utc));
+        }
+
+        [Fact]
+        public void Today_IsDynamic_AndModeAware()
+        {
+            Assert.Contains("jsv_today(false)", Js<DateTime, bool>(d => d >= DateTime.Today, DateTimeMode.Local));
+            Assert.Contains("jsv_today(true)", Js<DateTime, bool>(d => d >= DateTime.Today, DateTimeMode.Utc));
+        }
+
+        [Fact]
+        public void NowAddDays_StaysDynamic()
+        {
+            Assert.Contains("new Date().getTime()", Js<DateTime, bool>(d => d < DateTime.Now.AddDays(30), DateTimeMode.Local));
+        }
+
+        [Fact]
+        public void Today_RoundTrip_IsMidnight()
+        {
+            var engine = new Engine();
+            engine.Execute(ExpressionToJsStubAccessor.GetJsIncludesAsString());
+            Assert.Equal(0, Convert.ToInt32(engine.Evaluate("jsv_today(false).getHours()").ToObject()));
+            Assert.Equal(0, Convert.ToInt32(engine.Evaluate("jsv_today(true).getUTCHours()").ToObject()));
+        }
+
+        [Fact]
+        public void Now_RoundTrip_TracksRealClock()
+        {
+            // value < DateTime.Now is true for a past value and false for a future one, evaluated live.
+            var js = new ExpressionCompiler((Expression<Func<DateTime, bool>>)(value => value < DateTime.Now)).JavaScriptExpression;
+            Assert.True(Convert.ToBoolean(EvalWithDate(js, new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc))));
+            Assert.False(Convert.ToBoolean(EvalWithDate(js, new DateTime(2999, 1, 1, 0, 0, 0, DateTimeKind.Utc))));
+        }
+
+        private static object EvalWithDate(string js, DateTime utcInstant)
+        {
+            var engine = new Engine();
+            engine.Execute(ExpressionToJsStubAccessor.GetJsIncludesAsString());
+            double epochMs = (utcInstant.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+            engine.Execute("var value = new Date(" + epochMs.ToString(CultureInfo.InvariantCulture) + ");");
+            return engine.Evaluate(js).ToObject();
+        }
+
         // ---------- calendar diffs carry the mode flag ----------
 
         [Fact]

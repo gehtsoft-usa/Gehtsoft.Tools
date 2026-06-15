@@ -64,13 +64,20 @@ namespace Gehtsoft.ExpressionToJs
             if (member.Member.DeclaringType != typeof(DateTime))
                 return false;
 
-            if (member.Member.Name == nameof(DateTime.Now))
+            bool utc = context.DateMode == DateTimeMode.Utc;
+
+            // Ambient-now accessors stay dynamic (evaluated client-side at validation time).
+            if (member.Member.Name == nameof(DateTime.Now) || member.Member.Name == nameof(DateTime.UtcNow))
             {
-                js = "new Date()"; // an instant; identical in both modes
+                js = "new Date()"; // the current instant; component reads on top follow DateMode
+                return true;
+            }
+            if (member.Member.Name == nameof(DateTime.Today))
+            {
+                js = utc ? "jsv_today(true)" : "jsv_today(false)"; // midnight today in the chosen frame
                 return true;
             }
 
-            bool utc = context.DateMode == DateTimeMode.Utc;
             string obj = context.Emit(member.Expression);
 
             switch (member.Member.Name)

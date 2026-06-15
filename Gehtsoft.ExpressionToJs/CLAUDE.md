@@ -36,10 +36,11 @@ JS, evaluated in the browser). Typical use is boolean validation expressions.
 
 `WalkExpression(expr)`:
 1. If `expr.CanReduce`, reduce it.
-2. **Constant folding:** `GetExpressionValue` first runs a cheap `FreeParameterFinder`; only
-   subtrees with no *free* parameter (a captured local, a constant, a static call) are compiled +
-   invoked and emitted as a literal (via the constant pipeline). Parameter-referencing subtrees skip
-   the compile entirely.
+2. **Constant folding:** `GetExpressionValue` first runs a cheap `ContainsNonConstant` check
+   (`NonConstantFinder`); only subtrees with no *free* parameter and no ambient-now accessor
+   (`DateTime.Now/Today/UtcNow`) are compiled + invoked and emitted as a literal (via the constant
+   pipeline). Parameter-referencing and ambient-now subtrees skip the compile and stay dynamic
+   (`new Date()` / `jsv_today(...)`).
 3. Otherwise switch on `expr.NodeType`: binary/unary operators → `jsv_*` calls (e.g.
    `jsv_plus`, `jsv_less`); `Call` → `AddCall`; member access → `AddMemberAccess`; constants →
    `EmitConstant`; etc.
@@ -60,7 +61,8 @@ built-ins. To customize *parameter rendering* (e.g. for validation), still subcl
 + `getFullYear()` etc. for Local, `new Date(Date.UTC(...))` + `getUTCFullYear()` etc. for Utc, and a `utc`
 flag into `jsv_monthssince`/`jsv_yearssince`. Epoch-based ops (`±TimeSpan`, subtraction, `AddDays`,
 `.Total*`, `DaysSince`) are frame-independent. **Contract:** the host must bind JS-side dates in the same
-frame as `DateMode`. Set it before reading `JavaScriptExpression`.
+frame as `DateMode`. Set it before reading `JavaScriptExpression`. `DateTime.Now`/`Today`/`UtcNow` are
+emitted dynamically (`new Date()` / `jsv_today(...)`), so they evaluate at validation time, not compile time.
 
 Server/client parity is maintained **by hand**: every `Functions.X` must have a behaviorally
 identical `jsv_x` in `stub.js`. This is the main correctness risk (see PLAN.md).

@@ -388,11 +388,12 @@ namespace Gehtsoft.ExpressionToJs
         {
             returnValue = null;
 
-            // A subtree that references a free parameter (one not bound by a lambda inside it)
-            // can never reduce to a constant. Detect that cheaply and skip the expensive
-            // compile+invoke entirely - this avoids a failed JIT compile and a swallowed
-            // exception at every parameter-referencing node, which is the common case.
-            if (ReferencesFreeParameter(expression))
+            // A subtree that references a free parameter (one not bound by a lambda inside it), or an
+            // ambient-now accessor (DateTime.Now/Today/UtcNow), cannot be precomputed to a constant -
+            // the latter must stay dynamic so it evaluates at validation time on the client. Detect
+            // that cheaply and skip the expensive compile+invoke (also avoids a failed JIT compile and
+            // a swallowed exception at every parameter-referencing node, the common case).
+            if (ContainsNonConstant(expression))
                 return false;
 
             try
@@ -410,17 +411,18 @@ namespace Gehtsoft.ExpressionToJs
             }
         }
 
-        private static bool ReferencesFreeParameter(Expression expression)
+        private static bool ContainsNonConstant(Expression expression)
         {
-            FreeParameterFinder finder = new FreeParameterFinder();
+            NonConstantFinder finder = new NonConstantFinder();
             finder.Visit(expression);
             return finder.Found;
         }
 
-        // Detects a reference to a parameter that is not bound by a lambda within the visited
-        // subtree (a free variable). Lambda-bound parameters (e.g. the 'c' in arr.Any(c => ...))
-        // do not count, so closed sub-expressions still fold to constants as they did before.
-        private sealed class FreeParameterFinder : ExpressionVisitor
+        // Detects whether a subtree cannot be precomputed at compile time: it references a free
+        // parameter (one not bound by a lambda inside the subtree - lambda-bound params like the 'c'
+        // in arr.Any(c => ...) do not count), or an ambient-now accessor (DateTime.Now/Today/UtcNow)
+        // which must stay dynamic. Other closed sub-expressions still fold to constants as before.
+        private sealed class NonConstantFinder : ExpressionVisitor
         {
             private readonly HashSet<ParameterExpression> mBound = new HashSet<ParameterExpression>();
 
@@ -428,7 +430,7 @@ namespace Gehtsoft.ExpressionToJs
 
             public override Expression Visit(Expression node)
             {
-                return Found ? node : base.Visit(node); // short-circuit once a free parameter is seen
+                return Found ? node : base.Visit(node); // short-circuit once something non-constant is seen
             }
 
             protected override Expression VisitLambda<T>(Expression<T> node)
@@ -447,6 +449,20 @@ namespace Gehtsoft.ExpressionToJs
                     Found = true;
                 return node;
             }
+
+            protected override Expression VisitMember(MemberExpression node)
+            {
+                if (IsAmbientNow(node.Member))
+                {
+                    Found = true;
+                    return node;
+                }
+                return base.VisitMember(node);
+            }
+
+            private static bool IsAmbientNow(System.Reflection.MemberInfo member)
+                => member.DeclaringType == typeof(DateTime)
+                   && (member.Name == nameof(DateTime.Now) || member.Name == nameof(DateTime.Today) || member.Name == nameof(DateTime.UtcNow));
         }
 
         protected bool IsExpressionRootsInParameter(Expression expression)

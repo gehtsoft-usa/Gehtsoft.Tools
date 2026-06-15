@@ -148,8 +148,11 @@ function jsv_xor(a, b) { return a ^ b; }
 
 function jsv_boolxor(a, b) { return (!!a) !== (!!b); }
 
-function jsv_today() {
-    return new Date();
+function jsv_today(utc) {
+    var n = new Date();
+    return utc
+        ? new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()))
+        : new Date(n.getFullYear(), n.getMonth(), n.getDate());
 }
 
 function jsv_dayssince(date0, date1) {

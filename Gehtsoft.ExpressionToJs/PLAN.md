@@ -47,9 +47,13 @@ Low-layer differential test suite added under `Gehtsoft.ExpressionToJs.Tests/Com
   ops (±TimeSpan, subtraction, `AddDays`, `.Total*`, `DaysSince`) are unchanged. The mode rides on
   `IExpressionEmitContext.DateMode` so the shared translators stay stateless. **Contract:** the host must
   bind JS-side dates in the same frame as the mode. The static `AddConstant` shim stays Local-only.
-  Tests in `DateTimeModeTests`. Follow-ups: `DateTime.Now`/`Today`/`UtcNow` are currently
-  constant-folded (frozen at compile time) — making them dynamic (`new Date()`) needs the
-  free-parameter finder to treat them as non-constant; and optional per-`DateTimeKind` normalization.
+  Tests in `DateTimeModeTests`.
+- ✅ **DONE — `DateTime.Now`/`Today`/`UtcNow` are dynamic.** The fold check (`ContainsNonConstant`,
+  formerly `ReferencesFreeParameter`) now treats these ambient-now accessors as non-constant, so they
+  emit live JS instead of a frozen compile-time literal: `Now`/`UtcNow` → `new Date()`, `Today` →
+  `jsv_today(false|true)` (mode-aware midnight). Chains like `DateTime.Now.AddDays(30)` stay dynamic;
+  component reads follow `DateMode`. Tests in `DateTimeModeTests`. (`DateTimeOffset.Now/UtcNow` remain
+  out of scope.) Follow-up still open: optional per-`DateTimeKind` constant normalization.
 
 **Deferred (design-scope, not quick fixes):**
 
