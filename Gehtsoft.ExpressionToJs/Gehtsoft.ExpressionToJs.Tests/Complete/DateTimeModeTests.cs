@@ -66,6 +66,18 @@ namespace Gehtsoft.ExpressionToJs.Tests.Complete
             Assert.Contains("new Date().getTime()", Js<DateTime, bool>(d => d < DateTime.Now.AddDays(30), DateTimeMode.Local));
         }
 
+        // Pins the exact emitted JS shown in the "Dates and time zones" guide (age rule).
+        public class Person { public DateTime BirthDate { get; set; } }
+
+        [Fact]
+        public void AgeRule_EmitsExactJs_Local()
+        {
+            Expression<Func<Person, bool>> rule = p => Functions.YearsSince(DateTime.Today, p.BirthDate) >= 21;
+            Assert.Equal(
+                "jsv_greaterorequal(jsv_yearssince(jsv_today(false), p.BirthDate, false), 21)",
+                Js(rule, DateTimeMode.Local));
+        }
+
         [Fact]
         public void Today_RoundTrip_IsMidnight()
         {
