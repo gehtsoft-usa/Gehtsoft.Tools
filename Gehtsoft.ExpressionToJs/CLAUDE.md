@@ -44,6 +44,18 @@ JS, evaluated in the browser). Typical use is boolean validation expressions.
   - `ValidationExpressionCompiler.cs` — a sample `ExpressionCompiler` subclass that maps the
     lambda's parameters onto `reference('path')` / `value` for the form-validation use case.
   - `FunctionsTest.cs` — direct tests of `Functions`. `Debug.cs` — scratch/explicit tests.
+  - `Complete/*GuideTests.cs` + `ReadmeExamplesTests.cs` + `ParameterRegistryTests.cs` — pin the
+    **exact emitted JS** for the examples shown in the docs/README (see the doc-examples rule below).
+- `help/` — the documentation (docgen; `Gehtsoft.Build.DocGen`). Hand-written `src/index.ds` (landing),
+  `src/ns/` (namespace overview), `src/articles.ds` (nine how-to/reference guides, in reading order,
+  `@sortarticles=no`); auto-generated API in `src/raw/` (regenerated from the built DLL's XML doc by the
+  `Scan`+`Prepare` targets). Build the site with `dotnet build help/project.proj /t:MakeDoc` → `help/dst/`.
+- `nuget/` — packaging (NuGet via `nuget pack` from `Gehtsoft.ExpressionToJs.nuspec`, **not** `dotnet
+  pack`): `README.md` (the package readme), `pack.bat`/`push.bat`. The nuspec sets `projectUrl` (docs),
+  `repository`, `readme`, and ships the embedded skill + readme as `<file>` entries.
+- `skills/SKILL.md` — a consumer skill bundled in the package (via the nuspec) for the
+  `diegofrata/nuget-skills` tool: it teaches a consuming agent how to use the library. One file, no
+  subdirs (the tool concatenates top-level `.md` only).
 
 ## How the compiler works (mental model)
 
@@ -108,16 +120,28 @@ Tests depend on `Jint` (4.x), `xunit.v3` (3.x), `Microsoft.NET.Test.Sdk`.
 - Numeric/date/null semantics differ between C# and JS; new features need a round-trip test that
   actually exercises the divergent cases (integer division, rounding mode, timezones, loose
   equality). See PLAN.md §1 for known divergences.
+- **Every emitted-JS example in the docs/README must be backed by a test** asserting that exact
+  output (this caught a real `&&`-vs-`jsv_and` error). When you write or change a `// -> jsv_...`
+  example, add/point to an exact-string `Assert.Equal` in a `*GuideTests`/`ReadmeExamplesTests`, run
+  it, and paste the verified output.
+- **Trunk-based:** commit directly to `master`; do not create feature branches for this repo.
+- **docgen authoring (`.ds`) gotchas:** write `&` as `&amp;` but keep `<`/`>` raw; use BBCode
+  `[c]`/`[i]`/`[b]` not XML tags; never start a line with `- `/`* `; for indented code in `@example`
+  use the `!` line-prefix; `@show=yes` expands an example; mermaid via `@highlight=diagram`+`@show=yes`;
+  full-width table is `@width=100%` (with the `%`), columns via `@col @width=30%`/`70%` on the header;
+  link `[clink=]` to **class** keys (member keys carry unstable CRC suffixes); don't use `@see`
+  (renders an empty-description table) — end an article with a "See also" `@list`.
 
 ## Strategic context
 
-This repo sits under the `Gehtsoft.Tools` family, which is frozen on net8.0 and being superseded
-by **Gehtsoft.Tools2**. Confirm whether new investment should target Tools2 before large rework.
+Standalone library. Source: `git@github.com:gehtsoft-usa/Gehtsoft.ExpressionToJs.git`. Published to
+NuGet/MyGet (current **3.1**). Docs: `https://docs.gehtsoftusa.com/Gehtsoft.Expression.ToJs/` (the
+generated `help/dst/` output). It formerly lived under the `Gehtsoft.Tools` tree and is being extracted
+into its own repo; treat it as independent (no Tools2 coupling).
 
-## Improvement backlog
+## Status & backlog
 
-See **PLAN.md** for the full history and status. Most of it is done — correctness/parity fixes,
-the differential harness, the translator-pipeline refactor, extensibility registries, enums, XOR,
-extra string/LINQ methods, and the Local/UTC `DateTimeMode` (incl. dynamic `Now`/`Today`/`UtcNow`).
-Remaining items are small §4 stragglers (`Average`, predicate-less `FirstOrDefault`/`LastOrDefault`,
-bit shifts, `TryParse`) plus optional per-`DateTimeKind` constant normalization.
+- **Current state** of the project (what's released, what was done) → **STATE.md**.
+- **Full improvement history** and the remaining feature backlog → **PLAN.md**.
+- **Downstream follow-up** (refactor Gehtsoft.EF.Toolbox `ValidationExpressionCompiler` onto the
+  `Parameters` registry) → **REFERENCE_REFACTOR.md**.
