@@ -1,0 +1,1118 @@
+@article
+    @key=guides.validation-walkthrough
+    @title=Validating on all tiers from one source of truth
+    @ingroup=main
+    @brief=Write a validation rule once in C#, run it on the server, and run the same rule in the browser.
+
+    The goal of this library is one rule, two runtimes. You write a validation predicate once, as
+    a C# lambda. The server runs it directly as a compiled delegate; the browser runs an
+    equivalent JavaScript expression emitted from the same lambda. Because both ends come from a
+    single definition, they cannot drift apart.
+
+    @example
+        @title=One rule, two runtimes
+        @show=yes
+        @highlight=diagram
+
+        flowchart TD
+          R["C# rule, written once"]
+          R --> C["Compile to a delegate"]
+          R --> K["ExpressionCompiler"]
+          C --> SV["Server: run the delegate"]
+          K --> JS["JavaScript expression"]
+          JS --> EV["Browser: eval with stub.js"]
+          SV --> V["Same boolean verdict"]
+          EV --> V
+    @end
+
+    This walkthrough takes one rule from C# all the way into the page.
+
+    @headline
+        @level=2
+        Step 1 - write the rule once
+    @end
+
+    A rule is an ordinary [c]Expression<Func<...>>[/c], usually a boolean predicate over
+    your model. Keep it an expression (not a statement lambda) so the compiler can walk it.
+
+    @example
+        @title=The rule
+        @show=yes
+        @highlight=cs
+
+        using System.Linq.Expressions;
+        using Gehtsoft.ExpressionToJs;
+
+        Expression<Func<int, bool>> rule = x => x > 0 &amp;&amp; x < 100;
+    @end
+
+    @headline
+        @level=2
+        Step 2 - run it on the server
+    @end
+
+    On the server the rule is just a delegate. Compile it and invoke it like any [c]Func[/c]. This
+    is the authoritative check that cannot be bypassed.
+
+    @example
+        @title=Server side
+        @show=yes
+        @highlight=cs
+
+        bool ok = rule.Compile()(42);   // true
+    @end
+
+    @headline
+        @level=2
+        Step 3 - emit the JavaScript
+    @end
+
+    Hand the same lambda to [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]ExpressionCompiler[/clink]
+    and read [c]JavaScriptExpression[/c]. The result is computed once and cached, so configure the
+    compiler (date mode, custom translators) [i]before[/i] reading it.
+
+    @example
+        @title=Emitting the client code
+        @show=yes
+        @highlight=cs
+
+        string js = new ExpressionCompiler(rule).JavaScriptExpression;
+        // js == "((jsv_greater(x, 0)) &amp;&amp; (jsv_less(x, 100)))"
+    @end
+
+    The emitted text is an [i]expression[/i], not a program. It calls small runtime helpers named
+    [c]jsv_*[/c] ([c]jsv_greater[/c], [c]jsv_equal[/c], [c]jsv_match[/c], ...). Those helpers exist
+    so JavaScript reproduces C# semantics - integer division, banker's rounding, typed equality,
+    date handling - rather than JavaScript's looser defaults. See
+    [link=guides.supported-features]Supported expression features[/link] for the full set.
+
+    @headline
+        @level=2
+        Step 4 - ship the runtime stub to the page
+    @end
+
+    The [c]jsv_*[/c] helpers live in [c]stub.js[/c], shipped inside the assembly as an embedded
+    resource. Retrieve it with
+    [clink=Gehtsoft.ExpressionToJs.ExpressionToJsStubAccessor]ExpressionToJsStubAccessor.GetJsIncludesAsString[/clink]
+    and include it on the page [b]once[/b], before evaluating any compiled expression. It is the
+    same for every expression, so cache it site-wide rather than per rule.
+
+    @example
+        @title=Getting the runtime
+        @show=yes
+        @highlight=cs
+
+        string stub = ExpressionToJsStubAccessor.GetJsIncludesAsString();
+    @end
+
+    There are two common ways to get that string to the browser.
+
+    [b]Render it inline[/b] - write the stub straight into the page, for example from a Razor
+    layout so every page that validates has it:
+
+    @example
+        @title=Inline in an ASP.NET Razor layout
+        @show=yes
+        @highlight=cshtml
+       !@* _Layout.cshtml - emit the runtime once, e.g. in the page head *@
+       !<script>
+       !    @Html.Raw(ExpressionToJsStubAccessor.GetJsIncludesAsString())
+       !</script>
+    @end
+
+    [b]Serve it as a static script[/b] - the stub is just a set of [c]jsv_*[/c] function
+    definitions, so you can expose it at a stable URL and reference it with a normal
+    [c]<script>[/c] tag (no wrapping needed - it defines the helpers as globals). It never changes
+    between requests, so the browser caches it like any other static script - the better option for
+    a busy site:
+
+    @example
+        @title=A REST endpoint that returns the stub
+        @show=yes
+        @highlight=cs
+       !// Program.cs - the stub is constant, so this response is highly cacheable
+       !app.MapGet("/js/expr-stub.js", () =>
+       !    Results.Text(ExpressionToJsStubAccessor.GetJsIncludesAsString(), "application/javascript"));
+    @end
+
+    @example
+        @title=Referencing it from the page
+        @show=yes
+        @highlight=html
+       !<!-- in the page head, before any emitted rule runs -->
+       !<script src="/js/expr-stub.js"></script>
+    @end
+
+    @headline
+        @level=2
+        Step 5 - evaluate in the browser
+    @end
+
+    If you rendered the rule inline, bind the variables the expression references (here [c]x[/c])
+    and evaluate the emitted string. It returns the same boolean the server computed:
+
+    @example
+        @title=Evaluating inline
+        @show=yes
+        @highlight=js
+
+        // stub.js already loaded once on the page
+        var x = 42;
+        var ok = ((jsv_greater(x, 0)) &amp;&amp; (jsv_less(x, 100)));   // true
+    @end
+
+    In a script-tag setup you fetch each rule from the server as well. A bare expression is not
+    callable on its own, so wrap it in a [b]named function[/b] - the name fixed, or taken from the
+    request - and return that:
+
+    @example
+        @title=A REST endpoint that returns the rule as a function
+        @show=yes
+        @highlight=cs
+       !// GET /js/rules/{name} -> a script defining a function called {name}
+       !app.MapGet("/js/rules/{name}", (string name) =>
+       !{
+       !    string expr = new ExpressionCompiler(Rules.For(name)).JavaScriptExpression;
+       !    string script = $"function {name}(x) {{ return {expr}; }}";
+       !    return Results.Text(script, "application/javascript");
+       !});
+    @end
+
+    Load the stub once, the rule script alongside it, and call the function like any other:
+
+    @example
+        @title=Loading the rule and calling it
+        @show=yes
+        @highlight=html
+       !<!-- the jsv_* runtime, once -->
+       !<script src="/js/expr-stub.js"></script>
+       !<!-- defines function ageOk(x) -->
+       !<script src="/js/rules/ageOk"></script>
+       !<script>
+       !    if (!ageOk(document.getElementById("age").value))
+       !        showError("Enter a value between 1 and 99.");
+       !</script>
+    @end
+
+    @headline
+        @level=2
+        Beyond a single value
+    @end
+
+    The rule above validates one base-type value bound to a bare variable. Some rules instead have
+    to see [b]several fields at once[/b] - for example, that a password and its confirmation match.
+    Those are written against the whole model and bound to the form on the page, which is a little
+    extra setup covered in its own guide:
+    [link=guides.model-rules]Validating against a model object[/link].
+
+    @headline
+        @level=2
+        See also
+    @end
+
+    @list
+        @list-item
+            [link=guides.model-rules]Validating against a model object[/link]
+        @end
+        @list-item
+            [link=guides.supported-features]Supported expression features[/link]
+        @end
+        @list-item
+            [link=guides.unit-testing]Unit-testing your expressions[/link]
+        @end
+    @end
+@end
+@article
+    @key=guides.model-rules
+    @title=Validating against a model object
+    @ingroup=main
+    @brief=Write rules that span several fields of a model, bound to the form on the page.
+
+    Most field checks need only that one field's value - a length, a digit, a postal-code format -
+    and a single-value rule (the kind in the [link=guides.validation-walkthrough]walkthrough[/link])
+    handles them. A [b]model[/b] rule earns its place when a check has to see [b]more than one field
+    at once[/b].
+
+    The classic example is a change-password form. Every rule is single-field - minimum length,
+    contains a digit, and so on - except one: the new password and its confirmation must
+    [i]match[/i]. That check cannot be expressed against a single value; it has to read both fields,
+    so it is written against the whole model.
+
+    @example
+        @title=A rule that spans two fields
+        @show=yes
+        @highlight=cs
+       !// the new password and its confirmation must be equal
+       !Expression<Func<Account, bool>> rule = m => m.Password == m.Confirm;
+    @end
+
+    @headline
+        @level=2
+        The problem: where will JavaScript get the object and its properties from?
+    @end
+
+    By default the compiler emits each member access [i]verbatim[/i]: the rule above would become
+    [c]jsv_equal(m.Password, m.Confirm)[/c]. That only works if the browser already has a JavaScript
+    object [c]m[/c] shaped exactly like the server model. On a form you do not - the values live in
+    input fields, not in a mirror of your C# model.
+
+    What you want instead is for each access to resolve against the [b]form[/b]: read
+    [c]Password[/c] and [c]Confirm[/c] from the page.
+
+    @headline
+        @level=2
+        The binding: reference()
+    @end
+
+    The convention the library implements for you is a single host-provided JavaScript function,
+    [c]reference()[/c]: by default a model access resolves to a [c]reference(...)[/c] call that reads
+    the matching value from the page.
+
+    @table
+        @width=100%
+        @row
+            @header=yes
+            @col
+                @width=30%
+                Hook
+            @end
+            @col
+                @width=70%
+                Provided by the page
+            @end
+        @end
+        @row
+            @col
+                [c]reference('Path.To.Field')[/c]
+            @end
+            @col
+                Returns the current value of a model field, given its path. Your page implements it
+                to read the matching input (or a data model bound to the form).
+            @end
+        @end
+    @end
+
+    With that binding the password-match rule emits against the form instead of a server-shaped
+    object:
+
+    @example
+        @title=The emitted rule
+        @show=yes
+        @highlight=cs
+       !// rule:   m => m.Password == m.Confirm
+       !// emits:  jsv_equal(reference('Password'), reference('Confirm'))
+    @end
+
+    A field reached through a longer chain becomes a dotted path the same way -
+    [c]m.Address.PostalCode[/c] becomes [c]reference('Address.PostalCode')[/c].
+
+    @headline
+        @level=2
+        Map the model to the form, once for the whole application
+    @end
+
+    You are not binding a particular model - you are declaring, once for the whole application,
+    [b]how any rule's model maps onto the client-side source[/b] (the form). The convention is the
+    [c]reference()[/c] hook: a model field resolves to the matching value on the page.
+
+    This is [b]off by default[/b]: out of the box the compiler emits member access verbatim. You turn
+    the [c]reference()[/c] convention on with
+    [clink=Gehtsoft.ExpressionToJs.IJsParameterRegistry]Parameters.MapReference[/clink], whose
+    built-in rendering makes the bare parameter [c]reference()[/c], a member chain
+    [c]reference('Path.To.Field')[/c], and array indexing [c]jsv_index(...)[/c] - so [c]m.Password[/c],
+    in any rule over any model, becomes [c]reference('Password')[/c].
+
+    [c]MapReference[/c] takes a [c]Func<Type, bool>[/c] that picks which parameters it applies to;
+    passing [c]_ => true[/c] enables it for [b]every parameter, of any type, in any rule[/b]. (You
+    could filter by type, but a validation rule's one parameter is always the model, so there is
+    nothing to filter.) It only ever touches the rule's own parameter, so a parameter introduced by a
+    nested LINQ lambda ([c]r => r.Length > 0[/c]) keeps its own name.
+
+    Because it is one unified convention, enable it [b]once[/b] in a small application-level factory
+    and run every rule through it - no rule repeats the setup:
+
+    @example
+        @title=Compile every rule through one factory
+        @show=yes
+        @highlight=cs
+       !static string CompileRule(LambdaExpression rule)
+       !{
+       !    var compiler = new ExpressionCompiler(rule);
+       !    compiler.Parameters.MapReference(_ => true);   // turn the reference() convention on for all
+       !    return compiler.JavaScriptExpression;
+       !}
+       !
+       !// m => m.Password == m.Confirm
+       !//   -> jsv_equal(reference('Password'), reference('Confirm'))
+    @end
+
+    @headline
+        @level=2
+        The host side
+    @end
+
+    The page provides the hook the emitted code calls: [c]reference(path)[/c], which walks the form
+    by a dotted path and returns a field's current value. Write [c]reference[/c] once for your app,
+    alongside the [link=guides.validation-walkthrough]runtime stub[/link].
+
+    Serve each rule wrapped as a function, compiled through the factory above. Because the rule reads
+    its inputs through [c]reference()[/c], the function takes no arguments:
+
+    @example
+        @title=Serving a compiled rule
+        @show=yes
+        @highlight=cs
+       !// GET /js/rules/{name} -> defines a function {name}() that calls reference()
+       !app.MapGet("/js/rules/{name}", (string name) =>
+       !{
+       !    string expr = CompileRule(Rules.For(name));
+       !    string script = $"function {name}() {{ return {expr}; }}";
+       !    return Results.Text(script, "application/javascript");
+       !});
+    @end
+
+    On the page, implement [c]reference[/c] against your form and call the rule:
+
+    @example
+        @title=Host page - reference() and running the rule
+        @show=yes
+        @highlight=html
+       !<form name="account">
+       !    <input name="Password" type="password">
+       !    <input name="Confirm"  type="password">
+       !</form>
+       !
+       !<!-- jsv_* runtime, then the rule (defines passwordsMatch()) -->
+       !<script src="/js/expr-stub.js"></script>
+       !<script src="/js/rules/passwordsMatch"></script>
+       !<script>
+       !    // written once for the app: resolve a model path against the form
+       !    function reference(path) {
+       !        return document.forms["account"].elements[path].value;
+       !    }
+       !
+       !    document.forms["account"].addEventListener("submit", function (e) {
+       !        if (!passwordsMatch()) {
+       !            e.preventDefault();
+       !            showError("Passwords do not match.");
+       !        }
+       !    });
+       !</script>
+    @end
+
+    @headline
+        @level=2
+        Referring to the model another way
+    @end
+
+    [c]MapReference[/c] emits [c]reference('path')[/c], which is all most pages need. When it isn't
+    enough, [clink=Gehtsoft.ExpressionToJs.IJsParameterRegistry]Map[/clink] lets you emit anything -
+    and it takes [b]two[/b] functions, because a rule can use the model in two shapes:
+
+    @list
+        @list-item
+            the [b]whole model[/b] (the bare parameter) - for example when you pass it to a custom
+            whole-entity check; and
+        @end
+        @list-item
+            a [b]single field[/b] (a member chain rooted in the parameter), such as [c]m.Password[/c].
+        @end
+    @end
+
+    A custom whole-entity function shows both at once - register the function (server + client), then
+    a rule that uses the model whole [i]and[/i] by field:
+
+    @example
+        @title=The two shapes
+        @show=yes
+        @highlight=cs
+       !compiler.Methods.MapMethod(typeof(AccountRules), nameof(AccountRules.IsStrong),
+       !                           "jsv_account_strong($0)");
+       !compiler.Parameters.MapReference(_ => true);
+       !
+       !Expression<Func<Account, bool>> rule =
+       !    m => AccountRules.IsStrong(m) &amp;&amp; m.Password == m.Confirm;
+       !
+       !// ((jsv_account_strong(reference())) &amp;&amp; (jsv_equal(reference('Password'), reference('Confirm'))))
+       !//                      ^ whole model                  ^ a field
+    @end
+
+    The first [c]Map[/c] function renders the bare parameter (the whole model); the second renders a
+    member or index chain rooted in it. [c]MapReference[/c] simply fills both in for you
+    ([c]reference()[/c] and [c]reference('path')[/c]).
+
+    @headline
+        @level=3
+        More than one form on the page
+    @end
+
+    With several forms on one page, [c]reference('Password')[/c] is ambiguous. Pass the model's type
+    as the form name so the page knows which form to read. The type is on the
+    [c]ParameterExpression[/c], and
+    [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]ParameterAccessPath[/clink] turns the chain
+    into the dotted path:
+
+    @example
+        @title=A type-qualified reference
+        @show=yes
+        @highlight=cs
+       !compiler.Parameters.Map(
+       !    _ => true,
+       !    p => $"reference('{p.Type.Name}')",
+       !    (e, p) => $"reference('{p.Type.Name}', '{ExpressionCompiler.ParameterAccessPath(e)}')");
+       !
+       !// m => m.Password == m.Confirm
+       !//   -> jsv_equal(reference('Account', 'Password'), reference('Account', 'Confirm'))
+    @end
+
+    On the page, the matching [c]reference[/c] reads the named form:
+
+    @example
+        @title=The host-side reference(type, path)
+        @show=yes
+        @highlight=js
+       !function reference(type, path) {
+       !    return document.forms[type].elements[path].value;
+       !}
+    @end
+
+    @headline
+        @level=3
+        An object instead of a lookup function
+    @end
+
+    To skip the lookup function, refer to the model as an object the page exposes: the whole model is
+    [c]value[/c] and a field is [c]value.Password[/c]. Nothing is replaced by the bare word
+    [c]value[/c] - it [i]is[/i] the object the fields hang off:
+
+    @example
+        @title=Object access
+        @show=yes
+        @highlight=cs
+       !compiler.Parameters.Map(
+       !    _ => true,
+       !    p => "value",
+       !    (e, p) => "value." + ExpressionCompiler.ParameterAccessPath(e));
+       !
+       !// m => m.Password == m.Confirm
+       !//   -> jsv_equal(value.Password, value.Confirm)
+    @end
+
+    Whatever you emit, the only contract is that the [link=guides.client-frameworks]page
+    provides[/link] whatever the emitted code references.
+
+    @headline
+        @level=2
+        See also
+    @end
+
+    @list
+        @list-item
+            [link=guides.validation-walkthrough]Validating on all tiers from one source of truth[/link]
+        @end
+        @list-item
+            [link=guides.client-frameworks]Wiring into client frameworks[/link]
+        @end
+        @list-item
+            [link=guides.extending]Extending the translator for your own types[/link]
+        @end
+    @end
+@end
+
+@article
+    @key=guides.client-frameworks
+    @title=Wiring into client frameworks
+    @ingroup=main
+    @brief=Attach an emitted rule on ASP.NET, jQuery UI, Angular, React and Vue.
+
+    [i](To be written.)[/i]
+@end
+
+@article
+    @key=guides.supported-features
+    @title=Supported expression features
+    @ingroup=main
+    @brief=The C# operators, methods and constructs you can use in a rule, and the ones you cannot.
+
+    A rule is an expression tree, and the compiler translates the constructs listed here. Anything
+    not listed throws at compile time (when you read
+    [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]JavaScriptExpression[/clink]),
+    so an unsupported construct fails loudly on the server rather than silently misbehaving in the
+    browser.
+
+    Two design rules run through everything below:
+
+    @list
+        @list-item
+            [b]C# semantics win.[/b] The emitted [c]jsv_*[/c] helpers reproduce C# behaviour, not
+            JavaScript's. Integer division truncates toward zero, [c]int[/c] arithmetic wraps on
+            overflow, [c]Math.Round[/c] uses banker's rounding, and [c]==[/c] is typed and strict
+            (no [c]"10" == 10[/c]). See [link=guides.unit-testing]Unit-testing your expressions[/link].
+        @end
+        @list-item
+            [b]Constant subtrees are folded.[/b] A subtree with no free parameter and no ambient
+            [c]Now[/c]/[c]Today[/c]/[c]UtcNow[/c] is evaluated at compile time and emitted as a
+            literal. Dates that depend on the clock stay dynamic - see [link=guides.dates]Dates and
+            time zones[/link].
+        @end
+    @end
+
+    @headline
+        @level=2
+        Operators
+    @end
+
+    @table
+        @width=100%
+        @row
+            @header=yes
+            @col
+                Category
+            @end
+            @col
+                Supported
+            @end
+        @end
+        @row
+            @col
+                Arithmetic
+            @end
+            @col
+                [c]+[/c] [c]-[/c] [c]*[/c] [c]/[/c] [c]%[/c], unary [c]-[/c], and power.
+                Integer division truncates and [c]int[/c] results wrap, matching C#.
+            @end
+        @end
+        @row
+            @col
+                Comparison
+            @end
+            @col
+                [c]<[/c] [c]<=[/c] [c]>[/c] [c]>=[/c] [c]==[/c] [c]!=[/c]. Equality is
+                strict and typed; two numbers compare with a small tolerance so [c]0.1 + 0.2 ==
+                0.3[/c] holds.
+            @end
+        @end
+        @row
+            @col
+                Logical
+            @end
+            @col
+                [c]&amp;&amp;[/c] [c]||[/c] [c]![/c], and logical XOR ([c]^[/c] on [c]bool[/c]).
+            @end
+        @end
+        @row
+            @col
+                Bitwise
+            @end
+            @col
+                [c]&amp;[/c] [c]|[/c] [c]^[/c] on integers (wrapped to 32-bit).
+            @end
+        @end
+        @row
+            @col
+                Other
+            @end
+            @col
+                Conditional [c]?:[/c], null-coalescing [c]??[/c], array indexing
+                [c]a[[nil]i][/c], and array/collection length.
+            @end
+        @end
+    @end
+
+    @headline
+        @level=2
+        Math
+    @end
+
+    The common [c]System.Math[/c] members translate: [c]Round[/c] (banker's, including the
+    [c]Round(x, digits)[/c] overload), [c]Floor[/c], [c]Ceiling[/c], [c]Truncate[/c], [c]Abs[/c],
+    [c]Sign[/c], [c]Sqrt[/c], [c]Pow[/c], [c]Log[/c], [c]Exp[/c], [c]Min[/c], [c]Max[/c], the
+    trigonometric functions, and [c]Math.PI[/c].
+
+    @headline
+        @level=2
+        Strings and characters
+    @end
+
+    @list
+        @list-item
+            [b]String methods[/b]: [c]Trim[/c]/[c]TrimStart[/c]/[c]TrimEnd[/c],
+            [c]ToUpper[/c]/[c]ToLower[/c] (and the [c]Invariant[/c] variants),
+            [c]StartsWith[/c]/[c]EndsWith[/c] (including the [c]StringComparison[/c] overload),
+            [c]Contains[/c], [c]IndexOf[/c]/[c]LastIndexOf[/c], [c]Replace[/c],
+            [c]PadLeft[/c]/[c]PadRight[/c] (with optional pad char), [c]Length[/c], the indexer,
+            and [c]ToString[/c].
+        @end
+        @list-item
+            [b]Static string tests[/b]: [c]string.IsNullOrEmpty[/c], [c]string.IsNullOrWhiteSpace[/c]
+            (true Unicode whitespace, matching C#).
+        @end
+        @list-item
+            [b]Char classification[/b]: [c]char.IsUpper[/c], [c]IsLower[/c], [c]IsDigit[/c],
+            [c]IsLetter[/c], [c]IsLetterOrDigit[/c], [c]IsPunctuation[/c], [c]IsControl[/c],
+            [c]IsWhiteSpace[/c].
+        @end
+        @list-item
+            [b]Regex[/b]: [c]Regex.IsMatch(input, pattern)[/c]. The pattern is escaped into a JS
+            regex literal.
+        @end
+    @end
+
+    @headline
+        @level=2
+        Collections (LINQ)
+    @end
+
+    LINQ over arrays and lists translates to runtime helpers that return real JS values, so they
+    chain: [c]Any[/c], [c]All[/c], [c]Count[/c], [c]First[/c], [c]Last[/c],
+    [c]FirstOrDefault[/c]/[c]LastOrDefault[/c] (with a predicate), [c]Where[/c], [c]Select[/c],
+    [c]Sum[/c], [c]Min[/c], [c]Max[/c], [c]Distinct[/c], and [c]Contains[/c].
+
+    @example
+        @title=A collection rule
+        @show=yes
+        @highlight=cs
+
+        // p => p.Roles.Any(r => r == "admin")
+        // jsv_any(p.Roles, function (r) { return (jsv_equal(r, 'admin')); })
+    @end
+
+    @headline
+        @level=2
+        Dates and times
+    @end
+
+    @list
+        @list-item
+            Component reads: [c]Year[/c], [c]Month[/c], [c]Day[/c], [c]Hour[/c], [c]Minute[/c],
+            [c]Second[/c], [c]DayOfWeek[/c] (framed by [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode[/clink]).
+        @end
+        @list-item
+            Arithmetic: [c]AddDays[/c]/[c]AddHours[/c]/[c]AddMinutes[/c]/[c]AddSeconds[/c], adding
+            and subtracting a [c]TimeSpan[/c], subtracting two dates, and the [c]TimeSpan.Total*[/c]
+            properties.
+        @end
+        @list-item
+            Dynamic clock: [c]DateTime.Now[/c], [c]Today[/c] and [c]UtcNow[/c] stay live (they
+            become [c]new Date()[/c] / [c]jsv_today(...)[/c]), so the rule checks against the clock
+            at validation time.
+        @end
+    @end
+
+    See [link=guides.dates]Dates and time zones[/link] for the framing contract.
+
+    @headline
+        @level=2
+        Parity helper methods (Functions)
+    @end
+
+    Some checks have no direct C#-to-JavaScript equivalent, so the library ships matched pairs - a
+    C# [clink=Gehtsoft.ExpressionToJs.Functions]Functions[/clink] method and a behaviourally
+    identical [c]jsv_*[/c] helper. Call the [c]Functions[/c] method in your rule and the emitted
+    JavaScript calls its twin: [c]DaysSince[/c], [c]MonthsSince[/c], [c]YearsSince[/c],
+    [c]IsCreditCardNumberCorrect[/c] (Luhn), [c]ToBool[/c], [c]ToInt[/c], [c]Fractional[/c],
+    [c]IsNull[/c], [c]IsNotNull[/c], [c]IsNullOrEmpty[/c], [c]IsNotNullOrEmpty[/c].
+
+    @headline
+        @level=2
+        Enums
+    @end
+
+    Enum constants emit their underlying numeric value (flags enums emit the combined value),
+    consistent with how [c]enum[/c]-to-[c]int[/c] comparisons already work. The contract: client-side
+    enum fields must carry the numeric value. To emit an enum by [i]name[/i] instead, register a
+    constant translator - see [link=guides.extending]Extending the translator for your own types[/link].
+
+    @headline
+        @level=2
+        Not supported
+    @end
+
+    These throw at compile time. Reach for the extension registries or a different formulation:
+
+    @list
+        @list-item
+            String concatenation with [c]+[/c] (it compiles to a [c]string.Concat[/c] call),
+            [c]string.Format[/c] and [c]string.Split[/c] (locale/format correctness on the JS side
+            is out of scope).
+        @end
+        @list-item
+            [c]DateTime.AddMonths[/c]/[c]AddYears[/c], [c]DateTime.Parse[/c],
+            [c]TimeSpan.FromX[/c], and [c]DateTimeOffset[/c].
+        @end
+        @list-item
+            Bit shifts ([c]<<[/c], [c]>>[/c]), [c]int.TryParse[/c]/[c]double.TryParse[/c]
+            patterns, and LINQ [c]Average[/c] / predicate-less
+            [c]FirstOrDefault[/c]/[c]LastOrDefault[/c].
+        @end
+        @list-item
+            [c]long[/c] values beyond 2^53 lose precision in JavaScript and are not made safe.
+        @end
+        @list-item
+            Statement-bodied lambdas (use a single expression).
+        @end
+    @end
+
+    @note
+        @type=warning
+        The not-supported list reflects the current built-ins. Most gaps can be closed for your own
+        code with a custom translator - see [link=guides.extending]Extending the translator for
+        your own types[/link].
+    @end
+@end
+@article
+    @key=guides.dates
+    @title=Dates and time zones
+    @ingroup=main
+    @brief=Pick a date frame with DateTimeMode so the server and the browser agree on the calendar.
+
+    JavaScript [c]Date[/c] objects carry a time zone; C# [c]DateTime[/c] values are ambiguous about
+    one. To keep the two ends in agreement, the compiler emits every [i]calendar[/i] construct in a
+    frame you choose:
+    [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode[/clink].
+
+    @headline
+        @level=2
+        Choosing the frame
+    @end
+
+    @list
+        @list-item
+            [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode.Local[/clink] (the
+            default) emits local-time constructs - [c]new Date(y, m, d, ...)[/c] and
+            [c]getFullYear()[/c] / [c]getMonth()[/c] / ...
+        @end
+        @list-item
+            [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode.Utc[/clink] emits UTC
+            constructs - [c]new Date(Date.UTC(y, m, d, ...))[/c] and [c]getUTCFullYear()[/c] /
+            [c]getUTCMonth()[/c] / ...
+        @end
+    @end
+
+    Set the mode through the
+    [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]DateMode[/clink] property or the
+    [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]ExpressionCompiler(lambda, mode)[/clink]
+    constructor. It must be set [b]before[/b] you read
+    [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]JavaScriptExpression[/clink],
+    because the result is computed once and cached.
+
+    @example
+        @title=Selecting UTC framing
+        @show=yes
+        @highlight=cs
+
+        var compiler = new ExpressionCompiler(rule, DateTimeMode.Utc);
+        // or: compiler.DateMode = DateTimeMode.Utc;  (before reading JavaScriptExpression)
+        string js = compiler.JavaScriptExpression;
+    @end
+
+    @headline
+        @level=2
+        The contract
+    @end
+
+    @note
+        @type=warning
+        Bind JS-side dates in the [b]same[/b] frame you select here. A mismatch does not error - it
+        silently shifts every calendar-component comparison by the client's UTC offset, so a rule
+        can quietly pass or fail by up to a day.
+    @end
+
+    The mode only governs constructs that read or build [i]calendar components[/i]: date constants,
+    the [c]Year[/c]/[c]Month[/c]/[c]Day[/c]/[c]Hour[/c]/... reads, and the calendar-based
+    [clink=Gehtsoft.ExpressionToJs.Functions]MonthsSince[/clink] /
+    [clink=Gehtsoft.ExpressionToJs.Functions]YearsSince[/clink] helpers (which receive a
+    UTC flag).
+
+    @headline
+        @level=2
+        What is frame-independent
+    @end
+
+    Operations that work on the absolute instant (the epoch millisecond) are the same in both
+    frames, so you never have to think about the mode for them:
+
+    @list
+        @list-item
+            Adding or subtracting a [c]TimeSpan[/c], and subtracting two dates.
+        @end
+        @list-item
+            [c]AddDays[/c] / [c]AddHours[/c] / [c]AddMinutes[/c] / [c]AddSeconds[/c].
+        @end
+        @list-item
+            The [c]TimeSpan.Total*[/c] properties and
+            [clink=Gehtsoft.ExpressionToJs.Functions]DaysSince[/clink].
+        @end
+    @end
+
+    @headline
+        @level=2
+        The clock stays live
+    @end
+
+    [c]DateTime.Now[/c], [c]DateTime.Today[/c] and [c]DateTime.UtcNow[/c] are [i]not[/i] folded into
+    a compile-time constant. They emit live JavaScript - [c]Now[/c]/[c]UtcNow[/c] become
+    [c]new Date()[/c], and [c]Today[/c] becomes [c]jsv_today(...)[/c] (mode-aware midnight) - so the
+    rule is evaluated against the clock when the user submits, exactly as the server would. Chains
+    such as [c]DateTime.Now.AddDays(30)[/c] stay dynamic too.
+
+    @example
+        @title=An age rule, checked at validation time
+        @show=yes
+        @highlight=cs
+
+        // p => Functions.YearsSince(DateTime.Today, p.BirthDate) >= 21
+        // jsv_greaterorequal(jsv_yearssince(jsv_today(false), p.BirthDate, false), 21)
+    @end
+
+    @headline
+        @level=2
+        See also
+    @end
+
+    @list
+        @list-item
+            [link=guides.supported-features]Supported expression features[/link]
+        @end
+    @end
+@end
+@article
+    @key=guides.extending
+    @title=Extending the translator for your own types
+    @ingroup=main
+    @brief=Map a domain method, constant type or property the built-ins do not cover, without subclassing.
+
+    Real models reference types the built-ins don't know: a domain helper, a [c]Guid[/c], a value
+    struct, an enum you want rendered by name. When a rule uses one, the compiler throws at compile
+    time rather than guessing. Teach it the mapping through one of three registries on the
+    compiler instance.
+
+    @list
+        @list-item
+            [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]Methods[/clink]
+            ([clink=Gehtsoft.ExpressionToJs.IJsMethodRegistry]IJsMethodRegistry[/clink]) - method
+            calls.
+        @end
+        @list-item
+            [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]Constants[/clink]
+            ([clink=Gehtsoft.ExpressionToJs.IJsConstantRegistry]IJsConstantRegistry[/clink]) -
+            constant values of a given type.
+        @end
+        @list-item
+            [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]Members[/clink]
+            ([clink=Gehtsoft.ExpressionToJs.IJsMemberRegistry]IJsMemberRegistry[/clink]) - property
+            reads.
+        @end
+    @end
+
+    Register [b]before[/b] reading
+    [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]JavaScriptExpression[/clink].
+    Your registrations are consulted ahead of the built-ins, so they can also deliberately
+    [i]shadow[/i] a default.
+
+    @headline
+        @level=2
+        Template mappings
+    @end
+
+    The quickest path is a template string. Tokens are substituted as the expression is emitted:
+
+    @list
+        @list-item
+            [c]$0[/c], [c]$1[/c], ... - the method's arguments (for
+            [clink=Gehtsoft.ExpressionToJs.IJsMethodRegistry]MapMethod[/clink]).
+        @end
+        @list-item
+            [c]$obj[/c] - the target the method is called on or the property is read from (for an
+            instance method or for
+            [clink=Gehtsoft.ExpressionToJs.IJsMemberRegistry]MapMember[/clink]).
+        @end
+    @end
+
+    @example
+        @title=Registering custom mappings
+        @show=yes
+        @highlight=cs
+
+        var compiler = new ExpressionCompiler(rule);
+
+        // a static domain helper -> a JS function of three arguments
+        compiler.Methods.MapMethod(typeof(MyMath), nameof(MyMath.Clamp), "jsv_clamp($0, $1, $2)");
+
+        // a constant type -> a JS literal
+        compiler.Constants.MapConstant<Guid>(g => "'" + g + "'");
+
+        // a property read -> a field on the emitted target
+        compiler.Members.MapMember(typeof(Money), nameof(Money.Amount), "$obj.amount");
+    @end
+
+    @headline
+        @level=2
+        Full translators when a template is not enough
+    @end
+
+    When the emitted form needs logic a fixed template cannot express (it depends on argument
+    types, arity, or shape), implement the matching interface and register it with
+    [c]AddTranslator[/c]:
+    [clink=Gehtsoft.ExpressionToJs.IMethodCallTranslator]IMethodCallTranslator[/clink],
+    [clink=Gehtsoft.ExpressionToJs.IConstantTranslator]IConstantTranslator[/clink] or
+    [clink=Gehtsoft.ExpressionToJs.IMemberTranslator]IMemberTranslator[/clink]. Each is given the
+    node and an [clink=Gehtsoft.ExpressionToJs.IExpressionEmitContext]IExpressionEmitContext[/clink]
+    (to recurse into sub-expressions and to escape strings/regex), and returns whether it handled
+    the node. These are the same interfaces the built-ins are written against.
+
+    @headline
+        @level=2
+        Your mapping, your runtime
+    @end
+
+    @note
+        @type=warning
+        Whatever a template or translator emits must exist at evaluation time. If you emit
+        [c]jsv_clamp(...)[/c], you are responsible for defining [c]jsv_clamp[/c] in the JavaScript
+        you load on the page. The library only emits text and ships its own
+        [clink=Gehtsoft.ExpressionToJs.ExpressionToJsStubAccessor]stub[/clink]; there is
+        deliberately no companion-JS registration API - how you bundle your own helpers is yours.
+    @end
+
+    @headline
+        @level=2
+        When to subclass instead
+    @end
+
+    The registries cover [i]types[/i]. The one thing they do not cover is how a [i]parameter[/i]
+    renders on the client - for the form-validation [c]reference('path')[/c] / [c]value[/c] binding
+    you derive from [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]ExpressionCompiler[/clink] and
+    override [c]AddParameter[/c] / [c]AddParameterAccess[/c]. See
+    [link=guides.validation-walkthrough]Validating on both tiers[/link].
+@end
+@article
+    @key=guides.unit-testing
+    @title=Unit-testing your expressions
+    @ingroup=main
+    @brief=Prove the C# rule and its emitted JavaScript agree, by running both and comparing - the way this library tests itself.
+
+    The whole promise is parity: the server delegate and the emitted JavaScript compute the same
+    answer. That promise is only as good as your tests, because C# and JavaScript genuinely diverge
+    in ways a casual sample will not catch - integer division, banker's rounding, date math, and
+    [c]==[/c] coercion. The reliable way to test a rule is [b]differential[/b]: run the compiled C#
+    delegate and the emitted JavaScript on the same inputs and assert they agree.
+
+    @headline
+        @level=2
+        The setup: an in-process JavaScript engine
+    @end
+
+    You do not need a browser. Run the emitted JavaScript in-process with
+    [eurl=https://github.com/sebastienros/jint]Jint[/eurl], a JavaScript engine for .NET. The one
+    rule that makes it work: load the runtime stub
+    ([clink=Gehtsoft.ExpressionToJs.ExpressionToJsStubAccessor]ExpressionToJsStubAccessor[/clink])
+    into the engine once, so the [c]jsv_*[/c] helpers the emitted code calls are defined.
+
+    @example
+        @title=A reusable differential assertion (xUnit)
+        @show=yes
+        @highlight=cs
+       !using Jint;
+       !using Gehtsoft.ExpressionToJs;
+       !
+       !static void AssertParity<TArg, TResult>(Expression<Func<TArg, TResult>> rule, TArg input)
+       !{
+       !    // 1. server side: compile and invoke the delegate
+       !    TResult expected = rule.Compile()(input);
+       !
+       !    // 2. emit the JavaScript
+       !    string js = new ExpressionCompiler(rule).JavaScriptExpression;
+       !
+       !    // 3. run it in Jint with the stub loaded and the parameter bound
+       !    var engine = new Engine();
+       !    engine.Execute(ExpressionToJsStubAccessor.GetJsIncludesAsString());
+       !    engine.SetValue(rule.Parameters[0].Name, input);
+       !    object actual = engine.Evaluate(js).ToObject();
+       !
+       !    // 4. compare - C# delegate vs emitted JS
+       !    Assert.Equal(expected, actual);
+       !}
+    @end
+
+    @example
+        @title=Using it
+        @show=yes
+        @highlight=cs
+
+        AssertParity<int, bool>(x => x > 0 &amp;&amp; x < 100, 42);
+        AssertParity<int, int>(x => x / 3, 10);     // integer division
+        AssertParity<double, double>(x => Math.Round(x), 2.5);   // banker's rounding
+    @end
+
+    @headline
+        @level=2
+        Two gotchas when comparing values
+    @end
+
+    @list
+        @list-item
+            [b]Numbers come back as [c]double[/c].[/b] Jint returns every JS number as a
+            [c]double[/c], so comparing against an [c]int[/c] or [c]decimal[/c] expected value needs
+            a coercion (e.g. [c]Convert.ChangeType[/c] to the expected type), or compare with a
+            tolerance for floating-point results.
+        @end
+        @list-item
+            [b]Dates come back in UTC.[/b] A JS [c]Date[/c] converted back to .NET is an absolute
+            instant; compare against the expected [c]DateTime[/c] in the same frame (and allow a
+            millisecond of tolerance). This is also why the
+            [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode[/clink] of the compiler and the
+            frame you bind dates in must match - see [link=guides.dates]Dates and time zones[/link].
+        @end
+    @end
+
+    @headline
+        @level=2
+        What to test
+    @end
+
+    Sampling round numbers hides exactly the bugs differential testing exists to catch. Aim your
+    inputs at the places C# and JavaScript disagree:
+
+    @list
+        @list-item
+            Integer division and modulo with operands that do not divide evenly ([c]11 / 2[/c]).
+        @end
+        @list-item
+            [c]Math.Round[/c] on midpoints ([c]0.5[/c], [c]2.5[/c]) - banker's rounding.
+        @end
+        @list-item
+            Equality across types and the float-tolerance case ([c]0.1 + 0.2 == 0.3[/c]).
+        @end
+        @list-item
+            [c]null[/c] / empty inputs - strings, collections, nullable values.
+        @end
+        @list-item
+            Dates near midnight and across month/year boundaries, in the
+            [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode[/clink] you ship.
+        @end
+    @end
+
+    @headline
+        @level=2
+        How this library tests itself
+    @end
+
+    The same pattern guards the library. Its [c]Complete/[/c] differential suite checks each case
+    three ways - the compiled C# delegate, the emitted JavaScript in Jint, and the two against each
+    other - and that comparison is what keeps every server-side
+    [clink=Gehtsoft.ExpressionToJs.Functions]Functions[/clink] helper in lock-step with its
+    [c]jsv_*[/c] twin in the stub. Pointing the same harness at [i]your[/i] rules is the
+    surest way to know your client and server agree.
+
+    @headline
+        @level=2
+        See also
+    @end
+
+    @list
+        @list-item
+            [link=guides.supported-features]Supported expression features[/link]
+        @end
+    @end
+@end

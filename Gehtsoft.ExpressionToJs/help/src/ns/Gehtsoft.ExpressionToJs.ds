@@ -1,0 +1,64 @@
+@group
+    @title=Namespace Gehtsoft.ExpressionToJs
+    @key=Gehtsoft.ExpressionToJs
+    @ingroup=main
+    @brief=The common namespace for all of the library's classes.
+
+    [b]Entry points[/b]
+
+    @table
+        @width=100%
+        @row
+            @header=yes
+            @col
+                @width=30%
+                Type
+            @end
+            @col
+                @width=70%
+                Purpose
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]ExpressionCompiler[/clink]
+            @end
+            @col
+                The entry point. Wrap a lambda, optionally configure it, then read
+                [c]JavaScriptExpression[/c] to get the emitted code.
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.ExpressionToJsStubAccessor]ExpressionToJsStubAccessor[/clink]
+            @end
+            @col
+                Hands you the JavaScript runtime ([c]stub.js[/c]) that the emitted code calls into.
+                Load it into the page once.
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.Functions]Functions[/clink]
+            @end
+            @col
+                Validation helpers (age math, Luhn check, lenient coercions, null tests) safe to
+                call inside a rule, because each one has a matching JavaScript implementation.
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode[/clink]
+            @end
+            @col
+                Selects how dates are framed in the emitted code so both ends agree on the calendar.
+            @end
+        @end
+    @end
+
+    [b]Extending[/b]
+
+    The compiler can be taught to translate methods, properties and constants on types the
+    built-ins do not cover. For when and how, see
+    [link=guides.extending]Extending the translator for your own types[/link].
+@end

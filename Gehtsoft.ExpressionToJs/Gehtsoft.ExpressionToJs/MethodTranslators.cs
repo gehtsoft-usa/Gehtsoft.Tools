@@ -19,9 +19,11 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>
-    /// The building blocks a method-call translator needs to emit JavaScript. Implemented by
-    /// <see cref="ExpressionCompiler"/>; delegates to its (overridable) walk/escape helpers so
-    /// custom translators compose with subclass customizations such as parameter rendering.
+    /// The building blocks a method-call translator needs to emit JavaScript.
+    ///
+    /// Implemented by <see cref="ExpressionCompiler"/>; delegates to its (overridable) walk/escape
+    /// helpers so custom translators compose with subclass customizations such as parameter
+    /// rendering.
     /// </summary>
     public interface IExpressionEmitContext
     {
@@ -31,7 +33,7 @@ namespace Gehtsoft.ExpressionToJs
         /// <summary>Try to fold a (parameter-free) sub-expression to a constant value.</summary>
         bool TryEvaluate(Expression expression, out object value);
 
-        /// <summary>Emit a lambda as a JavaScript <c>function (...) { return ...; }</c> predicate.</summary>
+        /// <summary>Emit a lambda as a JavaScript function-expression predicate (function (...) { return ...; }).</summary>
         string EmitPredicate(LambdaExpression lambda);
 
         /// <summary>Emit access to a parameter-rooted member/indexer chain.</summary>
@@ -51,20 +53,35 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>
-    /// Translates a specific family of method calls into JavaScript. Translators are tried in
-    /// order; the first whose <see cref="TryTranslate"/> returns true wins. Register custom ones
-    /// on <see cref="ExpressionCompiler.MethodTranslators"/> (insert at the front to override).
+    /// Translates a specific family of method calls into JavaScript.
+    ///
+    /// Translators are tried in order; the first whose <see cref="TryTranslate"/> returns true wins.
+    /// Register custom ones through <see cref="ExpressionCompiler.Methods"/>; registrations are
+    /// consulted before the built-ins, so registering one is how you override a built-in translation.
     /// </summary>
     public interface IMethodCallTranslator
     {
+        /// <summary>
+        /// Implement this to claim a method call and produce its JavaScript.
+        ///
+        /// The compiler offers each call to the registered translators in turn, so return
+        /// [c]false[/c] (and leave <paramref name="js"/> null) for calls you don't handle, and only
+        /// consume the ones you recognize - keeping translators disjoint is what lets them be
+        /// combined freely.
+        /// </summary>
+        /// <param name="call">The call to inspect; check its method, declaring type, and arguments to decide whether it is yours.</param>
+        /// <param name="context">Use it to emit sub-expressions, fold constants, escape strings, and read the date mode - so your output composes with the rest of the compiler.</param>
+        /// <param name="js">Receives the emitted JavaScript when you return [c]true[/c]; otherwise leave it null.</param>
+        /// <returns>[c]true[/c] if this translator handled the call; [c]false[/c] to let another try.</returns>
         bool TryTranslate(MethodCallExpression call, IExpressionEmitContext context, out string js);
     }
 
     /// <summary>
-    /// Additive, leaf-level extension surface for method-call translation. Registrations are
-    /// consulted <b>before</b> the (fixed, correctly-ordered) built-ins, so a consumer can shadow
-    /// a specific method without being able to reorder or remove built-ins - the built-in
-    /// precedence invariants are preserved. Registrations are tried in the order added.
+    /// Additive extension surface for mapping method calls to JavaScript.
+    ///
+    /// Registrations are consulted [b]before[/b] the (fixed, correctly-ordered) built-ins, so a
+    /// consumer can shadow a specific method without being able to reorder or remove built-ins - the
+    /// built-in precedence invariants are preserved. Registrations are tried in the order added.
     /// </summary>
     public interface IJsMethodRegistry
     {
@@ -80,9 +97,9 @@ namespace Gehtsoft.ExpressionToJs
 
     /// <summary>
     /// Data-driven translator for the many 1:1 method mappings. A template uses the tokens
-    /// <c>$obj</c> (the call target) and <c>$0</c>, <c>$1</c>, ... (the emitted arguments).
+    /// [c]$obj[/c] (the call target) and [c]$0[/c], [c]$1[/c], ... (the emitted arguments).
     /// </summary>
-    public sealed class TableMethodTranslator : IMethodCallTranslator
+    internal sealed class TableMethodTranslator : IMethodCallTranslator
     {
         private sealed class Entry
         {
@@ -96,6 +113,19 @@ namespace Gehtsoft.ExpressionToJs
 
         private readonly List<Entry> mEntries = new List<Entry>();
 
+        /// <summary>
+        /// Adds one method-to-template mapping and returns the same translator so calls chain.
+        /// Reach for this (rather than a hand-written <see cref="IMethodCallTranslator"/>) whenever
+        /// a method maps straight onto a JavaScript expression with the arguments dropped into
+        /// fixed places - the common case.
+        /// </summary>
+        /// <param name="declaringType">The type that declares the method; pass [c]null[/c] to match by name regardless of declaring type (use sparingly, as it widens the match).</param>
+        /// <param name="name">The method name to match, exactly.</param>
+        /// <param name="argCount">The required argument count, or [c]null[/c] to match any arity. Give a value to disambiguate overloads that need different templates.</param>
+        /// <param name="instance">[c]true[/c] matches only instance calls, [c]false[/c] only static calls, [c]null[/c] either. Set it to keep an instance overload from capturing a static one of the same name.</param>
+        /// <param name="template">The JavaScript template. [c]$obj[/c] is replaced by the call target and [c]$0[/c], [c]$1[/c], ... by the emitted arguments in order.</param>
+        /// <param name="where">An optional extra predicate over the call; the mapping applies only when it returns [c]true[/c]. Use it for conditions arity can't express, e.g. requiring a particular argument type.</param>
+        /// <returns>This translator, for fluent chaining of further <see cref="Map"/> calls.</returns>
         public TableMethodTranslator Map(Type declaringType, string name, int? argCount, bool? instance, string template, Func<MethodCallExpression, bool> where = null)
         {
             mEntries.Add(new Entry
@@ -144,7 +174,7 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>Regex.IsMatch in its static (pattern[, options]) and instance forms.</summary>
-    public sealed class RegexIsMatchTranslator : IMethodCallTranslator
+    internal sealed class RegexIsMatchTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -194,7 +224,7 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>string.IndexOf with optional start index and/or StringComparison.</summary>
-    public sealed class StringIndexOfTranslator : IMethodCallTranslator
+    internal sealed class StringIndexOfTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -239,7 +269,7 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>string.StartsWith(value, StringComparison).</summary>
-    public sealed class StringStartsWithComparisonTranslator : IMethodCallTranslator
+    internal sealed class StringStartsWithComparisonTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -267,7 +297,7 @@ namespace Gehtsoft.ExpressionToJs
     /// to the stub which then reads getUTC*/setUTC* (Utc) or getX/setX (Local) components.
     /// (Functions.DaysSince is epoch-based and stays a plain table mapping.)
     /// </summary>
-    public sealed class DateDiffTranslator : IMethodCallTranslator
+    internal sealed class DateDiffTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -290,7 +320,7 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>string.EndsWith(value, StringComparison).</summary>
-    public sealed class StringEndsWithComparisonTranslator : IMethodCallTranslator
+    internal sealed class StringEndsWithComparisonTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -318,7 +348,7 @@ namespace Gehtsoft.ExpressionToJs
     /// (Enumerable.Contains, or MemoryExtensions.Contains for arrays where the source arrives as a
     /// span conversion). String.Contains is handled by the table.
     /// </summary>
-    public sealed class CollectionContainsTranslator : IMethodCallTranslator
+    internal sealed class CollectionContainsTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -356,7 +386,7 @@ namespace Gehtsoft.ExpressionToJs
     /// Empty, the projecting/filtering Where/Select (return arrays, so they chain), the aggregates
     /// Sum/Min/Max (with or without selector), and Distinct.
     /// </summary>
-    public sealed class LinqTranslator : IMethodCallTranslator
+    internal sealed class LinqTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -411,7 +441,7 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>Indexer access (get_Item); parameter-rooted indexers defer to parameter access.</summary>
-    public sealed class IndexerTranslator : IMethodCallTranslator
+    internal sealed class IndexerTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {
@@ -427,7 +457,7 @@ namespace Gehtsoft.ExpressionToJs
     }
 
     /// <summary>Parameterless ToString() on any type.</summary>
-    public sealed class ToStringTranslator : IMethodCallTranslator
+    internal sealed class ToStringTranslator : IMethodCallTranslator
     {
         public bool TryTranslate(MethodCallExpression e, IExpressionEmitContext ctx, out string js)
         {

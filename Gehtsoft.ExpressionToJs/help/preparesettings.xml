@@ -1,5 +1,5 @@
 ﻿<settings >
-  <assembly name="Gehtsoft.ExpressionToJs" xmldoc="../../../bin/Gehtsoft.ExpressionToJs.xml" />
+  <assembly name="Gehtsoft.ExpressionToJs" xmldoc="../../../bin/doc.xml" />
 
   <include type="public" />
 

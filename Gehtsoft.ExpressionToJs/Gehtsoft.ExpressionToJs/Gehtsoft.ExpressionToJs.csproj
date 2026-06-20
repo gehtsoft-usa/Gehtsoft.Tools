@@ -13,6 +13,11 @@
     <EmbeddedResource Include="stub.js" />
   </ItemGroup>
 
+  <!-- The concrete translators are internal implementation detail; a few tests reach them directly. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Gehtsoft.ExpressionToJs.Tests" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />

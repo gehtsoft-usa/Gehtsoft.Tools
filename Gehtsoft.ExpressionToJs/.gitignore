@@ -1,3 +1,4 @@
 .claude/
 coverage.xml
 *.user
+REFERENCE_REFACTOR.md

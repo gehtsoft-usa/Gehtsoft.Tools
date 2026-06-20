@@ -131,6 +131,18 @@ JS string for stability.
     `MapMember(Type,name,template)`. `AddMemberAccess` is now a dispatch loop over a data-driven
     `TableMemberTranslator` (DateTime.*, TimeSpan.*, Nullable, Length/Count) plus the terminal
     parameter-access fallback.
+  - **Parameters** — `compiler.Parameters` (`IJsParameterRegistry`), added 2026-06-19:
+    `MapReference(Func<Type,bool>)` turns on the built-in form-validation `reference()` rendering
+    (bare param → `reference()`, member chain → `reference('Path')`, array index → `jsv_index`);
+    `Map(Func<Type,bool>, Func<ParameterExpression,string> parameter, Func<Expression,ParameterExpression,string> access)`
+    emits any custom shape (e.g. `value.Property`, or `reference('Type','path')`). Off by default
+    (unchanged verbatim emission); matches by type predicate but applies only to the rule's **root**
+    parameters (nested LINQ-lambda params keep their names). Public helper
+    `ExpressionCompiler.ParameterAccessPath(Expression)` turns a member chain into a dotted path for
+    reuse in custom `access` funcs. This makes the form-validation `reference()/value` binding a
+    built-in feature — consumers no longer subclass `ExpressionCompiler` for it. Tests:
+    `ParameterRegistryTests` (17). See `REFERENCE_REFACTOR.md` for migrating Gehtsoft.EF.Toolbox's
+    `ValidationExpressionCompiler` onto it.
 
   **Matching model (decided):** translators are keyed by type + name (+ arity/shape); built-ins are
   **disjoint**, so iteration order is not load-bearing and two matches at one tier is a caller logic
@@ -181,10 +193,67 @@ Rough priority for form-validation use cases:
 
 ## 5. Project hygiene
 
-- **Stale packaging**: nupkg is `0.2.1` from 2020; no visible CI, no README for the library, no XML
-  doc comments, nullable reference types off. Worth a docs + packaging refresh if this stays in service.
+- **Packaging / CI / nullable** — still open: nupkg version is stale, no visible CI, nullable reference
+  types off. Worth a packaging refresh if this stays in service.
+- ✅ **DONE — README** for the library (intent, examples, project layout).
+- ✅ **DONE — XML doc comments** on the public API — see the Documentation section below.
 - **Tests** are good in spirit but are giant multi-assert `[Fact]`s — convert to `[Theory]`/`InlineData`
   for failure isolation, and add **negative tests** (unsupported expression → expected exception/message).
+
+## 6. Documentation (Phase 2 — in progress)
+
+Goal: a docgen-built reference + guides, with the public API documented from XML comments so the
+reference stays in sync with the code. Project lives in `help/` (docgen; `Gehtsoft.Build.DocGen`).
+
+**Done:**
+
+- ✅ **Public API XML doc comments**, written *use-first* (why/when/how, not behavior; parameters
+  framed by how their values change the outcome). Covers `ExpressionCompiler` (class, ctors,
+  `JavaScriptExpression`, `DateMode`, `Methods`/`Constants`/`Members`, the statics, `Equals`),
+  `Functions.*`, `ExpressionToJsStubAccessor`, `DateTimeMode`, and the extension contracts
+  (`IMethodCallTranslator`/`IConstantTranslator`/`IMemberTranslator` + the registry interfaces).
+- ✅ **Public surface minimized.** All concrete translators (focused built-ins + `Table*`/`Delegate*`)
+  are now `internal`; only the entry points and extension *interfaces* are public. Test access via
+  `InternalsVisibleTo`. Confirmed: internals no longer appear in generated docs.
+- ✅ **docgen wired up and building.** `help/` produces the API reference from the built DLL
+  (`Asm2Xml` → `cs2ds` → `src/raw/*.ds`) merged with hand-written `.ds`; `MakeDoc` is green.
+- ✅ **`index.ds`** landing page written — the *why* (one rule, two runtimes, no drift) with a short
+  API-at-a-glance; *how* deferred to articles.
+- ✅ **docgen authoring conventions learned & captured** in `DOCGEN_SKILL_BUGS.md` (3 issues, with
+  fixes + automatable lints): (1) the whole `<summary>` becomes the one-line `@brief` and `<remarks>`
+  is dropped — so write `one-line brief` + blank line + detail paragraphs, no `<remarks>`;
+  (2) use `[c]`/`[i]`/`[b]` BBCode, not XML `<c>`/`<i>`/`<b>` (which cs2ds mangles); (3) a line starting
+  with `- `/`* ` becomes a stray list bullet — never begin a line (or a wrapped `///` line) with one.
+
+- ✅ **DONE — Namespace overview** in `src/ns/Gehtsoft.ExpressionToJs.ds` (hand-written `@group`):
+  entry points + extension contracts, links to the API classes/interfaces. Merges with the empty
+  auto-generated group (hand-written loads first, wins). Guides navigation lives in `index.ds`, not here.
+- 🔄 **How-to articles — in progress, tracked page-by-page in `DOCUMENTATION_PLAN.md`** (the live
+  doc plan; read it first next session). Structure: a single `src/articles.ds` with seven
+  `@article`s in `main` (no `guides` group), `@sortarticles=no`, wired into `project.xml` as one
+  `<dg:file>`. The user validates **each page** before the next.
+  - **Done:** `index.ds` (API-at-a-glance 30/70 table; guides auto-listed), namespace overview,
+    **Validating on all tiers from one source of truth** (walkthrough; two-runtimes mermaid; ship
+    via Razor inline + REST endpoint; rule-as-function + JS call), **Validating against a model
+    object** (uses the new `Parameters` registry — `MapReference(_ => true)` in an app-level factory;
+    host side; the two-accessor / multi-form / object-access customizations).
+  - **Remaining:** *Wiring into client frameworks* (stub — ASP.NET/jQuery UI/Angular/React/Vue);
+    *Supported expression features* (consistent table layout #8b, demote extension warning #8c);
+    *Dates and time zones* (light layout pass); *Extending* (full redesign #9: per-scenario
+    method/property/constant with JS side + extension-contracts mermaid class diagram); *Unit-testing*
+    (boolean-validation focus #7). Plus a final extension-contracts class diagram.
+  - Docgen authoring gotchas captured in `DOCGEN_SKILL_BUGS.md` (Bugs 1–7): one-line `@brief`; BBCode
+    not XML; no line-leading `- `/`* `; `&`→`&amp;` but raw `<`/`>`; `!`-prefix for indented
+    `@example`; `@show=yes` to expand; mermaid via `@highlight=diagram`+`@show=yes`; `@width=100%`
+    (with `%`) + `@col @width` 30/70; `[clink]` to **class** keys; **no `@see`** → use a "See also"
+    `@list`. Standing rule: every emitted-JS example must be backed by a test.
+
+**Still to do (after the articles):**
+
+- Publish/host the generated docs; fold into the packaging refresh above.
+- (Optional) Deep-dive articles — integration internals and the translator-pipeline model — were
+  folded into the walkthrough/extending guides rather than written separately; revisit if a
+  dedicated internals section is wanted.
 
 ---
 
@@ -197,7 +266,10 @@ as part of that move rather than twice.
 
 ## Recommended order
 
-1. Fix the correctness bugs (§1).
-2. Stand up the differential test harness (§2).
-3. Refactor `AddCall` into a registry (§3).
-4. Expand features (§4).
+1. ✅ Fix the correctness bugs (§1).
+2. ✅ Stand up the differential test harness (§2).
+3. ✅ Refactor `AddCall` into a registry (§3).
+4. Expand features (§4) — most done; §4 stragglers remain (`Average`, predicate-less
+   `FirstOrDefault`/`LastOrDefault`, bit shifts, `TryParse`, string concat, `AddMonths`/`AddYears`).
+5. Documentation (§6) — in progress: API XML comments + docgen + `index.ds` done; namespace overview,
+   how-to and deep-dive articles still to write.

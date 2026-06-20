@@ -1,0 +1,78 @@
+@group
+    @key=main
+    @title=Gehtsoft.ExpressionToJs
+    @ingroup=
+    @sortarticles=no
+    @brief=Compile a C# validation rule once and run it on both the server and the browser.
+
+    [b]One rule, two runtimes, no drift.[/b]
+
+    Form validation almost always has to exist twice: once on the server, where it is
+    authoritative and cannot be bypassed, and once in the browser, where it gives the user
+    instant feedback without a round trip. Written by hand, those two copies drift apart - a
+    rule tightened on the server is forgotten on the client, an edge case fixed in JavaScript
+    never makes it back into C#, and the two ends quietly disagree about what "valid" means.
+
+    [b]Gehtsoft.ExpressionToJs[/b] removes the second copy. You write the rule once, as an
+    ordinary C# lambda - typically a boolean predicate over your model. The server runs that
+    lambda directly, compiled to a normal delegate. The same lambda is translated into an
+    equivalent JavaScript expression that runs in the browser. There is a single source of
+    truth, so the client and server cannot disagree: change the C# predicate and both ends
+    change together.
+
+    Because the emitted code is a faithful translation - same operators, same string and date
+    handling, same null and numeric semantics - a value that passes (or fails) on one side
+    passes (or fails) the same way on the other.
+
+    [b]The API at a glance[/b]
+
+    @table
+        @width=100%
+        @row
+            @header=yes
+            @col
+                @width=30%
+                Type
+            @end
+            @col
+                @width=70%
+                Purpose
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.ExpressionCompiler]ExpressionCompiler[/clink]
+            @end
+            @col
+                The entry point: wrap a lambda, read the emitted JavaScript.
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.Functions]Functions[/clink]
+            @end
+            @col
+                Validation helpers (age, Luhn check, lenient coercions, null tests) safe to call
+                inside a rule, because each one has a matching JavaScript implementation.
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.ExpressionToJsStubAccessor]ExpressionToJsStubAccessor[/clink]
+            @end
+            @col
+                The JavaScript runtime the emitted expressions depend on; load it into the page once.
+            @end
+        @end
+        @row
+            @col
+                [clink=Gehtsoft.ExpressionToJs.DateTimeMode]DateTimeMode[/clink]
+            @end
+            @col
+                Selects how dates are framed (local time or UTC) so both ends agree on the calendar.
+            @end
+        @end
+    @end
+
+    This page covers [i]why[/i] the library exists. The guides listed below cover [i]how[/i] to use it.
+@end

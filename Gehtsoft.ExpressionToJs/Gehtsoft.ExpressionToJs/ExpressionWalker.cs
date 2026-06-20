@@ -11,6 +11,23 @@ using System.Text.RegularExpressions;
 
 namespace Gehtsoft.ExpressionToJs
 {
+    /// <summary>
+    /// Converts a C# lambda expression into an equivalent JavaScript expression string.
+    ///
+    /// This is the entry point of the library. Construct it around a lambda - typically a boolean
+    /// form-validation predicate - and read <see cref="JavaScriptExpression"/> to get JavaScript
+    /// that computes the same result in the browser. The point is to keep one source of truth: the
+    /// lambda runs server-side as a compiled delegate, and its emitted twin runs client-side, so a
+    /// rule cannot drift between the two ends.
+    ///
+    /// Configure framing and translation [i]before[/i] reading the expression: set
+    /// <see cref="DateMode"/> for date semantics, and register custom translations through
+    /// <see cref="Methods"/>, <see cref="Constants"/>, and <see cref="Members"/>. For deeper control -
+    /// notably how a parameter renders on the client - derive a subclass and override the
+    /// [c]protected virtual[/c] emit methods. Whatever the emitted code calls (the [c]jsv_*[/c]
+    /// helpers) must be present at evaluation time; see
+    /// <see cref="ExpressionToJsStubAccessor.GetJsIncludesAsString"/>.
+    /// </summary>
     public class ExpressionCompiler : IEquatable<ExpressionCompiler>, IEquatable<Expression>
     {
         private readonly LambdaExpression mExpression;
@@ -23,6 +40,8 @@ namespace Gehtsoft.ExpressionToJs
         private readonly MethodRegistry mMethodRegistry;
         private readonly ConstantRegistry mConstantRegistry;
         private readonly MemberRegistry mMemberRegistry;
+        private readonly List<ParameterBinding> mParameterBindings = new List<ParameterBinding>();
+        private readonly ParameterRegistry mParameterRegistry;
 
         // Built-ins are disjoint by type+name (at most one matches any node), shared across instances
         // and never mutated. The member list ends with the terminal parameter-access fallback.
@@ -30,24 +49,71 @@ namespace Gehtsoft.ExpressionToJs
         private static readonly IReadOnlyList<IConstantTranslator> sBuiltinConstants = new IConstantTranslator[] { new DateTimeConstantTranslator(), new BuiltinConstantTranslator() };
         private static readonly IReadOnlyList<IMemberTranslator> sBuiltinMembers = BuildBuiltinMemberTranslators();
 
+        /// <summary>
+        /// The CLR type the lambda produces.
+        ///
+        /// Inspect it to decide how to consume the emitted code - most commonly to confirm a
+        /// validation lambda yields a [c]bool[/c] before wiring its JavaScript into a form's
+        /// validity check.
+        /// </summary>
         public Type ReturnType { get; }
 
         /// <summary>
-        /// How DateTime values are framed in the emitted JavaScript - <see cref="DateTimeMode.Local"/>
-        /// (default) or <see cref="DateTimeMode.Utc"/>. Set before reading <see cref="JavaScriptExpression"/>.
-        /// The host must bind JS-side dates in the same frame (see the library docs / PLAN.md).
+        /// How DateTime values are framed in the emitted JavaScript - local time or UTC.
+        ///
+        /// Selects <see cref="DateTimeMode.Local"/> (default) or <see cref="DateTimeMode.Utc"/>. Set
+        /// it before reading <see cref="JavaScriptExpression"/>. The host must bind JS-side dates in
+        /// the same frame (see the library docs / PLAN.md).
         /// </summary>
         public DateTimeMode DateMode { get; set; } = DateTimeMode.Local;
 
-        /// <summary>Extension point for translating custom method calls to JavaScript.</summary>
+        /// <summary>
+        /// Registry for mapping method calls the built-ins don't cover to JavaScript.
+        ///
+        /// Register here when the lambda calls a method the built-ins don't handle (a domain helper,
+        /// an overload with different arguments) so it maps to JavaScript instead of throwing at
+        /// compile time. Register before reading <see cref="JavaScriptExpression"/>; your
+        /// registrations are consulted ahead of the built-ins, which also lets you deliberately
+        /// override one.
+        /// </summary>
         public IJsMethodRegistry Methods => mMethodRegistry;
 
-        /// <summary>Extension point for translating custom constant types to JavaScript.</summary>
+        /// <summary>
+        /// Registry for mapping constant types the built-ins don't cover to JavaScript.
+        ///
+        /// Register here to teach the compiler how to emit a constant of a type it doesn't already
+        /// handle (a <see cref="Guid"/>, a domain value struct) or to emit an enum by name rather
+        /// than by its numeric value. Register before reading <see cref="JavaScriptExpression"/>.
+        /// </summary>
         public IJsConstantRegistry Constants => mConstantRegistry;
 
-        /// <summary>Extension point for translating custom member/property access to JavaScript.</summary>
+        /// <summary>
+        /// Registry for mapping property reads the built-ins don't cover to JavaScript.
+        ///
+        /// Register here when the lambda reads a property the built-ins don't handle and you want it
+        /// to map to a specific JavaScript form. Register before reading
+        /// <see cref="JavaScriptExpression"/>.
+        /// </summary>
         public IJsMemberRegistry Members => mMemberRegistry;
 
+        /// <summary>
+        /// Registry for binding a parameter type to a host-side lookup instead of emitting it verbatim.
+        ///
+        /// Register a model type here (with <see cref="IJsParameterRegistry.MapReference"/>) so rules
+        /// over that type emit against the form through a [c]reference('path')[/c] hook rather than a
+        /// server-shaped object - the form-validation case, with no subclassing. Register before
+        /// reading <see cref="JavaScriptExpression"/>.
+        /// </summary>
+        public IJsParameterRegistry Parameters => mParameterRegistry;
+
+        /// <summary>
+        /// The emitted JavaScript - the whole reason to use this type.
+        ///
+        /// Read it after the compiler is fully configured (date mode and any custom registrations
+        /// applied); the result is computed on first access and cached, so later configuration
+        /// changes are not reflected. Send the string to the client to evaluate, having first loaded
+        /// the runtime stub (<see cref="ExpressionToJsStubAccessor.GetJsIncludesAsString"/>).
+        /// </summary>
         public string JavaScriptExpression
         {
             get
@@ -56,11 +122,38 @@ namespace Gehtsoft.ExpressionToJs
             }
         }
 
+        /// <summary>
+        /// Creates a compiler for the given lambda using local-time date framing.
+        ///
+        /// Use this overload unless the client binds dates in UTC; pass <see cref="DateTimeMode"/>
+        /// explicitly (or set <see cref="DateMode"/>) when it does.
+        /// </summary>
+        /// <param name="lambdaExpression">
+        /// The expression to translate - usually a validation predicate. Its parameters become the
+        /// free variables of the emitted JavaScript, so they determine what the client code reads
+        /// from; its body is what gets translated.
+        /// </param>
         public ExpressionCompiler(LambdaExpression lambdaExpression)
             : this(lambdaExpression, DateTimeMode.Local)
         {
         }
 
+        /// <summary>
+        /// Creates a compiler for the given lambda with an explicit date framing.
+        ///
+        /// Use this when you already know whether the client binds dates in local time or UTC and
+        /// want to fix it at construction.
+        /// </summary>
+        /// <param name="lambdaExpression">
+        /// The expression to translate. Its parameters become the free variables of the emitted
+        /// JavaScript; its body is what gets translated.
+        /// </param>
+        /// <param name="dateMode">
+        /// Sets <see cref="DateMode"/>. Choose the frame the host will bind JS-side dates in:
+        /// <see cref="DateTimeMode.Local"/> emits local-time constructs,
+        /// <see cref="DateTimeMode.Utc"/> emits UTC ones. A mismatch silently shifts every
+        /// calendar-component comparison by the client's offset.
+        /// </param>
         public ExpressionCompiler(LambdaExpression lambdaExpression, DateTimeMode dateMode)
         {
             mExpression = lambdaExpression;
@@ -70,6 +163,7 @@ namespace Gehtsoft.ExpressionToJs
             mMethodRegistry = new MethodRegistry(mUserTranslators);
             mConstantRegistry = new ConstantRegistry(mUserConstants);
             mMemberRegistry = new MemberRegistry(mUserMembers);
+            mParameterRegistry = new ParameterRegistry(mParameterBindings);
         }
 
         protected virtual string WalkExpression(Expression expression)
@@ -218,7 +312,20 @@ namespace Gehtsoft.ExpressionToJs
         private static string WrapInteger(Expression expression, string js)
             => expression.Type == typeof(int) ? $"(({js}) | 0)" : js;
 
-        // Back-compat entry point: emits the built-in constant types (no custom registrations).
+        /// <summary>
+        /// Renders a single value as the JavaScript literal the compiler would emit for it.
+        ///
+        /// Use it when you are building or testing JavaScript fragments by hand and need one constant
+        /// formatted the same way the compiler does; it covers only the built-in types and does not
+        /// apply any custom <see cref="Constants"/> registrations, so prefer a full
+        /// <see cref="ExpressionCompiler"/> for real translation.
+        /// </summary>
+        /// <param name="constantValue">
+        /// The value to render. Its runtime type selects the literal form (string, number, boolean,
+        /// date, enum, ...); [c]null[/c] renders as [c]null[/c]. A type the built-ins don't
+        /// recognize throws.
+        /// </param>
+        /// <returns>The JavaScript literal for <paramref name="constantValue"/>.</returns>
         public static string AddConstant(object constantValue)
         {
             if (TryEmitBuiltinConstant(constantValue, out string js))
@@ -309,9 +416,23 @@ namespace Gehtsoft.ExpressionToJs
         }
 
         /// <summary>
-        /// Render a DateTime literal in the requested frame: Local -> new Date(y, m, d, ...),
-        /// Utc -> new Date(Date.UTC(y, m, d, ...)). DateTimeKind is ignored; the mode governs.
+        /// Renders a fixed date as the JavaScript Date literal the compiler would emit for it.
+        ///
+        /// Use it when hand-authoring a JavaScript fragment that must agree with compiled
+        /// expressions on date framing - call it with the same <see cref="DateMode"/> you give the
+        /// compiler so both sides build dates the same way.
         /// </summary>
+        /// <param name="dt">
+        /// The date to render. A midnight value emits a date-only constructor; any non-zero time
+        /// component emits the longer form down to seconds. The value's
+        /// <see cref="DateTime.Kind"/> is ignored - <paramref name="mode"/> alone decides the frame.
+        /// </param>
+        /// <param name="mode">
+        /// Which frame to build the date in: <see cref="DateTimeMode.Local"/> for a local-time
+        /// constructor, <see cref="DateTimeMode.Utc"/> for a UTC one. This must match how the rest
+        /// of the page interprets dates or the literal will be off by the client's offset.
+        /// </param>
+        /// <returns>The JavaScript [c]Date[/c] construction expression.</returns>
         public static string FormatDateLiteral(DateTime dt, DateTimeMode mode)
         {
             bool dateOnly = dt.Hour == 0 && dt.Minute == 0 && dt.Second == 0;
@@ -321,7 +442,18 @@ namespace Gehtsoft.ExpressionToJs
             return mode == DateTimeMode.Utc ? $"new Date(Date.UTC({args}))" : $"new Date({args})";
         }
 
-        /// <summary>Render a CLR string as a valid single-quoted JavaScript string literal.</summary>
+        /// <summary>
+        /// Turns a CLR string into a safe, quoted JavaScript string literal.
+        ///
+        /// Use it from a custom translator (or when assembling JavaScript by hand) whenever you
+        /// splice user- or data-supplied text into emitted code, so quotes, backslashes, and control
+        /// characters can't break or inject into the output.
+        /// </summary>
+        /// <param name="value">
+        /// The text to embed. Its characters are escaped as needed; the result already includes the
+        /// surrounding quotes, so do not add your own.
+        /// </param>
+        /// <returns>A single-quoted JavaScript string literal equivalent to <paramref name="value"/>.</returns>
         public static string EscapeJsString(string value)
         {
             StringBuilder sb = new StringBuilder(value.Length + 2);
@@ -349,7 +481,18 @@ namespace Gehtsoft.ExpressionToJs
             return sb.ToString();
         }
 
-        /// <summary>Escape a regex pattern so it is safe inside a JavaScript /.../ literal.</summary>
+        /// <summary>
+        /// Prepares a regular-expression pattern for use inside a JavaScript regex literal.
+        ///
+        /// Use it from a custom translator that emits a regex literal so an unescaped [c]/[/c] or a
+        /// raw newline in the pattern doesn't terminate or corrupt the literal.
+        /// </summary>
+        /// <param name="pattern">
+        /// The regex source. Only the characters that would break a slash-delimited literal are
+        /// adjusted; existing backslash escapes are respected and left intact. The result is the
+        /// inner pattern text only - wrap it in the slashes (and any flags) yourself.
+        /// </param>
+        /// <returns>The pattern, safe to place between [c]/[/c] delimiters.</returns>
         public static string EscapeJsRegex(string pattern)
         {
             StringBuilder sb = new StringBuilder(pattern.Length);
@@ -494,6 +637,10 @@ namespace Gehtsoft.ExpressionToJs
 
         protected virtual string AddParameterAccess(Expression expression)
         {
+            ParameterExpression root = GetRootParameter(expression);
+            if (root != null && IsRootParameter(root) && TryGetParameterBinding(root.Type, out ParameterBinding binding))
+                return binding.Access != null ? binding.Access(expression, root) : DefaultReferenceParameterAccess(expression);
+
             if (expression.NodeType == ExpressionType.MemberAccess)
             {
                 MemberExpression memberExpression = (MemberExpression)expression;
@@ -639,6 +786,44 @@ namespace Gehtsoft.ExpressionToJs
             }
         }
 
+        // One registered parameter binding: a type predicate plus how to render the bare parameter
+        // and a chain rooted in it. Null funcs mean "use the built-in reference() rendering".
+        private sealed class ParameterBinding
+        {
+            public readonly Func<Type, bool> Matches;
+            public readonly Func<ParameterExpression, string> Parameter;
+            public readonly Func<Expression, ParameterExpression, string> Access;
+
+            public ParameterBinding(Func<Type, bool> matches, Func<ParameterExpression, string> parameter, Func<Expression, ParameterExpression, string> access)
+            {
+                Matches = matches;
+                Parameter = parameter;
+                Access = access;
+            }
+        }
+
+        private sealed class ParameterRegistry : IJsParameterRegistry
+        {
+            private readonly List<ParameterBinding> mTarget;
+
+            public ParameterRegistry(List<ParameterBinding> target) => mTarget = target;
+
+            public IJsParameterRegistry MapReference(Func<Type, bool> matches)
+            {
+                mTarget.Add(new ParameterBinding(matches ?? throw new ArgumentNullException(nameof(matches)), null, null));
+                return this;
+            }
+
+            public IJsParameterRegistry Map(Func<Type, bool> matches, Func<ParameterExpression, string> parameter, Func<Expression, ParameterExpression, string> parameterAccess)
+            {
+                if (matches == null) throw new ArgumentNullException(nameof(matches));
+                if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+                if (parameterAccess == null) throw new ArgumentNullException(nameof(parameterAccess));
+                mTarget.Add(new ParameterBinding(matches, parameter, parameterAccess));
+                return this;
+            }
+        }
+
         // Built-in member translators. Disjoint by type+name, then the terminal parameter-access
         // fallback (a typed member like DateTime.Year deliberately wins over the generic fallback).
         private static IReadOnlyList<IMemberTranslator> BuildBuiltinMemberTranslators()
@@ -776,9 +961,119 @@ namespace Gehtsoft.ExpressionToJs
 
         protected virtual string AddParameter(ParameterExpression parameterExpression)
         {
+            if (IsRootParameter(parameterExpression) && TryGetParameterBinding(parameterExpression.Type, out ParameterBinding binding))
+                return binding.Parameter != null ? binding.Parameter(parameterExpression) : "reference()";
             return parameterExpression.Name;
         }
 
+        /// <summary>
+        /// Builds the dotted member path of a parameter access, for use inside a custom parameter
+        /// binding.
+        ///
+        /// Turns a member chain rooted in a rule parameter into a path - [c]m.Address.PostalCode[/c]
+        /// becomes [c]Address.PostalCode[/c], and the bare parameter becomes an empty string. Call it
+        /// from the [c]parameterAccess[/c] function you pass to
+        /// <see cref="IJsParameterRegistry.Map"/> so you don't have to walk the expression yourself.
+        /// </summary>
+        /// <param name="access">The member chain rooted in the parameter (as handed to your function).</param>
+        public static string ParameterAccessPath(Expression access)
+        {
+            if (access == null)
+                throw new ArgumentNullException(nameof(access));
+            if (access.NodeType == ExpressionType.Parameter)
+                return "";
+            if (access.NodeType == ExpressionType.MemberAccess)
+            {
+                MemberExpression member = (MemberExpression)access;
+                string head = ParameterAccessPath(member.Expression);
+                return head.Length == 0 ? member.Member.Name : head + "." + member.Member.Name;
+            }
+            throw new InvalidOperationException($"Cannot build a parameter access path for {access.NodeType}.");
+        }
+
+        // A parameter binding applies only to the rule's own (top-level) parameters; parameters
+        // introduced by a nested LINQ lambda are not bound and keep their own name.
+        private bool IsRootParameter(ParameterExpression parameter)
+            => mExpression.Parameters.Contains(parameter);
+
+        private bool TryGetParameterBinding(Type type, out ParameterBinding binding)
+        {
+            for (int i = 0; i < mParameterBindings.Count; i++)
+            {
+                if (mParameterBindings[i].Matches(type))
+                {
+                    binding = mParameterBindings[i];
+                    return true;
+                }
+            }
+            binding = null;
+            return false;
+        }
+
+        // Walks a member/index chain down to the parameter it roots in (null if it doesn't root in one).
+        private static ParameterExpression GetRootParameter(Expression expression)
+        {
+            switch (expression.NodeType)
+            {
+                case ExpressionType.Parameter:
+                    return (ParameterExpression)expression;
+                case ExpressionType.MemberAccess:
+                    MemberExpression member = (MemberExpression)expression;
+                    return member.Expression == null ? null : GetRootParameter(member.Expression);
+                case ExpressionType.ArrayIndex:
+                    return GetRootParameter(((BinaryExpression)expression).Left);
+                case ExpressionType.Call:
+                    MethodCallExpression call = (MethodCallExpression)expression;
+                    return call.Method.Name == "get_Item" && call.Object != null ? GetRootParameter(call.Object) : null;
+                default:
+                    return null;
+            }
+        }
+
+        // Built-in reference() rendering used when a binding is registered via MapReference (null funcs).
+        private string DefaultReferenceParameterAccess(Expression expression) => DefaultReferenceParameterAccess(expression, true);
+
+        private string DefaultReferenceParameterAccess(Expression expression, bool initial)
+        {
+            string result = null;
+            if (expression.NodeType == ExpressionType.MemberAccess)
+            {
+                MemberExpression member = (MemberExpression)expression;
+                result = DefaultReferenceParameterAccess(member.Expression, false);
+                if (result != "")
+                    result += ".";
+                result += member.Member.Name;
+            }
+            else if (expression.NodeType == ExpressionType.ArrayIndex)
+            {
+                BinaryExpression binary = (BinaryExpression)expression;
+                return $"jsv_index({DefaultReferenceParameterAccess(binary.Left)}, {WalkExpression(binary.Right)})";
+            }
+            else if (expression.NodeType == ExpressionType.Call)
+            {
+                MethodCallExpression call = (MethodCallExpression)expression;
+                if (call.Method.Name == "get_Item" && call.Arguments.Count == 1)
+                    return $"jsv_index({DefaultReferenceParameterAccess(call.Object)}, {WalkExpression(call.Arguments[0])})";
+            }
+            else if (expression.NodeType == ExpressionType.Parameter)
+            {
+                return "";
+            }
+
+            if (initial)
+                result = $"reference('{result}')";
+            return result;
+        }
+
+        /// <summary>
+        /// Tells whether two compilers were built from the same lambda.
+        ///
+        /// Useful as a cache key when you memoize emitted JavaScript and want to avoid recompiling
+        /// the same rule. Equality is by the underlying expression, not by the emitted string or
+        /// configuration.
+        /// </summary>
+        /// <param name="other">The compiler to compare against; [c]null[/c] is never equal.</param>
+        /// <returns>[c]true[/c] when both wrap the same lambda expression.</returns>
         public bool Equals(ExpressionCompiler other)
         {
             if (other == null)
@@ -786,6 +1081,14 @@ namespace Gehtsoft.ExpressionToJs
             return object.Equals(mExpression, other.mExpression);
         }
 
+        /// <summary>
+        /// Tells whether this compiler was built from the given lambda.
+        ///
+        /// The same caching/identity use as the other overload, for when what you hold is the raw
+        /// expression rather than a compiler.
+        /// </summary>
+        /// <param name="other">The expression to compare against this compiler's lambda; [c]null[/c] is never equal.</param>
+        /// <returns>[c]true[/c] when this compiler wraps <paramref name="other"/>.</returns>
         public bool Equals(Expression other)
         {
             if (other == null)

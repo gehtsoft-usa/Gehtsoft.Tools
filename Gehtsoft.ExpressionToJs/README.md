@@ -140,17 +140,23 @@ matching `jsv_x(...)`.
 ### Customizing the form-validation binding
 
 By default a parameter `p` is emitted verbatim (`p.Age`). For the validation use case you usually
-want member access to resolve against the form model instead. Subclass `ExpressionCompiler` and
-override how parameters render — the sample
-[`ValidationExpressionCompiler`](Gehtsoft.ExpressionToJs.Tests/ValidationExpressionCompiler.cs)
-maps the entity parameter onto `reference('path')` and the validated value onto `value`:
+want member access to resolve against the form instead, through a host-provided `reference()` hook.
+Turn that on with the `Parameters` registry — no subclassing:
 
 ```csharp
+var compiler = new ExpressionCompiler(rule);
+compiler.Parameters.MapReference(_ => true);   // off by default; this enables it for the model
+
 // p => p.Address.PostalCode.Length == 5
 //   becomes:  jsv_equal(jsv_length(reference('Address.PostalCode')), 5)
 ```
 
-The host page provides `reference(path)` (walk the model) and `value`, and the rule runs unchanged.
+The host page provides `reference(path)` (walk the model) and the rule runs unchanged. Use
+`Parameters.Map(...)` (with the public `ExpressionCompiler.ParameterAccessPath` helper) to emit a
+different shape — e.g. `value.Property` object access, or `reference('Type', 'path')` when a page
+hosts more than one form. The sample
+[`ValidationExpressionCompiler`](Gehtsoft.ExpressionToJs.Tests/ValidationExpressionCompiler.cs)
+shows the older subclassing approach.
 
 ### Extending without subclassing
 
@@ -162,6 +168,7 @@ var compiler = new ExpressionCompiler(rule);
 compiler.Methods.MapMethod(typeof(MyMath), nameof(MyMath.Clamp), "jsv_clamp($0, $1, $2)");
 compiler.Constants.MapConstant<Guid>(g => "'" + g + "'");
 compiler.Members.MapMember(typeof(Money), nameof(Money.Amount), "$obj.amount");
+compiler.Parameters.MapReference(_ => true);   // model fields -> reference('path')
 ```
 
 User registrations are consulted before the built-ins, so they can also shadow defaults.

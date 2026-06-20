@@ -65,9 +65,15 @@ JS, evaluated in the browser). Typical use is boolean validation expressions.
    exception: the terminal parameter-access member fallback).
 
 **Extending without subclassing:** `compiler.Methods` / `compiler.Constants` / `compiler.Members`
-(`MapMethod`/`MapConstant<T>`/`MapMember` + `AddTranslator`). User registrations are consulted before
-built-ins. To customize *parameter rendering* (e.g. for validation), still subclass and override
-`AddParameter` / `AddParameterAccess` — see `ValidationExpressionCompiler`.
+(`MapMethod`/`MapConstant<T>`/`MapMember` + `AddTranslator`), plus `compiler.Parameters`
+(`IJsParameterRegistry`) for *parameter rendering* — `MapReference(Func<Type,bool>)` turns on the
+built-in form-validation `reference()`/`reference('path')`/`jsv_index` rendering (off by default);
+`Map(Func<Type,bool>, Func<ParameterExpression,string>, Func<Expression,ParameterExpression,string>)`
+emits any custom shape (`value.Property`, `reference('Type','path')`). Public helper
+`ExpressionCompiler.ParameterAccessPath(Expression)` builds the dotted path. Bindings apply only to
+the rule's root parameters (nested LINQ params keep their names). User registrations are consulted
+before built-ins. Subclassing `AddParameter`/`AddParameterAccess` still works (the older
+`ValidationExpressionCompiler` sample) but is no longer needed for the `reference()/value` binding.
 
 **Date/time framing:** `compiler.DateMode` (`DateTimeMode.Local` default, or `Utc`; also a
 `new ExpressionCompiler(lambda, mode)` ctor) selects how calendar constructs are emitted — `new Date(...)`
